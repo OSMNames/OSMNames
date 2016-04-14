@@ -68,3 +68,39 @@ postalcode=<postalcode>
 
 ? timestamp - osm modification?
 ```
+
+
+### Get Started
+
+You need a complete OSM PBF data dump either from a [country extract](http://download.geofabrik.de/index.html) or of the [entire world](http://planet.osm.org/).
+Download the data and put it into the `data` directory.
+
+```bash
+wget --directory-prefix=./data http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+```
+
+Now we need to set up the database and import the data using the `import-osm` Docker container.
+
+```bash
+# This will automatically initialize the database
+docker-compose up -d postgres
+
+# Import the OSM data dump from the ./data folder
+docker-compose run import-osm
+```
+
+We can now export the ranked geonames and their geometries.
+
+```bash
+docker-compose run export-osmnames
+```
+
+### Components
+
+The different components that attach to the `postgres` container are all located in the `src` directory.
+
+| Component         | Description
+|-------------------|--------------------------------------------------------------
+| postgres          | PostGIS data store for OSM data and to perform noise analysis
+| import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries
+| export-osmnames   | Export names and their bounding boxes to TSV datasets

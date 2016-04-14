@@ -15,7 +15,7 @@ function export_tsv() {
     local tsv_file="$EXPORT_DIR/$tsv_filename"
     local sql_file="$2"
 
-	pgclimb \
+    pgclimb \
         -f "$sql_file" \
         -o "$tsv_file" \
         -dbname "$OSM_DB" \
