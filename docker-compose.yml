@@ -25,4 +25,4 @@ export-osmnames:
   volumes:
    - ./data:/data
   links:
-   - postgis:db
+   - postgres:db
