@@ -7,12 +7,7 @@ readonly IMPORT_DATA_DIR=${IMPORT_DATA_DIR:-/data/import}
 readonly IMPOSM_CACHE_DIR=${IMPOSM_CACHE_DIR:-/data/cache}
 readonly MAPPING_JSON=${MAPPING_JSON:-/usr/src/app/mapping.json}
 
-readonly DB_NAME=${DB_NAME:-noise}
-readonly DB_USER=${DB_USER:-noise}
-readonly DB_PASSWORD=${DB_PASSWORD:-noise}
-readonly DB_HOST=$POSTGRES_PORT_5432_TCP_ADDR
-
-readonly DB_SCHEMA=${DB_SCHEMA:-public}
+readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
 readonly PG_CONNECT="postgis://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME"
 
 function import_pbf() {

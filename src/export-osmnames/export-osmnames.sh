@@ -3,12 +3,9 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly OSM_HOST=$DB_PORT_5432_TCP_ADDR
-readonly OSM_PORT=$DB_PORT_5432_TCP_PORT
-readonly OSM_DB=${OSM_DB:-osm}
-readonly OSM_USER=${OSM_USER:-osm}
-readonly OSM_PASSWORD=${OSM_PASSWORD:-osm}
-readonly EXPORT_DIR=${EXPORT_DIR:-"./"}
+readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
+readonly DB_PORT=$DB_PORT_5432_TCP_PORT
+readonly EXPORT_DIR=${EXPORT_DIR:-"/data/"}
 
 function export_tsv() {
     local tsv_filename="$1"
@@ -18,11 +15,11 @@ function export_tsv() {
     pgclimb \
         -f "$sql_file" \
         -o "$tsv_file" \
-        -dbname "$OSM_DB" \
-        --username "$OSM_USER" \
-        --host "$OSM_HOST" \
-        --port "$OSM_PORT" \
-        --pass "$OSM_PASSWORD" \
+        -dbname "$DB_NAME" \
+        --username "$DB_USER" \
+        --host "$DB_HOST" \
+        --port "$DB_PORT" \
+        --pass "$DB_PASSWORD" \
     tsv --header
 }
 

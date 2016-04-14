@@ -89,6 +89,12 @@ docker-compose up -d postgres
 docker-compose run import-osm
 ```
 
+Create the database schema.
+
+```bash
+docker-compose run schema
+```
+
 We can now export the ranked geonames and their geometries.
 
 ```bash
@@ -104,3 +110,4 @@ The different components that attach to the `postgres` container are all located
 | postgres          | PostGIS data store for OSM data and to perform noise analysis
 | import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries
 | export-osmnames   | Export names and their bounding boxes to TSV datasets
+| schema            | Contains views, tables, functions for the schema

@@ -3,10 +3,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly DB_NAME=${DB_NAME:-noise}
-readonly DB_USER=${DB_USER:-noise}
-readonly DB_PASSWORD=${DB_PASSWORD:-noise}
-
 function create_db() {
     echo "Creating database $DB_NAME with owner $DB_USER"
     PGUSER="$POSTGRES_USER" psql --dbname="$POSTGRES_DB" <<-EOSQL
