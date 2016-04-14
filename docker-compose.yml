@@ -1,0 +1,28 @@
+pgdata:
+  image: "tianon/true"
+  volumes:
+  - /var/lib/postgresql/data
+cache:
+  image: "tianon/true"
+  volumes:
+  - /data/cache
+postgres:
+  build: "src/postgres"
+  volumes_from:
+   - pgdata
+  ports:
+   - "5432"
+import-osm:
+  build: "src/import-osm"
+  volumes:
+   - ./data:/data/import
+  volumes_from:
+   - cache
+  links:
+   - postgres:postgres
+export-osmnames:
+  build: "src/export-osmnames"
+  volumes:
+   - ./data:/data
+  links:
+   - postgis:db
