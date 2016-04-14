@@ -7,4 +7,4 @@ SELECT r.name,
     ST_YMIN(ST_Transform(r.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(r.geometry, 4326)) AS north
-FROM osm_roads AS r;
+FROM osm_road_linestring AS r;

@@ -1,188 +1,67 @@
 tables:
-  motorway:
+  road_linestring:
     type: linestring
     fields:
+    - name: osm_id
+      type: id
     - name: geometry
       type: geometry
-    mapping:
-      highway:
-      - motorway
-      - motorway_link
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  trunk:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      highway:
-      - trunk
-      - trunk_link
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  primary_road:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      highway:
-      - primary
-      - primary_link
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  secondary_road:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      highway:
-      - secondary
-      - secondary_link
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  tertiary_road:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      highway:
-      - tertiary
-      - tertiary_link
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  industrial_zone:
-    type: polygon
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      landuse:
-      - industrial
-  retail_zone:
-    type: polygon
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      landuse:
-      - retail
-  shop:
-    type: point
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      shop: [__any__]
-  food:
-    type: point
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      amenity:
-      - bar
-      - bbq
-      - cafe
-      - biergarten
-      - fast_food
-      - food_court
-      - ice_cream
-      - pub
-      - restaurant
-  party:
-    type: point
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      amenity:
-      - cinema
-      - casino
-      - community_centre
-      - gambling
-      - nightclub
-      - stripclub
-      - theatre
-  leisure:
-    type: point
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      leisure:
-      - beach_resort
-      - swimming_area
-      - water_park
-      tourism:
-      - camp_site
-      - museum
-      - picnic_site
-      - theme_park
-      - zoo
-  sport:
-    type: point
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      sport:
-      - american_football
-      - baseball
-      - beachvolleyball
-      - bmx
-      - canadian_football
-      - cockfighting
-      - cricket
-      - dog_racing
-      - field_hockey
-      - horse_racing
-      - ice_hockey
-      - ice_skating
-      - obstacle_course
-      - rc_car
-      - rugby_league
-      - rugby_union
-      - shooting
-      - soccer
-      - volleyball
-      - tennis
-      - water_ski
-  railway:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
     mapping:
       railway:
       - rail
-      - narrow_gauge
-      - preserved
-      - funicular
-      - monorail
-      - disused
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
-  light_railway:
-    type: linestring
-    fields:
-    - name: geometry
-      type: geometry
-    mapping:
-      railway:
-      - tram
       - light_rail
-      - funicular
-      - monorail
-    filters:
-      exclude_tags:
-       - ["tunnel", "yes"]
+      - subway
+      highway:
+      - motorway
+      - motorway_link
+      - trunk
+      - trunk_link
+      - primary
+      - primary_link
+      - secondary
+      - secondary_link
+      - tertiary
+      - tertiary_link
+      - unclassified
+      - residential
+      - road
+      - living_street
+      - raceway
+      - construction
+      - track
+      - service
+      - path
+      - cycleway
+      - steps
+      - bridleway
+      - footway
+      - corridor
+      - crossing
+      aerialway:
+      - cable_car
+      - gondola
+      - mixed_lift
+      - chair_lift
+      - drag_lift
+      - t-bar
+      - j-bar
+      - platter
+      - rope_tow
+      - zip_line
+      - magic_carpet
+      - canopy
+      golf:
+      - hole
+      public_transport:
+      - platform
+      route:
+      - ferry
+      - piste
+      - mtb
+      - hiking
+

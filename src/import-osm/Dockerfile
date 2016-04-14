@@ -6,7 +6,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libleveldb-dev \
       libgeos-dev \
       postgresql-client \
-      osmctools \
       --no-install-recommends \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
  && rm -rf /var/lib/apt/lists/*
