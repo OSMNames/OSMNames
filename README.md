@@ -24,7 +24,7 @@ Database of geographic place names from OpenStreetMap for full text search downl
 - Ready to use via Docker in minutes
 - https://github.com/klokantech/osmnames-sphinxsearch
 
-## Data format
+## Data format of OSMNames
 
 ```
 *osm_id - MUST BE UNIQUE "DOCUMENT ID" accross complete database
@@ -62,12 +62,14 @@ city=<city>
 county=<county>
 state=<state>
 country=<country>
-postalcode=<postalcode>
 
 (= a la nominatim http://wiki.openstreetmap.org/wiki/Nominatim)
 
 ? timestamp - osm modification?
 ```
+
+REMARKs: 
+* Fields like housenumber and postalcode don't belong to this dataset. There's a dataset "OSM Adresses" for that.
 
 
 ### Get Started
