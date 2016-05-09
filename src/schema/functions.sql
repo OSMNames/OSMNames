@@ -22,3 +22,27 @@ BEGIN
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION city_class(type TEXT)
+RETURNS TEXT AS $$
+BEGIN
+	RETURN CASE
+		WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
+		WHEN type IN ('city','borough','suburb','quarter','neighbourhood','town','village','hamlet') THEN 'place'
+	END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION getHierarchyAsTextArray(int[])
+RETURNS character varying[] AS $$
+DECLARE
+  retVal character varying[];
+  x int;
+BEGIN
+  FOREACH x IN ARRAY $1
+  LOOP
+    retVal := array_append(retVal, (SELECT name FROM osm_city_polygon WHERE id = x));
+  END LOOP;
+  RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;

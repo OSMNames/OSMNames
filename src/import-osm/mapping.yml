@@ -64,4 +64,32 @@ tables:
       - piste
       - mtb
       - hiking
-
+  city_polygon:
+    type: polygon
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    - name: rank_search
+      type: integer
+    mapping:
+      place:
+      - city
+      - borough
+      - suburb
+      - quarter
+      - neighbourhood
+      - town
+      - village
+      - hamlet
+      boundary: 
+      - administrative
