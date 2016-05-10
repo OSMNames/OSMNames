@@ -23,9 +23,15 @@ function export_tsv() {
     tsv --header
 }
 
+function gzip_tsv() {
+    local tsv_filename="$1"
+    local tsv_file="$EXPORT_DIR/$tsv_filename"
+    gzip -c "$tsv_file" > "$tsv_file.gzip"
+}
+
 function export_geonames() {
-    export_tsv "roads.tsv" "roads.sql"
-    export_tsv "cities.tsv" "cities.sql"
+    export_tsv "output.tsv" "export.sql"
+    gzip_tsv "output.tsv"
 }
 
 export_geonames
