@@ -38,8 +38,8 @@ CREATE OR REPLACE FUNCTION countryCode(country_id int) returns TEXT as $$
 	SELECT country_code FROM osm_city_polygon WHERE id = country_id;
 $$ language 'sql';
 
-CREATE OR REPLACE FUNCTION placeName(country_id int) returns TEXT as $$
-	SELECT name_en FROM osm_city_polygon WHERE id = country_id;
+CREATE OR REPLACE FUNCTION placeName(place_id int) returns TEXT as $$
+	SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_city_polygon WHERE id = place_id;
 $$ language 'sql';
 
 
