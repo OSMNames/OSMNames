@@ -13,6 +13,7 @@ readonly PG_CONNECT="postgis://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME"
 readonly DB_PORT=$DB_PORT_5432_TCP_PORT
 
 function import_pbf() {
+    
     local pbf_file="$1"
     imposm3 import \
         -connection "$PG_CONNECT" \

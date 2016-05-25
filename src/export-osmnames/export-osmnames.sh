@@ -29,7 +29,7 @@ function export_tsv() {
 function gzip_tsv() {
     local tsv_filename="$1"
     local tsv_file="$EXPORT_DIR/$tsv_filename"
-    gzip -c "$tsv_file" > "$tsv_file.gzip"
+    gzip -c "$tsv_file" > "$tsv_file.gz"
 }
 
 function determineOutputFilename() {

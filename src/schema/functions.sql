@@ -34,6 +34,15 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
+CREATE OR REPLACE FUNCTION countryCode(country_id int) returns TEXT as $$
+	SELECT country_code FROM osm_city_polygon WHERE id = country_id;
+$$ language 'sql';
+
+CREATE OR REPLACE FUNCTION placeName(country_id int) returns TEXT as $$
+	SELECT name_en FROM osm_city_polygon WHERE id = country_id;
+$$ language 'sql';
+
+
 CREATE OR REPLACE FUNCTION getHierarchyAsTextArray(int[])
 RETURNS character varying[] AS $$
 DECLARE
@@ -44,12 +53,45 @@ IF $1 IS NOT NULL
 THEN
     FOREACH x IN ARRAY $1
     LOOP
-      retVal := array_append(retVal, (SELECT name FROM osm_city_polygon WHERE id = x));
+      retVal := array_append(retVal, (SELECT COALESCE(NULLIF(name_en,''), name)::character varying FROM osm_city_polygon WHERE id = x));
     END LOOP;
-  RETURN retVal;
-ELSE
-    RETURN NULL;
 END IF;
+RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION updateParentCountry(parentID int) RETURNS void AS $$
+BEGIN
+
+UPDATE osm_city_polygon SET country = parentID FROM 
+(SELECT id, country FROM osm_city_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
+WHERE osm_city_polygon.id = countryQuery.id;
+
+UPDATE osm_city_point SET country = parentID FROM 
+(SELECT id, country FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
+WHERE osm_city_point.id = countryQuery.id;
+
+UPDATE osm_road_linestring SET country = parentID FROM 
+(SELECT id, country FROM osm_road_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
+WHERE osm_road_linestring.id = countryQuery.id;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION updateParentState(parentID int) RETURNS void AS $$
+BEGIN
+
+UPDATE osm_city_polygon SET state = parentID FROM 
+(SELECT id, state FROM osm_city_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
+WHERE osm_city_polygon.id = stateQuery.id;
+
+UPDATE osm_city_point SET state = parentID FROM 
+(SELECT id, state FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
+WHERE osm_city_point.id = stateQuery.id;
+
+UPDATE osm_road_linestring SET state = parentID FROM 
+(SELECT id, state FROM osm_road_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
+WHERE osm_road_linestring.id = stateQuery.id;
 
 END;
 $$ LANGUAGE plpgsql;
