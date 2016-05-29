@@ -1,0 +1,1 @@
+ALTER TABLE wikipedia_article OWNER TO osm;

@@ -32,14 +32,31 @@ function exec_psql_file() {
         --host="$DB_HOST" \
         --port="$DB_PORT" \
         --dbname="$DB_NAME" \
-        --username="$DB_USER" \
+        --username="$2" \
         -f "$file_name"
 }
 
 function indexing_phase() {
     echo "$(date +"%T"): start indexing.."
-    exec_psql_file "indexing.sql"
+    # exec_psql_file "indexing.sql" "$DB_USER"
     echo "$(date +"%T"): indexing complete.."
+}
+
+function load_wiki_dump() {
+    echo "$(date +"%T"): try to load wiki dump.."
+    local file_name="$IMPORT_DATA_DIR/wikipedia_article.sql.bin"
+    #wget --output-document=$IMPORT_DATA_DIR/wikipedia_redirect.sql.bin http://www.nominatim.org/data/wikipedia_redirect.sql.bin
+
+    exec_psql_file "wiki_privileges.sql" "postgres"
+
+    if [ ! -f "$file_name" ]; then
+        wget --output-document=$file_name http://www.nominatim.org/data/wikipedia_article.sql.bin
+    fi
+    pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $file_name
+    #pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $IMPORT_DATA_DIR/wikipedia_redirect.sql.bin
+    echo "$(date +"%T"): wiki data complete.."
+    exec_psql_file "wiki_transfer_ownership.sql" "postgres"
+    
 }
 
 function main() {
@@ -49,6 +66,7 @@ function main() {
             import_pbf "$pbf_file"
             break
         done
+        load_wiki_dump
         indexing_phase
     else
         echo "No PBF files for import found."
