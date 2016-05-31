@@ -8,7 +8,7 @@ BEGIN
 
       CREATE ROLE brian LOGIN PASSWORD 'brian';
       GRANT ALL PRIVILEGES ON DATABASE osm to brian;
-
    END IF;
+   DROP TABLE IF EXISTS wikipedia_article;
 END
 $body$;

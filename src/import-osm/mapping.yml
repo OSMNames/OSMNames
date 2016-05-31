@@ -174,3 +174,54 @@ tables:
       - town
       - village
       - hamlet
+  housenumbers:
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    - key: addr:street
+      name: addr:street
+      type: string
+    - key: addr:postcode
+      name: addr:postcode
+      type: string
+    - key: addr:city
+      name: addr:city
+      type: string
+    mapping:
+      addr:housenumber:
+      - __any__
+    type: point
+  housenumbers_interpolated:
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    - key: addr:street
+      name: addr:street
+      type: string
+    - key: addr:postcode
+      name: addr:postcode
+      type: string
+    - key: addr:city
+      name: addr:city
+      type: string
+    - key: addr:inclusion
+      name: addr:inclusion
+      type: string
+    mapping:
+      addr:interpolation:
+      - __any__
+    type: linestring
