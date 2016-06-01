@@ -35,6 +35,9 @@ tables:
     - name: name_zh
       key: name:zh
       type: string
+    - key: wikipedia
+      name: wikipedia
+      type: string
     - key: admin_level
       name: admin_level
       type: integer
@@ -106,6 +109,9 @@ tables:
     - name: name_zh
       key: name:zh
       type: string
+    - key: wikipedia
+      name: wikipedia
+      type: string
     - key: admin_level
       name: admin_level
       type: integer
@@ -158,6 +164,9 @@ tables:
       type: string
     - name: name_zh
       key: name:zh
+      type: string
+    - key: wikipedia
+      name: wikipedia
       type: string
     - key: admin_level
       name: admin_level

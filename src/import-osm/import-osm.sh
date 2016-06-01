@@ -38,7 +38,7 @@ function exec_psql_file() {
 
 function indexing_phase() {
     echo "$(date +"%T"): start indexing.."
-    # exec_psql_file "indexing.sql" "$DB_USER"
+    #exec_psql_file "indexing.sql" "$DB_USER"
     echo "$(date +"%T"): indexing complete.."
 }
 
