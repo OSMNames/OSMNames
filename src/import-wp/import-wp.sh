@@ -22,14 +22,14 @@ function exec_psql_file() {
 }
 
 function load_wiki_dump() {
-    echo "$(date +"%T"): try to load wiki dump.."
+    echo "$(date +"%T"): try to load wikipedia dump.."
     local file_name="$IMPORT_DATA_DIR/wikipedia_article.sql.bin"
     exec_psql_file "wiki_privileges.sql" "postgres"
     if [ ! -f "$file_name" ]; then
         wget --output-document=$file_name http://www.nominatim.org/data/wikipedia_article.sql.bin
     fi
     pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $file_name
-    echo "$(date +"%T"): wiki data loading complete.."
+    echo "$(date +"%T"): wikipedia loading complete.."
     exec_psql_file "wiki_transfer_ownership.sql" "postgres"
 }
 
