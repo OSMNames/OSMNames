@@ -13,7 +13,7 @@ BEGIN
 		WHEN type IN ('town') THEN 18
 		WHEN type IN ('village','hamlet','municipality','district','unincorporated_area','borough') THEN 19
 		WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass') THEN 20
-		WHEN type IN ('neighbourhood') THEN 22
+		WHEN type IN ('neighbourhood', 'residental') THEN 22
 		WHEN type IN ('houses') THEN 28
 		WHEN type IN ('house','building') THEN 30
 		WHEN type IN ('quarter') THEN 30
