@@ -16,7 +16,7 @@ SELECT r.name,
     ST_YMIN(ST_Transform(r.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(r.geometry, 4326)) AS north
-FROM osm_city_polygon AS r WHERE (r.name <> '') IS TRUE
+FROM osm_polygon AS r WHERE (r.name <> '') IS TRUE
 UNION SELECT rr.name,
     city_class(rr.type) AS class,
     rr.type AS type,
@@ -35,7 +35,7 @@ UNION SELECT rr.name,
     ST_YMIN(ST_Transform(rr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north
-FROM osm_city_point AS rr WHERE (rr.name <> '') IS TRUE
+FROM osm_point AS rr WHERE (rr.name <> '') IS TRUE
 UNION SELECT rrr.name,
     road_class(rrr.type) AS class,
     rrr.type,
@@ -54,5 +54,5 @@ UNION SELECT rrr.name,
     ST_YMIN(ST_Transform(rrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north
-FROM osm_road_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE
+FROM osm_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE
 ;

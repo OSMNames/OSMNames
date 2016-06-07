@@ -36,24 +36,42 @@ function exec_psql_file() {
         -f "$file_name"
 }
 
+function init_helper_tables() {
+    echo "$(date +"%T"): init helper tables"
+    exec_psql_file "create_hstore.sql" "postgres"
+    exec_psql_file "country_name.sql" "postgres"
+    exec_psql_file "country_osm_grid.sql" "postgres"
+    exec_psql_file "transfer_privileges.sql" "postgres"
+
+}
+
 function indexing_phase() {
     echo "$(date +"%T"): start indexing.."
     exec_psql_file "indexing.sql" "$DB_USER"
     echo "$(date +"%T"): indexing complete.."
 }
 
-function main() {
-    if [ "$(ls -A $IMPORT_DATA_DIR/*.pbf 2> /dev/null)" ]; then
+function reading_pbf_file() {
+ if [ "$(ls -A $IMPORT_DATA_DIR/*.pbf 2> /dev/null)" ]; then
         local pbf_file
         for pbf_file in "$IMPORT_DATA_DIR"/*.pbf; do
             import_pbf "$pbf_file"
             break
         done
-        indexing_phase
+        return 0
     else
         echo "No PBF files for import found."
         echo "Please mount the $IMPORT_DATA_DIR volume to a folder containing OSM PBF files."
         exit 404
+    fi
+} 
+
+function main() {
+    reading_pbf_file
+    retval=$?
+    if [ "$retval" == 0 ]; then
+        init_helper_tables
+        indexing_phase
     fi
 }
 

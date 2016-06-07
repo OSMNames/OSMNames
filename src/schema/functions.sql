@@ -29,17 +29,18 @@ BEGIN
 	RETURN CASE
 		WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
 		WHEN type IN ('city','borough','suburb','quarter','neighbourhood','town','village','hamlet') THEN 'place'
+		WHEN type IN ('residental') THEN 'landuse'
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION countryCode(country_id int) returns TEXT as $$
-	SELECT country_code FROM osm_city_polygon WHERE id = country_id;
+	SELECT country_code FROM osm_polygon WHERE id = country_id;
 $$ language 'sql';
 
 CREATE OR REPLACE FUNCTION placeName(place_id int) returns TEXT as $$
-	SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_city_polygon WHERE id = place_id;
+	SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = place_id;
 $$ language 'sql';
 
 
@@ -53,7 +54,7 @@ IF $1 IS NOT NULL
 THEN
     FOREACH x IN ARRAY $1
     LOOP
-      retVal := array_append(retVal, (SELECT COALESCE(NULLIF(name_en,''), name)::character varying FROM osm_city_polygon WHERE id = x));
+      retVal := array_append(retVal, (SELECT COALESCE(NULLIF(name_en,''), name)::character varying FROM osm_polygon WHERE id = x));
     END LOOP;
 END IF;
 RETURN retVal;
@@ -63,17 +64,17 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION updateParentCountry(parentID int) RETURNS void AS $$
 BEGIN
 
-UPDATE osm_city_polygon SET country = parentID FROM 
-(SELECT id, country FROM osm_city_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
-WHERE osm_city_polygon.id = countryQuery.id;
+UPDATE osm_polygon SET country = parentID FROM 
+(SELECT id, country FROM osm_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
+WHERE osm_polygon.id = countryQuery.id;
 
 UPDATE osm_city_point SET country = parentID FROM 
 (SELECT id, country FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
 WHERE osm_city_point.id = countryQuery.id;
 
-UPDATE osm_road_linestring SET country = parentID FROM 
-(SELECT id, country FROM osm_road_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
-WHERE osm_road_linestring.id = countryQuery.id;
+UPDATE osm_linestring SET country = parentID FROM 
+(SELECT id, country FROM osm_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
+WHERE osm_linestring.id = countryQuery.id;
 
 END;
 $$ LANGUAGE plpgsql;
@@ -81,17 +82,17 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION updateParentState(parentID int) RETURNS void AS $$
 BEGIN
 
-UPDATE osm_city_polygon SET state = parentID FROM 
-(SELECT id, state FROM osm_city_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
-WHERE osm_city_polygon.id = stateQuery.id;
+UPDATE osm_polygon SET state = parentID FROM 
+(SELECT id, state FROM osm_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
+WHERE osm_polygon.id = stateQuery.id;
 
 UPDATE osm_city_point SET state = parentID FROM 
 (SELECT id, state FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
 WHERE osm_city_point.id = stateQuery.id;
 
-UPDATE osm_road_linestring SET state = parentID FROM 
-(SELECT id, state FROM osm_road_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
-WHERE osm_road_linestring.id = stateQuery.id;
+UPDATE osm_linestring SET state = parentID FROM 
+(SELECT id, state FROM osm_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
+WHERE osm_linestring.id = stateQuery.id;
 
 END;
 $$ LANGUAGE plpgsql;
@@ -107,6 +108,43 @@ BEGIN
     RETURN lower(nearcountry.country_default_language_code);
   END LOOP;
   RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION get_country_code(place geometry) RETURNS TEXT
+  AS $$
+DECLARE
+  place_centre GEOMETRY;
+  nearcountry RECORD;
+BEGIN
+  place_centre := ST_PointOnSurface(place);
+
+  FOR nearcountry IN select country_code from country_osm_grid where st_covers(geometry, place_centre) order by area asc limit 1
+  LOOP
+    RETURN nearcountry.country_code;
+  END LOOP;
+
+  FOR nearcountry IN select country_code from country_osm_grid where st_dwithin(geometry, place_centre, 0.5) order by st_distance(geometry, place_centre) asc, area asc limit 1
+  LOOP
+    RETURN nearcountry.country_code;
+  END LOOP;
+
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION get_partition(in_country_code character varying(2)) RETURNS INTEGER
+  AS $$
+DECLARE
+  nearcountry RECORD;
+BEGIN
+  FOR nearcountry IN select partition from country_name where country_code = in_country_code
+  LOOP
+    RETURN nearcountry.partition;
+  END LOOP;
+  RETURN 0;
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;
