@@ -35,12 +35,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION countryCode(country_id int) returns TEXT as $$
-	SELECT country_code FROM osm_polygon WHERE id = country_id;
-$$ language 'sql';
-
-CREATE OR REPLACE FUNCTION placeName(place_id int) returns TEXT as $$
-	SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = place_id;
+CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
+	SELECT name -> 'name:en' FROM country_name WHERE partition = partition_id;
 $$ language 'sql';
 
 
