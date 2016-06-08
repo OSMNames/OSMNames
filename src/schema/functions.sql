@@ -29,7 +29,7 @@ BEGIN
 	RETURN CASE
 		WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
 		WHEN type IN ('city','borough','suburb','quarter','neighbourhood','town','village','hamlet') THEN 'place'
-		WHEN type IN ('residental') THEN 'landuse'
+		WHEN type IN ('residential') THEN 'landuse'
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
