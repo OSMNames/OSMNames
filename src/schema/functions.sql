@@ -57,39 +57,97 @@ RETURN retVal;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION updateParentCountry(parentID int) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION constructDisplayName(id_value BIGINT, delimiter TEXT) RETURNS TEXT AS $$
+DECLARE
+  displayName TEXT;
+  oldName TEXT;
+  currentName TEXT;
+  current_id BIGINT;
 BEGIN
-
-UPDATE osm_polygon SET country = parentID FROM 
-(SELECT id, country FROM osm_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
-WHERE osm_polygon.id = countryQuery.id;
-
-UPDATE osm_city_point SET country = parentID FROM 
-(SELECT id, country FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
-WHERE osm_city_point.id = countryQuery.id;
-
-UPDATE osm_linestring SET country = parentID FROM 
-(SELECT id, country FROM osm_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS countryQuery 
-WHERE osm_linestring.id = countryQuery.id;
-
+  current_id := id_value;
+  WHILE current_id IS NOT NULL LOOP
+    SELECT parent_id, COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO current_id, currentName;
+    IF displayName IS NULL THEN
+	displayName := currentName;
+    ELSE
+    	displayName := displayName || delimiter || ' ' || currentName;
+    END IF;
+  END LOOP;
+RETURN displayName;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION updateParentState(parentID int) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION constructNodeDisplayName(id_value BIGINT, delimiter TEXT, name TEXT) RETURNS TEXT AS $$
+DECLARE
+  displayName TEXT;
 BEGIN
+	SELECT constructDisplayName(id_value) INTO displayName;
+	displayName := name || delimiter || ' ' || displayName;
+RETURN displayName;
+END;
+$$ LANGUAGE plpgsql;
 
-UPDATE osm_polygon SET state = parentID FROM 
-(SELECT id, state FROM osm_polygon WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
-WHERE osm_polygon.id = stateQuery.id;
+CREATE OR REPLACE FUNCTION constructSpecificParentName(id_value BIGINT, from_rank INTEGER, to_rank INTEGER) RETURNS TEXT AS $$
+DECLARE
+  current_id BIGINT;
+  currentName TEXT;
+  currentNameOld TEXT;
+  current_rank INTEGER;
+BEGIN
+  current_rank := from_rank;
+  current_id := id_value;
+  IF current_rank = to_rank THEN
+    SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO currentName;
+    RETURN currentName;
+  END IF; 
+  WHILE current_rank > to_rank  LOOP
+  currentNameOld := currentName;
+    SELECT parent_id, COALESCE(NULLIF(name_en,''), name), rank_search FROM osm_polygon WHERE id = current_id INTO current_id, currentName, current_rank;
+    IF current_id IS NULL THEN
+	RETURN currentName;
+    END IF; 
+      IF current_rank < to_rank THEN
+	RETURN currentNameOld;
+    END IF; 
+  END LOOP;
+RETURN currentName;
+END;
+$$ LANGUAGE plpgsql;
 
-UPDATE osm_city_point SET state = parentID FROM 
-(SELECT id, state FROM osm_city_point WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
-WHERE osm_city_point.id = stateQuery.id;
+CREATE OR REPLACE FUNCTION determineParentPlace(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+  FOR current_rank  IN REVERSE rank_search_value..1 LOOP
+     SELECT id FROM osm_polygon WHERE partition=partition_value AND rank_search = current_rank AND NOT id=id_value AND ST_Contains(geometry, geometry_value) INTO retVal;
+     IF retVal IS NOT NULL THEN
+      return retVal;
+    END IF;
+  END LOOP;
+RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;
 
-UPDATE osm_linestring SET state = parentID FROM 
-(SELECT id, state FROM osm_linestring WHERE parent_ids @> ARRAY[parentID]::int[]) AS stateQuery 
-WHERE osm_linestring.id = stateQuery.id;
+CREATE OR REPLACE FUNCTION findRoadsWithinGeometry(id_value integer,partition_value integer, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+retVal := 1;
+	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value,geometry);
+RETURN id_value;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS BIGINT AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+  FOR current_partition  IN 1..255 LOOP
+    FOR current_rank  IN REVERSE 22..4 LOOP
+       PERFORM findRoadsWithinGeometry(id, current_partition, geometry) FROM osm_polygon WHERE partition = current_partition AND rank_search = current_rank;
+    END LOOP;
+  END LOOP;
+RETURN retVal;
 END;
 $$ LANGUAGE plpgsql;
 

@@ -76,22 +76,23 @@ ALTER TABLE osm_polygon
 	ADD COLUMN linked_osm_id bigint,
 	ADD COLUMN rank_search int,
 	ADD COLUMN parent_ids integer[],
-	ADD COLUMN parent_id bigint;
+	ADD COLUMN parent_id bigint,
+	ADD COLUMN parent_type int;
 ALTER TABLE osm_point
 	ADD COLUMN partition integer,
 	ADD COLUMN calculated_country_code character varying(2),
 	ADD COLUMN rank_search int,
 	ADD COLUMN parent_ids integer[],
 	ADD COLUMN linked BOOLEAN DEFAULT FALSE,
-	ADD COLUMN parent_id bigint;
-ALTER TABLE osm_linestring
+	ADD COLUMN parent_id bigint,
+	ADD COLUMN parent_type int;ALTER TABLE osm_linestring
 	ADD COLUMN partition integer,
 	ADD COLUMN calculated_country_code character varying(2),
 	ADD COLUMN linked_osm_id bigint,
 	ADD COLUMN rank_search int,
 	ADD COLUMN parent_ids integer[],
-	ADD COLUMN parent_id bigint;
-
+	ADD COLUMN parent_id bigint,
+	ADD COLUMN parent_type int;
 
 --create triggers for partitioning
 CREATE TRIGGER performCountryAndPartitionUpdate_polygon
@@ -113,7 +114,6 @@ CREATE TRIGGER performCountryAndPartitionUpdate_linestring
 UPDATE osm_polygon SET rank_search = rank_place(type, osm_id);
 UPDATE osm_point SET rank_search = rank_place(type, osm_id);
 UPDATE osm_linestring SET rank_search = rank_address(type, osm_id);
-
 
 --determine linked places
 -- places with admin_centre tag
@@ -139,7 +139,14 @@ UPDATE osm_point p SET linked = TRUE
 	FROM osm_point po WHERE po.osm_id IN (SELECT linked_osm_id FROM osm_polygon WHERE linked_osm_id IS NOT NULL)
 	AND po.osm_id = p.osm_id;
 
+
 --determine parents
+UPDATE osm_polygon SET parent_id = determineParentPlace(id, partition, rank_search, geometry);
+UPDATE osm_point SET parent_id = determineParentPlace(id, partition, rank_search, geometry) WHERE linked IS FALSE;
+SELECT determineRoadHierarchyForEachCountry();
+
+--determine parents
+/*
 UPDATE osm_polygon
   SET parent_ids = calculated_parent_ids
 FROM (SELECT pl.id as currentID, array_agg(area.id ORDER BY area.rank_search DESC) as calculated_parent_ids
@@ -158,7 +165,6 @@ GROUP BY pl.id
 ORDER BY pl.id) AS spatialQuery 
 WHERE osm_point.id = currentID;
 
-/* 
 UPDATE osm_linestring
   SET parent_ids = calculated_parent_ids
 FROM (SELECT pl.id as currentID, array_agg(area.id ORDER BY area.rank_search DESC) as calculated_parent_ids
@@ -169,6 +175,3 @@ ORDER BY pl.id) AS spatialQuery
 WHERE osm_linestring.id = currentID;
 */
 
--- TODO change order, partition into countries first and then run spatial queries
---SELECT updateParentCountry(id) FROM osm_polygon WHERE rank_search = 4;
---SELECT updateParentState(id) FROM osm_polygon WHERE rank_search = 8;

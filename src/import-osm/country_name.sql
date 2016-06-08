@@ -287,7 +287,7 @@ bq	\N	\N	250
 -- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: brian; Tablespace: 
 --
 
-CREATE INDEX idx_country_name_country_code ON country_name USING btree (country_code);
+CREATE INDEX IF NOT EXISTS idx_country_name_country_code ON country_name USING btree (country_code);
 
 
 
