@@ -62,33 +62,38 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 --cleanup unusable entries
 DELETE FROM osm_polygon WHERE (name <> '' OR name_fr <> '' OR name_en <> '' OR name_de <> '' OR name_es <> '' OR name_ru <> '' OR name_zh <> '') IS FALSE;
 DELETE FROM osm_point WHERE (name <> '' OR name_fr <> '' OR name_en <> '' OR name_de <> '' OR name_es <> '' OR name_ru <> '' OR name_zh <> '') IS FALSE;
-DELETE FROM osm_linestring WHERE (name <> '' OR name_fr <> '' OR name_en <> '' OR name_de <> '' OR name_es <> '' OR name_ru <> '' OR name_zh <> '') IS FALSE;
+--DELETE FROM osm_linestring WHERE (name <> '' OR name_fr <> '' OR name_en <> '' OR name_de <> '' OR name_es <> '' OR name_ru <> '' OR name_zh <> '') IS FALSE;
 
 
 -- Alter tables for parent ids calculation
 ALTER TABLE osm_polygon 
 	ADD COLUMN partition integer,
 	ADD COLUMN calculated_country_code character varying(2),
-	ADD COLUMN linked_place_id bigint,
+	ADD COLUMN linked_osm_id bigint,
 	ADD COLUMN rank_search int,
-	ADD COLUMN parent_ids integer[];
+	ADD COLUMN parent_ids integer[],
+	ADD COLUMN parent_id bigint;
 ALTER TABLE osm_point
 	ADD COLUMN partition integer,
 	ADD COLUMN calculated_country_code character varying(2),
-	ADD COLUMN linked_place_id bigint,
 	ADD COLUMN rank_search int,
-	ADD COLUMN parent_ids integer[];
+	ADD COLUMN parent_ids integer[],
+	ADD COLUMN linked BOOLEAN DEFAULT FALSE,
+	ADD COLUMN parent_id bigint;
 ALTER TABLE osm_linestring
 	ADD COLUMN partition integer,
 	ADD COLUMN calculated_country_code character varying(2),
-	ADD COLUMN linked_place_id bigint,
+	ADD COLUMN linked_osm_id bigint,
 	ADD COLUMN rank_search int,
-	ADD COLUMN parent_ids integer[];
+	ADD COLUMN parent_ids integer[],
+	ADD COLUMN parent_id bigint;
 
 
+--create triggers for partitioning
 CREATE TRIGGER performCountryAndPartitionUpdate_polygon
     BEFORE UPDATE OF rank_search ON osm_polygon
     FOR EACH ROW
@@ -104,12 +109,37 @@ CREATE TRIGGER performCountryAndPartitionUpdate_linestring
     FOR EACH ROW
     EXECUTE PROCEDURE determineCountryCodeAndPartition();
 
-
+--do the ranking and partitioning
 UPDATE osm_polygon SET rank_search = rank_place(type, osm_id);
 UPDATE osm_point SET rank_search = rank_place(type, osm_id);
 UPDATE osm_linestring SET rank_search = rank_address(type, osm_id);
 
 
+--determine linked places
+-- places with admin_centre tag
+UPDATE osm_polygon p
+	SET linked_osm_id = r.member         
+	FROM osm_relation r                                     
+	WHERE 
+	r.type = 0 AND r.role = 'admin_centre' 
+	AND p.osm_id = r.osm_id;    
+
+-- places with label tag inside geometry
+UPDATE osm_polygon p
+	SET linked_osm_id = n.osm_id 
+	FROM osm_point  n, osm_polygon r WHERE n.name = r.name AND ST_WITHIN(n.geometry,r.geometry)
+	AND p.osm_id = r.osm_id      
+	AND r.osm_id NOT IN (
+	SELECT osm_id 
+	FROM osm_relation
+	WHERE role = 'label');  
+
+--tag linked places
+UPDATE osm_point p SET linked = TRUE
+	FROM osm_point po WHERE po.osm_id IN (SELECT linked_osm_id FROM osm_polygon WHERE linked_osm_id IS NOT NULL)
+	AND po.osm_id = p.osm_id;
+
+--determine parents
 UPDATE osm_polygon
   SET parent_ids = calculated_parent_ids
 FROM (SELECT pl.id as currentID, array_agg(area.id ORDER BY area.rank_search DESC) as calculated_parent_ids

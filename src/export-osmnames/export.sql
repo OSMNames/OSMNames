@@ -17,7 +17,7 @@ SELECT r.name,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(r.geometry, 4326)) AS north
 FROM osm_polygon AS r WHERE (r.name <> '') IS TRUE
-UNION SELECT rr.name,
+UNION (SELECT rr.name,
     city_class(rr.type) AS class,
     rr.type AS type,
     ST_X(ST_Transform(rr.geometry, 4326)) AS lon,
@@ -35,12 +35,13 @@ UNION SELECT rr.name,
     ST_YMIN(ST_Transform(rr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north
-FROM osm_point AS rr WHERE (rr.name <> '') IS TRUE
+FROM osm_point AS rr WHERE      (rr.name <> '') IS TRUE
+                                AND rr.linked IS FALSE)
 UNION SELECT rrr.name,
     road_class(rrr.type) AS class,
     rrr.type,
-    ST_X(ST_Line_Interpolate_Point(ST_Transform(rrr.geometry, 4326), 0.5)) AS lon,
-    ST_Y(ST_Line_Interpolate_Point(ST_Transform(rrr.geometry, 4326), 0.5)) AS lat,
+    ST_X(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lon,
+    ST_Y(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lat,
     rrr.rank_search AS place_rank,
     getImportance(rrr.rank_search, rrr.wikipedia, rrr.calculated_country_code) AS importance,
     rrr.name AS street,
