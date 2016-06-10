@@ -36,7 +36,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
-	SELECT name -> 'name:en' FROM country_name WHERE partition = partition_id;
+	SELECT COALESCE(name -> 'name:en',name -> 'name') FROM country_name WHERE partition = partition_id;
 $$ language 'sql';
 
 
@@ -83,6 +83,9 @@ DECLARE
 BEGIN
 	SELECT constructDisplayName(id_value) INTO displayName;
 	displayName := name || delimiter || ' ' || displayName;
+	IF displayName IS NULL THEN
+		return '';
+	END IF;
 RETURN displayName;
 END;
 $$ LANGUAGE plpgsql;
@@ -96,6 +99,8 @@ DECLARE
 BEGIN
   current_rank := from_rank;
   current_id := id_value;
+  currentName := '';
+  currentNameOld := '';
   IF current_rank = to_rank THEN
     SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO currentName;
     RETURN currentName;
@@ -104,7 +109,7 @@ BEGIN
   currentNameOld := currentName;
     SELECT parent_id, COALESCE(NULLIF(name_en,''), name), rank_search FROM osm_polygon WHERE id = current_id INTO current_id, currentName, current_rank;
     IF current_id IS NULL THEN
-	RETURN currentName;
+	RETURN '';
     END IF; 
       IF current_rank < to_rank THEN
 	RETURN currentNameOld;
