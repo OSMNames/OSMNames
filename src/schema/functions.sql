@@ -19,6 +19,7 @@ BEGIN
 		WHEN type IN ('ferry') THEN 'ferry'
 		WHEN type IN ('trunk_link','primary_link','secondary_link','tertiary_link') THEN 'link'
 		WHEN type IN ('unclassified','residential','road','living_street','raceway') THEN 'street'
+		ELSE 'multiple'
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -33,6 +34,70 @@ BEGIN
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION rank_place(type TEXT, osmID bigint)
+RETURNS int AS $$
+BEGIN
+	RETURN CASE
+		WHEN type IN ('administrative') THEN 2*(SELECT admin_level FROM osm_polygon o WHERE osm_id = osmID)  
+		WHEN type IN ('continent', 'sea') THEN 2
+		WHEN type IN ('country') THEN 4
+		WHEN type IN ('state') THEN 8
+		WHEN type IN ('county') THEN 12
+		WHEN type IN ('city') THEN 16
+		WHEN type IN ('island') THEN 17
+		WHEN type IN ('region') THEN 18 -- dropped from previous value of 10
+		WHEN type IN ('town') THEN 18
+		WHEN type IN ('village','hamlet','municipality','district','unincorporated_area','borough') THEN 19
+		WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass') THEN 20
+		WHEN type IN ('neighbourhood', 'residential') THEN 22
+		WHEN type IN ('houses') THEN 28
+		WHEN type IN ('house','building') THEN 30
+		WHEN type IN ('quarter') THEN 30
+	END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION rank_address(type TEXT, osmID bigint)
+RETURNS int AS $$
+BEGIN
+	RETURN CASE
+		WHEN type IN ('service','cycleway','path','footway','steps','bridleway','motorway_link','primary_link','trunk_link','secondary_link','tertiary_link') THEN 27
+		ELSE 26
+	END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+
+CREATE OR REPLACE FUNCTION determineCountryCodeAndPartition()
+RETURNS TRIGGER AS $$
+DECLARE
+  place_centroid GEOMETRY;
+BEGIN
+
+  	place_centroid := ST_PointOnSurface(NEW.geometry);
+
+    -- recalculate country and partition
+    IF NEW.rank_search = 4 THEN
+      -- for countries, believe the mapped country code,
+      -- so that we remain in the right partition if the boundaries
+      -- suddenly expand.
+      NEW.partition := get_partition(lower(NEW.country_code));
+      IF NEW.partition = 0 THEN
+        NEW.calculated_country_code := lower(get_country_code(place_centroid));
+        NEW.partition := get_partition(NEW.calculated_country_code);
+      ELSE
+        NEW.calculated_country_code := lower(NEW.country_code);
+      END IF;
+    ELSE
+      IF NEW.rank_search > 4 THEN
+        NEW.calculated_country_code := lower(get_country_code(place_centroid));
+      	NEW.partition := get_partition(NEW.calculated_country_code);
+      END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
@@ -143,7 +208,7 @@ RETURN id_value;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS BIGINT AS $$
+CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS void AS $$
 DECLARE
   retVal BIGINT;
 BEGIN
@@ -152,7 +217,6 @@ BEGIN
        PERFORM findRoadsWithinGeometry(id, current_partition, geometry) FROM osm_polygon WHERE partition = current_partition AND rank_search = current_rank;
     END LOOP;
   END LOOP;
-RETURN retVal;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -252,3 +316,28 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mergeStreetsOfParentId(parent_id_value bigint) RETURNS void AS $$
+BEGIN
+	INSERT INTO osm_merged_multi_linestring(member_ids, type, name, name_fr, name_en, name_de, name_es, name_ru, name_zh, wikipedia, geometry, partition, calculated_country_code, rank_search, parent_id) 
+	SELECT array_agg(DISTINCT sub.id), string_agg(DISTINCT type,','), sub.name, max(sub.name_fr), max(sub.name_en), max(sub.name_de), max(sub.name_es), max(sub.name_ru), max(sub.name_zh), max(sub.wikipedia),  ST_UNION(sub.geometry), bit_and(sub.partition), max(sub.calculated_country_code), min(sub.rank_search), parent_id_value FROM
+	(SELECT  a.id, a.type, a.name, a.name_fr, a.name_en, a.name_de, a.name_es, a.name_ru, a.name_zh, a.wikipedia, a.geometry, a.partition, a.calculated_country_code, a.rank_search FROM
+	osm_linestring AS a INNER JOIN osm_linestring AS b 
+	ON ST_Touches(a.geometry, b.geometry)
+	WHERE a.parent_id = parent_id_value AND b.parent_id=parent_id_value AND a.name = b.name AND a.id!=b.id) AS sub
+	GROUP BY sub.name ;
+END;
+$$ LANGUAGE plpgsql;
+    
+CREATE OR REPLACE FUNCTION updateMergedFlag() RETURNS TRIGGER AS $$
+DECLARE
+	member_id BIGINT;
+BEGIN
+	IF NEW.member_ids IS NOT NULL THEN
+		FOREACH member_id IN ARRAY NEW.member_ids LOOP
+			UPDATE osm_linestring SET merged = TRUE WHERE id=member_id;
+		END LOOP;
+	END IF;
+	return NEW;
+END;
+$$ LANGUAGE plpgsql;

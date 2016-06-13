@@ -39,10 +39,9 @@ function exec_psql_file() {
 function init_helper_tables() {
     echo "$(date +"%T"): init helper tables"
     exec_psql_file "create_hstore.sql" "postgres"
-    exec_psql_file "country_name.sql" "postgres"
-    exec_psql_file "country_osm_grid.sql" "postgres"
-    exec_psql_file "transfer_privileges.sql" "postgres"
-
+    exec_psql_file "$IMPORT_DATA_DIR/sql/country_name.sql" "postgres"
+    exec_psql_file "$IMPORT_DATA_DIR/sql/country_osm_grid.sql" "postgres"
+    exec_psql_file "create_merged_linestring_table.sql" "postgres"
 }
 
 function indexing_phase() {

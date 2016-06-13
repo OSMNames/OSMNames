@@ -55,5 +55,25 @@ UNION SELECT rrr.name,
     ST_YMIN(ST_Transform(rrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north
-FROM osm_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE
+FROM osm_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE AND merged IS FALSE
+
+UNION SELECT rrrr.name,
+    road_class(rrrr.type) AS class,
+    rrrr.type,
+    ST_X(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lon,
+    ST_Y(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lat,
+    rrrr.rank_search AS place_rank,
+    getImportance(rrrr.rank_search, rrrr.wikipedia, rrrr.calculated_country_code) AS importance,
+    rrrr.name AS street,
+    constructSpecificParentName(rrrr.parent_id, rrrr.rank_search, 16) AS city,
+    constructSpecificParentName(rrrr.parent_id, rrrr.rank_search, 12)  AS county,
+    constructSpecificParentName(rrrr.parent_id, rrrr.rank_search, 8)  AS state,
+    countryName(rrrr.partition) AS country,
+    rrrr.calculated_country_code AS country_code,
+    constructNodeDisplayName(rrrr.parent_id, ',',COALESCE(NULLIF(rrrr.name_en,''), rrrr.name)) AS display_name,  
+    ST_XMIN(ST_Transform(rrrr.geometry, 4326)) AS west,
+    ST_YMIN(ST_Transform(rrrr.geometry, 4326)) AS south,
+    ST_XMAX(ST_Transform(rrrr.geometry, 4326)) AS east,
+    ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north
+FROM osm_merged_multi_linestring AS rrrr  WHERE (rrrr.name <> '') IS TRUE
 ;
