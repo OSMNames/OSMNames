@@ -204,6 +204,7 @@ DECLARE
 BEGIN
 retVal := 1;
 	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value,geometry);
+--	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND (ST_Contains(geometry_value,geometry) OR ST_Intersects(geometry_value,geometry));
 RETURN id_value;
 END;
 $$ LANGUAGE plpgsql;
