@@ -22,8 +22,8 @@ import-osm:
    - cache
   links:
    - postgres:db
-import-wp:
-  build: "src/import-wp"
+import-wikipedia:
+  build: "src/import-wikipedia"
   env_file: .env
   volumes:
    - ./data:/data/import

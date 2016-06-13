@@ -87,6 +87,10 @@ Now we need to set up the database and import the data using the `import-osm` Do
 # This will automatically initialize the database
 docker-compose up -d postgres
 
+# Import additional wikipedia data to the ./data folder
+docker-compose run import-wikipedia
+```
+
 # Import the OSM data dump from the ./data folder
 docker-compose run import-osm
 ```
@@ -110,6 +114,7 @@ The different components that attach to the `postgres` container are all located
 | Component         | Description
 |-------------------|--------------------------------------------------------------
 | postgres          | PostGIS data store for OSM data and to perform noise analysis
-| import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries
+| import-wikipedia  | Imports wikipedia data for more accurate importance calculation
+| import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries, handles indexing and hierarchy reconstruction
 | export-osmnames   | Export names and their bounding boxes to TSV datasets
 | schema            | Contains views, tables, functions for the schema
