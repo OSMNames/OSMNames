@@ -15,7 +15,8 @@ SELECT r.name,
     ST_XMIN(ST_Transform(r.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(r.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
-    ST_YMAX(ST_Transform(r.geometry, 4326)) AS north
+    ST_YMAX(ST_Transform(r.geometry, 4326)) AS north,
+    getWikipediaURL(r.wikipedia, r.calculated_country_code) AS wikipedia
 FROM osm_polygon AS r WHERE (r.name <> '') IS TRUE
 UNION (SELECT rr.name,
     city_class(rr.type) AS class,
@@ -34,7 +35,8 @@ UNION (SELECT rr.name,
     ST_XMIN(ST_Transform(rr.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(rr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rr.geometry, 4326)) AS east,
-    ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north
+    ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north,
+    getWikipediaURL(rr.wikipedia, rr.calculated_country_code) AS wikipedia
 FROM osm_point AS rr WHERE      (rr.name <> '') IS TRUE
                                 AND rr.linked IS FALSE)
 UNION SELECT rrr.name,
@@ -54,7 +56,8 @@ UNION SELECT rrr.name,
     ST_XMIN(ST_Transform(rrr.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(rrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrr.geometry, 4326)) AS east,
-    ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north
+    ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north,
+    getWikipediaURL(rrr.wikipedia, rrr.calculated_country_code) AS wikipedia
 FROM osm_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE AND merged IS FALSE
 
 UNION SELECT rrrr.name,
@@ -74,6 +77,8 @@ UNION SELECT rrrr.name,
     ST_XMIN(ST_Transform(rrrr.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(rrrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrrr.geometry, 4326)) AS east,
-    ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north
+    ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north,
+    getWikipediaURL(rrrr.wikipedia, rrrr.calculated_country_code) AS wikipedia
+
 FROM osm_merged_multi_linestring AS rrrr  WHERE (rrrr.name <> '') IS TRUE
 ;
