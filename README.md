@@ -86,6 +86,7 @@ Now we need to set up the database and import the data using the `import-osm` Do
 ```bash
 # This will automatically initialize the database
 docker-compose up -d postgres
+```
 
 ```bash
 # Import additional wikipedia data to the ./data folder
