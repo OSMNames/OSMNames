@@ -68,11 +68,11 @@ function reading_pbf_file() {
 
 function main() {
     reading_pbf_file
-    #retval=$?
-    #if [ "$retval" == 0 ]; then
+    retval=$?
+    if [ "$retval" == 0 ]; then
         init_helper_tables
         indexing_phase
-    #fi
+    fi
 }
 
 main
