@@ -1,4 +1,8 @@
 DROP TABLE IF EXISTS public.osm_merged_multi_linestring;
+
+CREATE SEQUENCE IF NOT EXISTS osm_multilinestring_id_seq;
+GRANT USAGE, SELECT ON SEQUENCE osm_multilinestring_id_seq TO osm;
+
 CREATE TABLE  public.osm_merged_multi_linestring
 (
   id integer NOT NULL DEFAULT nextval('osm_multilinestring_id_seq'::regclass),

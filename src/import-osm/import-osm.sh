@@ -42,6 +42,7 @@ function init_helper_tables() {
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_name.sql" "postgres"
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_osm_grid.sql" "postgres"
     exec_psql_file "create_merged_linestring_table.sql" "postgres"
+    exec_psql_file "alter_imposm_tables.sql" "$DB_USER"
 }
 
 function indexing_phase() {
@@ -67,11 +68,11 @@ function reading_pbf_file() {
 
 function main() {
     reading_pbf_file
-    retval=$?
-    if [ "$retval" == 0 ]; then
+    #retval=$?
+    #if [ "$retval" == 0 ]; then
         init_helper_tables
         indexing_phase
-    fi
+    #fi
 }
 
 main
