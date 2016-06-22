@@ -149,7 +149,7 @@ BEGIN
 	SELECT constructDisplayName(id_value,',') INTO displayName;
 	displayName := name || delimiter || ' ' || displayName;
 	IF displayName IS NULL THEN
-		return '';
+		return ' ';
 	END IF;
 RETURN displayName;
 END;
@@ -164,8 +164,8 @@ DECLARE
 BEGIN
   current_rank := from_rank;
   current_id := id_value;
-  currentName := '';
-  currentNameOld := '';
+  currentName := ' ';
+  currentNameOld := ' ';
   IF current_rank = to_rank THEN
     SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO currentName;
     RETURN currentName;
@@ -174,7 +174,7 @@ BEGIN
   currentNameOld := currentName;
     SELECT parent_id, COALESCE(NULLIF(name_en,''), name), rank_search FROM osm_polygon WHERE id = current_id INTO current_id, currentName, current_rank;
     IF current_id IS NULL THEN
-	RETURN '';
+	RETURN ' ';
     END IF; 
       IF current_rank < to_rank THEN
 	RETURN currentNameOld;
@@ -323,7 +323,7 @@ DECLARE
   wiki_url_part TEXT;
 BEGIN
   IF wikipedia IS NULL OR wikipedia <> '' IS FALSE THEN
-  	RETURN '';
+  	RETURN ' ';
   END IF;
   wiki_url_part := '.wikipedia.org/wiki/';
   wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');

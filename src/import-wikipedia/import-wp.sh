@@ -3,6 +3,9 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+# credits to nominatim for providing the precalculated data
+readonly WIKIPEDIA_ARTICLE_TABLE="http://www.nominatim.org/data/wikipedia_article.sql.bin"
+
 readonly IMPORT_DATA_DIR=${IMPORT_DATA_DIR:-/data/import}
 readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
 readonly PG_CONNECT="postgis://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME"
@@ -26,7 +29,7 @@ function load_wiki_dump() {
     local file_name="$IMPORT_DATA_DIR/wikipedia_article.sql.bin"
     exec_psql_file "wiki_privileges.sql" "postgres"
     if [ ! -f "$file_name" ]; then
-        wget --output-document=$file_name http://www.nominatim.org/data/wikipedia_article.sql.bin
+        wget --output-document=$file_name $WIKIPEDIA_ARTICLE_TABLE
     fi
     pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $file_name
     echo "$(date +"%T"): wikipedia loading complete.."
