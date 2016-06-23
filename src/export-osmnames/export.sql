@@ -1,4 +1,4 @@
-SELECT r.name,
+SELECT getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh) AS name,
     city_class(r.type) AS class,
     r.type AS type,
     ST_X(ST_PointOnSurface(ST_Transform(r.geometry, 4326))) AS lon,
@@ -17,8 +17,8 @@ SELECT r.name,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(r.geometry, 4326)) AS north,
     getWikipediaURL(r.wikipedia, r.calculated_country_code) AS wikipedia
-FROM osm_polygon AS r WHERE (r.name <> '') IS TRUE
-UNION (SELECT rr.name,
+FROM osm_polygon AS r 
+UNION (SELECT getLanguageName(rr.name, rr.name_fr, rr.name_en, rr.name_de, rr.name_es, rr.name_ru, rr.name_zh) AS name,
     city_class(rr.type) AS class,
     rr.type AS type,
     ST_X(ST_Transform(rr.geometry, 4326)) AS lon,
@@ -37,9 +37,8 @@ UNION (SELECT rr.name,
     ST_XMAX(ST_Transform(rr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north,
     getWikipediaURL(rr.wikipedia, rr.calculated_country_code) AS wikipedia
-FROM osm_point AS rr WHERE      (rr.name <> '') IS TRUE
-                                AND rr.linked IS FALSE)
-UNION SELECT rrr.name,
+FROM osm_point AS rr WHERE       rr.linked IS FALSE)
+UNION SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh) AS name,
     road_class(rrr.type) AS class,
     rrr.type,
     ST_X(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lon,
@@ -58,9 +57,9 @@ UNION SELECT rrr.name,
     ST_XMAX(ST_Transform(rrr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north,
     getWikipediaURL(rrr.wikipedia, rrr.calculated_country_code) AS wikipedia
-FROM osm_linestring AS rrr  WHERE (rrr.name <> '') IS TRUE AND merged IS FALSE
+FROM osm_linestring AS rrr  WHERE merged IS FALSE
 
-UNION SELECT rrrr.name,
+UNION SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh) AS name,
     road_class(rrrr.type) AS class,
     rrrr.type,
     ST_X(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lon,
@@ -80,5 +79,5 @@ UNION SELECT rrrr.name,
     ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north,
     getWikipediaURL(rrrr.wikipedia, rrrr.calculated_country_code) AS wikipedia
 
-FROM osm_merged_multi_linestring AS rrrr  WHERE (rrrr.name <> '') IS TRUE
+FROM osm_merged_multi_linestring AS rrrr  
 ;

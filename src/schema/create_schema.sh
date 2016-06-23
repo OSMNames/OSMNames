@@ -18,7 +18,8 @@ function exec_psql_file() {
 }
 
 function main() {
-    exec_psql_file "functions.sql"
+	echo "create schema"
+    #exec_psql_file "functions.sql"
 }
 
 main

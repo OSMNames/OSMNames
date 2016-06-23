@@ -43,8 +43,10 @@ function determineOutputFilename() {
 }
 
 function export_geonames() {
+    echo "$(date +"%T"): start export.."
     filename=$(determineOutputFilename)
     export_tsv "$filename.tsv" "export.sql"
+    echo "$(date +"%T"): export finished. Zipping output file.."
     gzip_tsv "$filename.tsv"
 }
 

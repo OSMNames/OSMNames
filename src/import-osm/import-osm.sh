@@ -51,6 +51,11 @@ function indexing_phase() {
     echo "$(date +"%T"): indexing complete.."
 }
 
+function init_functions() {
+    echo "$(date +"%T"): init functions"
+    exec_psql_file "functions.sql" "$DB_USER"
+}
+
 function reading_pbf_file() {
  if [ "$(ls -A $IMPORT_DATA_DIR/*.pbf 2> /dev/null)" ]; then
         local pbf_file
@@ -71,6 +76,7 @@ function main() {
     retval=$?
     if [ "$retval" == 0 ]; then
         init_helper_tables
+        init_functions
         indexing_phase
     fi
 }
