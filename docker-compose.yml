@@ -43,3 +43,8 @@ schema:
   env_file: .env
   links:
    - postgres:db
+download-pbf:
+  build: "src/download-pbf"
+  env_file: .env
+  volumes:
+   - ./data:/data
