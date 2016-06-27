@@ -15,4 +15,4 @@ ENV IMPORT_DATA_DIR=/data/import
 
 WORKDIR /usr/src/app
 COPY . /usr/src/app
-CMD ["./import-wp.sh"]
+CMD ["./import-wikipedia.sh"]

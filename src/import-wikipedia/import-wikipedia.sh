@@ -34,6 +34,7 @@ function load_wiki_dump() {
     pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $file_name
     echo "$(date +"%T"): wikipedia loading complete.."
     exec_psql_file "wiki_transfer_ownership.sql" "postgres"
+    exec_psql_file "create_index.sql" "postgres"
 }
 
 function main() {
