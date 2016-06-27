@@ -16,5 +16,3 @@ SELECT mergeStreetsOfParentId(q.parent_id)
 FROM (SELECT DISTINCT parent_id FROM osm_linestring WHERE parent_id IS NOT NULL) AS q;
 
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_merged ON osm_linestring (merged);
-
-CREATE INDEX IF NOT EXISTS idx_wikipedia_article_language_title ON wikipedia_article (language,title);

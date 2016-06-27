@@ -38,16 +38,24 @@ function exec_psql_file() {
 
 function init_helper_tables() {
     echo "$(date +"%T"): init helper tables"
-    exec_psql_file "create_hstore.sql" "postgres"
+    exec_psql_file "00_create_hstore_extension.sql" "postgres"
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_name.sql" "postgres"
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_osm_grid.sql" "postgres"
-    exec_psql_file "create_merged_linestring_table.sql" "postgres"
-    exec_psql_file "alter_imposm_tables.sql" "$DB_USER"
+    exec_psql_file "00_create_merged_linestring_table.sql" "postgres"
+    exec_psql_file "00_alter_imposm_tables.sql" "$DB_USER"
 }
 
 function indexing_phase() {
-    echo "$(date +"%T"): start indexing.."
-    exec_psql_file "indexing.sql" "$DB_USER"
+    echo "$(date +"%T"): delete  unusable entries.."
+    exec_psql_file "01_delete_unusable_entries.sql" "$DB_USER"
+    echo "$(date +"%T"): initiate ranking and partitioning.."
+    exec_psql_file "02_ranking_partitioning.sql" "$DB_USER"
+    echo "$(date +"%T"): determine linked places.."
+    exec_psql_file "03_determine_linked_places.sql" "$DB_USER"
+    echo "$(date +"%T"): creating hierarchy.."
+    exec_psql_file "04_create_hierarchy.sql" "$DB_USER"
+    echo "$(date +"%T"): merging corresponding streets.."
+    exec_psql_file "05_merge_corresponding_streets.sql" "$DB_USER"
     echo "$(date +"%T"): indexing complete.."
 }
 

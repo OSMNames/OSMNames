@@ -6,4 +6,5 @@ SELECT determineRoadHierarchyForEachCountry();
 -- create index for faster processing
 CREATE INDEX IF NOT EXISTS idx_linestring_name_parent ON osm_linestring (name,parent_id);
 
-CREATE INDEX IF NOT EXISTS idx_linestring_parent ON public.osm_linestring USING btree (parent_id);
+--TODO still needed?
+--CREATE INDEX IF NOT EXISTS idx_linestring_parent ON osm_linestring USING btree (parent_id);

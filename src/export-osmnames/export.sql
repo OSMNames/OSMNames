@@ -58,7 +58,6 @@ UNION SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rr
     ST_YMAX(ST_Transform(rrr.geometry, 4326)) AS north,
     getWikipediaURL(rrr.wikipedia, rrr.calculated_country_code) AS wikipedia
 FROM osm_linestring AS rrr  WHERE merged IS FALSE
-
 UNION SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh) AS name,
     road_class(rrrr.type) AS class,
     rrrr.type,
@@ -78,6 +77,5 @@ UNION SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de
     ST_XMAX(ST_Transform(rrrr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north,
     getWikipediaURL(rrrr.wikipedia, rrrr.calculated_country_code) AS wikipedia
-
 FROM osm_merged_multi_linestring AS rrrr  
 ;
