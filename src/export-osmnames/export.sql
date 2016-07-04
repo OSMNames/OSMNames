@@ -11,7 +11,7 @@ SELECT getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.nam
     constructSpecificParentName(r.id, r.rank_search, 8) AS state,
     countryName(r.partition) AS country,
     r.calculated_country_code AS country_code,
-    constructDisplayName(r.id, ',') AS display_name,  
+    constructNodeDisplayName(r.parent_id, ',',getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh)) AS display_name,  
     ST_XMIN(ST_Transform(r.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(r.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,
