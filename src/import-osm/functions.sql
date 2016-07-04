@@ -287,7 +287,7 @@ BEGIN
   SELECT constructDisplayName(id_value,',') INTO displayName;
   displayName := name || delimiter || ' ' || displayName;
   IF displayName IS NULL THEN
-    return ' ';
+    return name;
   END IF;
 RETURN displayName;
 END;
