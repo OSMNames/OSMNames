@@ -191,6 +191,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP AGGREGATE IF EXISTS array_agg_mult(anyarray);
+CREATE AGGREGATE array_agg_mult (anyarray) (
+ SFUNC = array_cat
+ ,STYPE = anyarray
+ ,INITCOND ='{}'); 
+
 
 -----------------------------------
 --                               --
