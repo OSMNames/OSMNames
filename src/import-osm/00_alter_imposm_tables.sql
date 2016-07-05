@@ -1,3 +1,5 @@
+
+/*
 -- Alter tables for parent ids calculation
 ALTER TABLE osm_polygon 
   DROP COLUMN IF EXISTS partition CASCADE,
@@ -37,3 +39,8 @@ ALTER TABLE osm_linestring
   ADD COLUMN rank_search int,
   ADD COLUMN parent_id bigint,
   ADD COLUMN merged BOOLEAN DEFAULT FALSE;
+
+  */
+
+SET temp_buffers TO '3000MB';   -- default is 8MB
+SET work_mem TO '32MB';   -- default is 1MB

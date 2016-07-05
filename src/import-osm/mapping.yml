@@ -1,5 +1,5 @@
 tables:
-  linestring:
+  linestring_tmp:
     type: linestring
     fields:
     - name: osm_id
@@ -62,7 +62,7 @@ tables:
       - footway
       - corridor
       - crossing
-  polygon:
+  polygon_tmp:
     type: polygon
     fields:
     - name: osm_id
@@ -115,7 +115,7 @@ tables:
       - residential
       boundary: 
       - administrative
-  point:
+  point_tmp:
     type: point
     fields:
     - name: osm_id

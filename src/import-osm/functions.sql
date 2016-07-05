@@ -2,7 +2,7 @@ CREATE OR REPLACE FUNCTION rank_place(type TEXT, osmID bigint)
 RETURNS int AS $$
 BEGIN
 	RETURN CASE
-		WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon o WHERE osm_id = osmID)  
+		WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)  
 		WHEN type IN ('continent', 'sea') THEN 2
 		WHEN type IN ('country') THEN 4
 		WHEN type IN ('state') THEN 8
@@ -22,7 +22,7 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION rank_address(type TEXT, osmID bigint)
+CREATE OR REPLACE FUNCTION rank_address(type TEXT)
 RETURNS int AS $$
 BEGIN
 	RETURN CASE
@@ -196,6 +196,36 @@ CREATE AGGREGATE array_agg_mult (anyarray) (
  SFUNC = array_cat
  ,STYPE = anyarray
  ,INITCOND ='{}'); 
+
+CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,country_code character varying)
+RETURNS rankPartitionCode AS $$
+DECLARE
+  place_centroid GEOMETRY;
+  result rankPartitionCode;
+BEGIN
+    place_centroid := ST_PointOnSurface(geom);
+  result.rank_search := rank_address(type);
+    -- recalculate country and partition
+    IF result.rank_search = 4 THEN
+      -- for countries, believe the mapped country code,
+      -- so that we remain in the right partition if the boundaries
+      -- suddenly expand.
+      result.partition := get_partition(lower(country_code));
+      IF result.partition = 0 THEN
+        result.calculated_country_code := lower(get_country_code(place_centroid));
+        result.partition := get_partition(result.calculated_country_code);
+      ELSE
+        result.calculated_country_code := lower(country_code);
+      END IF;
+    ELSE
+      IF result.rank_search > 4 THEN
+        result.calculated_country_code := lower(get_country_code(place_centroid));
+        result.partition := get_partition(result.calculated_country_code);
+      END IF;
+    END IF;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
 
 
 -----------------------------------
