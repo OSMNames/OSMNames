@@ -197,14 +197,18 @@ CREATE AGGREGATE array_agg_mult (anyarray) (
  ,STYPE = anyarray
  ,INITCOND ='{}'); 
 
-CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,country_code character varying)
+CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,osm_id bigint, country_code character varying)
 RETURNS rankPartitionCode AS $$
 DECLARE
   place_centroid GEOMETRY;
   result rankPartitionCode;
 BEGIN
     place_centroid := ST_PointOnSurface(geom);
-  result.rank_search := rank_address(type);
+    IF (osm_id IS NULL) THEN
+    result.rank_search := rank_address(type);
+  ELSE
+    result.rank_search := rank_place(type, osm_id);
+  END IF;
     -- recalculate country and partition
     IF result.rank_search = 4 THEN
       -- for countries, believe the mapped country code,
