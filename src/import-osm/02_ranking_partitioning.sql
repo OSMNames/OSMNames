@@ -125,9 +125,9 @@ CREATE TRIGGER updateMergeFlagWhenLinestringInsert BEFORE INSERT ON osm_merged_m
     FOR EACH ROW EXECUTE PROCEDURE updateMergedFlag();
 
 --create indexes
-CREATE INDEX idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
-CREATE INDEX idx_osm_point_geom ON osm_point USING gist (geometry);
-CREATE INDEX idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
+CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
+CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
 
-CREATE INDEX  idx_osm_polygon_partition_rank ON osm_polygon (partition,rank_search);
-CREATE INDEX  idx_osm_point_osm_id ON osm_point (osm_id);
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_partition_rank ON osm_polygon (partition,rank_search);
+CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
