@@ -203,6 +203,7 @@ DECLARE
   place_centroid GEOMETRY;
   result rankPartitionCode;
 BEGIN
+    RAISE NOTICE 'determine rank with type % and osm_id %', type, osm_id;
     place_centroid := ST_PointOnSurface(geom);
     IF (osm_id IS NULL) THEN
     result.rank_search := rank_address(type);
@@ -242,9 +243,9 @@ CREATE OR REPLACE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, 
 RETURNS TEXT AS $$
 BEGIN
   RETURN CASE
+    WHEN en NOT IN ('') THEN en
     WHEN default_lang NOT IN ('') THEN default_lang
     WHEN fr NOT IN ('') THEN fr
-    WHEN en NOT IN ('') THEN en
     WHEN de NOT IN ('') THEN de
     WHEN es NOT IN ('') THEN es
     WHEN ru NOT IN ('') THEN ru
@@ -291,6 +292,53 @@ BEGIN
   END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
+DECLARE
+  retVal parentInfo;
+  current_rank INTEGER;
+  current_id BIGINT;
+  currentName TEXT;
+BEGIN
+  current_rank := from_rank;
+  retVal.displayName := name_value;
+  current_id := id_value;
+  
+  IF current_rank = 16 THEN  
+    retVal.city := retVal.displayName;
+  ELSE
+    retVal.city := ' ';
+  END IF;
+  IF current_rank = 12 THEN  
+    retVal.county := retVal.displayName;
+  ELSE
+    retVal.county := ' ';
+  END IF;
+  IF current_rank = 8 THEN  
+    retVal.state := retVal.displayName; 
+  ELSE
+    retVal.state := ' '; 
+  END IF;
+  
+  WHILE current_rank >= 8 LOOP
+    SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
+    IF currentName IS NOT NULL THEN
+      retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
+    END IF;
+
+    IF current_rank = 16 THEN  
+      retVal.city := currentName;
+    END IF;
+    IF current_rank = 12 THEN  
+      retVal.county := currentName;
+    END IF;
+    IF current_rank = 8 THEN  
+      retVal.state := currentName;  
+    END IF;
+  END LOOP;
+RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION constructDisplayName(id_value BIGINT, delimiter TEXT) RETURNS TEXT AS $$

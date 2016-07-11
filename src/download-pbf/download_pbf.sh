@@ -3,7 +3,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly FILE_URL="http://download.geofabrik.de/europe/andorra-latest.osm.pbf"
+readonly FILE_URL="http://download.geofabrik.de/europe-latest.osm.pbf"
 
 
 function exec_psql_file() {
