@@ -73,6 +73,7 @@ function export_geonames() {
     filename=$(determineOutputFilename)
     cleanup
     prepare_data
+    echo "$(date +"%T"): writing tsv file.."
     export_tsv "$filename.tsv" "export.sql"
     cleanup
     echo "$(date +"%T"): export finished. Zipping output file.."
