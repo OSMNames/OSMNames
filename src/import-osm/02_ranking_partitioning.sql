@@ -34,7 +34,7 @@ CREATE INDEX IF NOT EXISTS idx_osm_polygon_partition_rank ON osm_polygon (partit
 
 */
 
-DROP TABLE IF EXISTS osm_polygon;
+DROP TABLE IF EXISTS osm_polygon CASCADE;
 CREATE TABLE osm_polygon AS
 (SELECT     
     id,
@@ -61,7 +61,7 @@ FROM
     determineRankPartitionCode(type, geometry, osm_id, country_code) AS rpc
 );
 
-DROP TABLE IF EXISTS osm_point;
+DROP TABLE IF EXISTS osm_point CASCADE;
 CREATE TABLE osm_point AS
 (SELECT
     id,
@@ -90,7 +90,7 @@ DROP TABLE osm_point_tmp;
 DROP TABLE osm_polygon_tmp;
 
 
-DROP TABLE IF EXISTS osm_linestring;
+DROP TABLE IF EXISTS osm_linestring CASCADE;
 CREATE TABLE osm_linestring AS
 (SELECT 
     id,
