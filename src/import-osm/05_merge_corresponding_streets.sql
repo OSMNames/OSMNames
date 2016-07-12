@@ -51,11 +51,13 @@ CREATE TABLE osm_merged_multi_linestring AS
 		a.parent_id,
 		a.name;
 
+--create index
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_merged_false ON osm_linestring (merged) WHERE merged IS FALSE;
+
 -- update which linestring got merged
 UPDATE osm_linestring SET merged = TRUE WHERE id IN (
 	SELECT  unnest(array_agg_mult(member_ids)) FROM osm_merged_multi_linestring
 );
-
 
 
 

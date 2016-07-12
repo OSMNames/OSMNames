@@ -41,8 +41,10 @@ function init_helper_tables() {
     exec_psql_file "00_create_hstore_extension.sql" "postgres"
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_name.sql" "postgres"
     exec_psql_file "$IMPORT_DATA_DIR/sql/country_osm_grid.sql" "postgres"
-    exec_psql_file "00_create_merged_linestring_table.sql" "postgres"
-    exec_psql_file "00_alter_imposm_tables.sql" "$DB_USER"
+    #exec_psql_file "00_create_merged_linestring_table.sql" "postgres"
+    #exec_psql_file "00_alter_imposm_tables.sql" "$DB_USER"
+    exec_psql_file "00_index_helper_tables.sql" "$DB_USER"
+    
 }
 
 function indexing_phase() {

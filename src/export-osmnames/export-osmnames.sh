@@ -69,6 +69,7 @@ function cleanup() {
 }
 
 function export_geonames() {
+    exec_psql_file "functions.sql" "$DB_USER"
     echo "$(date +"%T"): start export.."
     filename=$(determineOutputFilename)
     cleanup
