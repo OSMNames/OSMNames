@@ -93,16 +93,19 @@ docker-compose up -d postgres
 docker-compose run import-wikipedia
 ```
 
+Create the database schema
+
+```bash
+docker-compose run schema
+```
+
+Import the pbf file from the data folder
+
 ```bash
 # Import the OSM data dump from the ./data folder
 docker-compose run import-osm
 ```
 
-Create the database schema.
-
-```bash
-docker-compose run schema
-```
 
 We can now export the ranked geonames and their geometries.
 
