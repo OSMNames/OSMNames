@@ -22,7 +22,7 @@ CREATE INDEX IF NOT EXISTS idx_osm_linestring_merged ON osm_linestring (merged);
 
 
 -- create merged linestrings
-DROP TABLE IF EXISTS osm_merged_multi_linestring;
+DROP TABLE IF EXISTS osm_merged_multi_linestring CASCADE;
 CREATE TABLE osm_merged_multi_linestring AS 
  	SELECT array_agg(DISTINCT a.id) AS member_ids,
  	string_agg(DISTINCT a.type,',') AS type,
