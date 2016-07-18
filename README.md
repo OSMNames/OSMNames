@@ -23,8 +23,9 @@ Does include hierarchy information without house numbers or zip codes.
 - JSON/JSONP API similar to Nominatim: http://nominatim.klokantech.com/?q=paris&format=jsonv2&addressdetails=1
 - Ready to use via Docker in minutes
 - https://github.com/klokantech/osmnames-sphinxsearch
+- osmnames.klokantech.com/
 
-## Data format of OSMNames
+## Data format of tsv export of OSMNames
 
 ```
 name 				the name of the feature (default language is en, others available(de,es,fr,ru,zh))
