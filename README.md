@@ -1,6 +1,7 @@
 # OSM Names
 
 Database of geographic place names from OpenStreetMap for full text search downloadable for free. Website: http://osmnames.org
+Does include hierarchy information without house numbers or zip codes.
 
 ## Target of the project
 
@@ -8,7 +9,6 @@ Database of geographic place names from OpenStreetMap for full text search downl
 - Data are derived primarily from OpenStreetMap
 - The data format is simple to use tab-delimited text in utf8 encoding (as geonames.org). First line has column names.
 - Different type of records are stored in different files (download and index just what you need, sometimes you don't need POIs or addresses with house numbers)
-- Tight to the OSM2VectorTiles generator (class/type from vector tiles, exporting names available in vector tiles, regular diff updates possible)
 - Possible to generate from a country specific extract of Open Street Map (together with vector tiles)
 
 ## Why to make this
@@ -27,49 +27,30 @@ Database of geographic place names from OpenStreetMap for full text search downl
 ## Data format of OSMNames
 
 ```
-*osm_id - MUST BE UNIQUE "DOCUMENT ID" accross complete database
+name 				the name of the feature (default language is en, others available(de,es,fr,ru,zh))
+class				
+type
+lon
+lat
+place_rank			rank from 1-30 ascending depending on the type and class
+importance			importance [0.0-1.0] depending on wikipedia if available otherwise just the ranking
+street 				
+city
+county
+state	
+country	
+country_code		ISO-3166 2-letter country code
+display_name		the display name representing the hierarchy
+west				bbox
+south				bbox
+east				bbox
+north				bbox
+wikipedia 			the wikipedia URL associated with this feature
 
-display_name - exactly as in Nominatim (may be improved later)
-
-*name (=utf-8)
-name_en
-name_de
-name_es
-name_fr
-name_ru
-name_zh
-
-*class
-*type
-
-*north (=boundingbox)
-*south
-*east
-*west
-
-*lat
-*lon
-
-scalerank - we have it
-place_rank - nominatim has it
-
-importance - exactly as in nominatim calculated
-
-country (=country code, ISO-3166 2-letter country code)
-
-street=<housenumber> <streetname>
-city=<city>
-county=<county>
-state=<state>
-country=<country>
-
-(= a la nominatim http://wiki.openstreetmap.org/wiki/Nominatim)
-
-? timestamp - osm modification?
 ```
 
 REMARKs: 
-* Fields like housenumber and postalcode don't belong to this dataset. There's a dataset "OSM Adresses" for that.
+* Fields like housenumber and postalcode don't belong to this dataset.
 
 
 ### Get Started
@@ -79,6 +60,12 @@ Download the data and put it into the `data` directory.
 
 ```bash
 wget --directory-prefix=./data http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+```
+
+Alternatively there is a docker-compose, just edit FILE_URL in download-pbf.sh accordingly
+
+```bash
+docker-compose run download-pbf
 ```
 
 Now we need to set up the database and import the data using the `import-osm` Docker container.
@@ -120,6 +107,7 @@ The different components that attach to the `postgres` container are all located
 | Component         | Description
 |-------------------|--------------------------------------------------------------
 | postgres          | PostGIS data store for OSM data and to perform noise analysis
+| download-pbf      | automatically downloads the pbf file 
 | import-wikipedia  | Imports wikipedia data for more accurate importance calculation
 | import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries, handles indexing and hierarchy reconstruction
 | export-osmnames   | Export names and their bounding boxes to TSV datasets
