@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>OSMNames by Geometa Lab HSR and Klokan Tech.</title>
+    <title>Osmnames by geometalab</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">OSMNames</h1>
+      <h1 class="project-name">Osmnames</h1>
       <h2 class="project-tagline">Database of geographic place names from OpenStreetMap for full text search downloadable for free</h2>
       <a href="https://github.com/geometalab/OSMNames" class="btn">View on GitHub</a>
       <a href="https://github.com/geometalab/OSMNames/zipball/master" class="btn">Download .zip</a>
@@ -19,19 +19,65 @@
     </section>
 
     <section class="main-content">
+      <h3>
+<a id="target-of-the-project" class="anchor" href="#target-of-the-project" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Target of the project</h3>
+
+<ul>
+<li>Downloadable gazeteer data a la GeoNames.org: <a href="http://download.geonames.org/export/dump/">http://download.geonames.org/export/dump/</a> but each record has bounding box and an importance rank known from Nominatim</li>
+<li>Data are derived primarily from OpenStreetMap</li>
+<li>The data format is simple to use tab-delimited text in utf8 encoding (as geonames.org). First line has column names.</li>
+<li>Different type of records are stored in different files (download and index just what you need, sometimes you don't need POIs or addresses with house numbers)</li>
+<li>Possible to generate from a country specific extract of Open Street Map (together with vector tiles)</li>
+</ul>
 
 <h3>
-<a id="welcome" class="anchor" href="#welcome" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome</h3>
+<a id="why-to-make-this" class="anchor" href="#why-to-make-this" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Why to make this</h3>
 
-<p>...This is work in progress...</p>
+<ul>
+<li>Direct indexing via fulltext search engines (SphinxSearch, ElasticSearch, etc.)</li>
+<li>Simple process to get a <strong>basic</strong> search in place names on a map within minutes</li>
+<li>Downloading the basic gazeteer data from OSM in usable format is problematic now (a need to process large OSM Planet files)</li>
+</ul>
 
 <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About GitHub Pages</h3>
+<a id="sample-search-server" class="anchor" href="#sample-search-server" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample search server</h3>
 
-<p>This page was created by the automatic page generator.</p>
+<ul>
+<li>Powered by super fast open-source fulltext Sphinxsearch - inspired by Swiss GeoAdmin search service</li>
+<li>JSON/JSONP API similar to Nominatim: <a href="http://nominatim.klokantech.com/?q=paris&amp;format=jsonv2&amp;addressdetails=1">http://nominatim.klokantech.com/?q=paris&amp;format=jsonv2&amp;addressdetails=1</a>
+</li>
+<li>Ready to use via Docker in minutes</li>
+<li><a href="https://github.com/klokantech/osmnames-sphinxsearch">https://github.com/klokantech/osmnames-sphinxsearch</a></li>
+<li>osmnames.klokantech.com/</li>
+</ul>
+
+<h3>
+<a id="data-format-of-tsv-export-of-osmnames" class="anchor" href="#data-format-of-tsv-export-of-osmnames" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data format of tsv export of OSMNames</h3>
+
+<pre><code>name                the name of the feature (default language is en, others available(de,es,fr,ru,zh))
+class               
+type
+lon
+lat
+place_rank          rank from 1-30 ascending depending on the type and class
+importance          importance [0.0-1.0] depending on wikipedia if available otherwise just the ranking
+street              
+city
+county
+state   
+country 
+country_code        ISO-3166 2-letter country code
+display_name        the display name representing the hierarchy
+west                bbox
+south               bbox
+east                bbox
+north               bbox
+wikipedia           the wikipedia URL associated with this feature
+
+</code></pre>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/geometalab/OSMNames">OSMNames</a> is maintained by <a href="https://github.com/geometalab">Geometa Lab HSR and Klokan Tech.</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/geometalab/OSMNames">Osmnames</a> is maintained by <a href="https://github.com/geometalab">geometalab</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
