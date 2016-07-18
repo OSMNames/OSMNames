@@ -133,3 +133,6 @@ CREATE INDEX IF NOT EXISTS idx_osm_polygon_partition_rank ON osm_polygon (partit
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_id ON osm_polygon (id);
 
 CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
+
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_id ON osm_linestring (id);
+
