@@ -1,7 +1,7 @@
 SELECT * FROM mv_polygons
-UNION
+UNION ALL
 SELECT * FROM mv_points
-UNION
+UNION ALL
 SELECT * FROM mv_linestrings
-UNION
+UNION ALL
 SELECT * FROM mv_merged_linestrings;
