@@ -1,5 +1,7 @@
 CREATE MATERIALIZED VIEW mv_linestrings AS
 SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh) AS name,
+    'way' as osm_type,
+    osm_id,
     road_class(rrr.type) AS class,
     rrr.type,
     ST_X(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lon,

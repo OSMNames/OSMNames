@@ -58,6 +58,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+CREATE OR REPLACE FUNCTION get_osm_type_polygon(osm_id BIGINT)
+RETURNS TEXT AS $$
+BEGIN
+  IF osm_id > 0 THEN
+    RETURN 'way';
+  ELSE
+    RETURN 'relation';
+  END IF;  
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+
 CREATE OR REPLACE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
 DECLARE
   retVal parentInfo;

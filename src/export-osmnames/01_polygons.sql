@@ -1,5 +1,7 @@
 CREATE MATERIALIZED VIEW mv_polygons AS
 SELECT getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh) AS name,
+    get_osm_type_polygon(osm_id) as osm_type,
+    abs(osm_id) as osm_id,
     city_class(r.type) AS class,
     r.type AS type,
     ST_X(ST_PointOnSurface(ST_Buffer(ST_Transform(r.geometry, 4326),0.0))) AS lon,
