@@ -1,5 +1,7 @@
 CREATE MATERIALIZED VIEW mv_merged_linestrings AS
 SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh) AS name,
+    'way' as osm_type,
+    '' AS osm_id,
     road_class(rrrr.type) AS class,
     rrrr.type,
     ST_X(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lon,

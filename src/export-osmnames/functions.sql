@@ -154,8 +154,8 @@ RETURN displayName;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
-  SELECT COALESCE(name -> 'name:en',name -> 'name') FROM country_name WHERE partition = partition_id;
+ CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
+  SELECT COALESCE(name -> 'name:en',name -> 'name',name -> 'name:fr',name -> 'name:de',name -> 'name:es',name -> 'name:ru',name -> 'name:zh') FROM country_name WHERE partition = partition_id;
 $$ language 'sql';
 
 CREATE OR REPLACE FUNCTION constructSpecificParentName(id_value BIGINT, from_rank INTEGER, to_rank INTEGER) RETURNS TEXT AS $$
