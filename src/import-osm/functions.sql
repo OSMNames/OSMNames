@@ -237,3 +237,13 @@ BEGIN
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION determinePartitionFromImportedData(geom geometry)
+RETURNS INTEGER AS $$
+DECLARE
+  result INTEGER;
+BEGIN
+  SELECT partition, calculated_country_code from osm_polygon where ST_Within(ST_PointOnSurface(geom), geometry) AND rank_search = 4 AND NOT partition = 0 INTO result;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
