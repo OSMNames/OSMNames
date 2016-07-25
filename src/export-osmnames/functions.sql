@@ -253,3 +253,14 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION getOsmIdWithId(member_id BIGINT)
+RETURNS BIGINT AS $$
+DECLARE
+  result BIGINT;
+BEGIN
+  SELECT osm_id FROM osm_linestring WHERE id=member_id  INTO result;
+    RETURN result;
+END;
+$$ LANGUAGE plpgsql;
