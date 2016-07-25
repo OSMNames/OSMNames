@@ -102,7 +102,7 @@ BEGIN
   WHILE current_rank >= 8 LOOP
     SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
     IF currentName IS NOT NULL THEN
-      retVal.displayName := retVal.displayName || delimiter || '' || currentName;
+      retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
     END IF;
 
     IF current_rank = 16 THEN  
