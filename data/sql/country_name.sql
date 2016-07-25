@@ -281,7 +281,7 @@ li	"name"=>"Liechtenstein", "name:ar"=>"ليختنشتاين", "name:be"=>"Лі�
 ss	"name"=>"South Sudan", "name:ar"=>"جنوب السودان", "name:br"=>"Soudan ar Su", "name:cs"=>"Jižní Súdán", "name:de"=>"Südsudan", "name:en"=>"South Sudan", "name:es"=>"Sudán del Sur", "name:et"=>"Lõuna-Sudaan", "name:fa"=>"سودان جنوبی", "name:fr"=>"Sud-Soudan", "name:hr"=>"Južni Sudan", "name:ku"=>"Sûdana Başûr", "name:ru"=>"Южный Судан", "name:sk"=>"Južný Sudán", "name:sl"=>"Južni Sudan", "name:tl"=>"Timog Sudan", "name:vi"=>"Nam Sudan", "name:zh"=>"南蘇丹", "int_name"=>"South Sudan", "name:ast"=>"Sudán del Sur", "official_name"=>"Republic of South Sudan", "official_name:br"=>"Republik Soudan ar Su", "official_name:cs"=>"Republika Jižní Súdán", "official_name:de"=>"Republik Südsudan", "official_name:en"=>"Republic of South Sudan", "official_name:es"=>"República de Sudán del Sur", "official_name:fr"=>"République du Sud-Soudan", "official_name:hr"=>"Republika Južni Sudan", "official_name:ku"=>"Komara Sûdana Başûr", "official_name:sk"=>"Juhosudánska republika", "official_name:tl"=>"Republika ng Timog Sudan"	\N	247
 cw	"name"=>"Curaçao", "name:en"=>"Curaçao", "name:es"=>"Curazao", "name:fr"=>"Curaçao", "name:ru"=>"Кюрасао", "name:sv"=>"Curaçao", "name:pap"=>"Kòrsou"	\N	248
 sx	"name"=>"Sint Maarten"	\N	249
-bq	\N	\N	250
+bq	"name"=>"Caribbean Netherlands", "name:en"=>"Caribbean Netherlands"	\N	250
 \.
 
 
