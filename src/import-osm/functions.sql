@@ -247,3 +247,30 @@ BEGIN
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION findBestParentIDPoint(geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+SELECT id FROM osm_polygon 
+WHERE ST_Intersects(geometry,geometry_value) AND NOT ST_Equals(geometry, geometry_value)
+ORDER BY rank_search DESC
+LIMIT 1 INTO retVal;
+RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION findBestParentID(geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+
+SELECT id FROM osm_polygon 
+WHERE ST_Intersects(geometry,geometry_value) AND NOT ST_Equals(geometry, geometry_value)
+ORDER BY ST_Area(ST_Intersection(geometry_value,geometry)) DESC, rank_search DESC
+LIMIT 1 INTO retVal;
+
+RETURN retVal;
+END;
+$$ LANGUAGE plpgsql;

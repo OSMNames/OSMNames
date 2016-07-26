@@ -13,7 +13,14 @@ UPDATE osm_polygon SET parent_id = determineParentPlace(id, partition, rank_sear
 UPDATE osm_point SET parent_id = determineParentPlace(id, partition, rank_search, geometry) WHERE linked IS FALSE;
 SELECT determineRoadHierarchyForEachCountry();
 
--- create index for faster processing
---CREATE INDEX IF NOT EXISTS idx_linestring_name_parent ON osm_linestring (name,parent_id);
+-- use different method for parenting
+UPDATE osm_polygon SET parent_id = findBestParentID(geometry)
+WHERE rank_search > 4 AND parent_id IS NULL;
+
+UPDATE osm_point SET parent_id = findBestParentIDPoint(geometry)
+WHERE rank_search > 4 AND parent_id IS NULL;
+
+UPDATE osm_linestring SET parent_id = findBestParentIDPoint(geometry)
+WHERE rank_search > 4 AND parent_id IS NULL;
 
 VACUUM ANALYZE osm_linestring;
