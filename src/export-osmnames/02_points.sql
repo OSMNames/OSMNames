@@ -19,7 +19,8 @@ SELECT getLanguageName(rr.name, rr.name_fr, rr.name_en, rr.name_de, rr.name_es, 
     ST_YMIN(ST_Transform(rr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rr.geometry, 4326)) AS north,
-    getWikipediaURL(rr.wikipedia, rr.calculated_country_code) AS wikipedia
+    rr.wikidata AS wikidata,
+    rr.wikipedia AS wikipedia
 FROM 
     osm_point AS rr, 
     getParentInfo(getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), parent_id, rank_search, ',') AS parentInfo 

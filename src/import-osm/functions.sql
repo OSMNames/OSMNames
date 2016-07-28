@@ -209,7 +209,7 @@ DECLARE
   place_centroid GEOMETRY;
   result rankPartitionCode;
 BEGIN
-    RAISE NOTICE 'determine rank with type % and osm_id %', type, osm_id;
+    --RAISE NOTICE 'determine rank with type % and osm_id %', type, osm_id;
     place_centroid := ST_PointOnSurface(geom);
     IF (osm_id IS NULL) THEN
     result.rank_search := rank_address(type);

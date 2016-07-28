@@ -32,6 +32,9 @@ tables:
     - key: wikipedia
       name: wikipedia
       type: string
+    - key: wikidata
+      name: wikidata
+      type: string
     - key: admin_level
       name: admin_level
       type: integer
@@ -98,6 +101,9 @@ tables:
     - key: wikipedia
       name: wikipedia
       type: string
+    - key: wikidata
+      name: wikidata
+      type: string
     - key: admin_level
       name: admin_level
       type: integer
@@ -147,6 +153,9 @@ tables:
       type: string
     - key: wikipedia
       name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
       type: string
     - key: admin_level
       name: admin_level

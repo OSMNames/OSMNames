@@ -33,6 +33,7 @@ CREATE TABLE osm_merged_multi_linestring AS
  	max(a.name_ru) AS name_ru,
  	max(a.name_zh) AS name_zh,
  	max(a.wikipedia) AS wikipedia,
+ 	max(a.wikidata) AS wikidata,
  	ST_UNION(array_agg(a.geometry)) AS geometry,
  	bit_and(a.partition) AS partition,
  	max(a.calculated_country_code) AS calculated_country_code,

@@ -19,6 +19,7 @@ SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr
     ST_YMIN(ST_Transform(rrrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrrr.geometry, 4326)) AS east,
     ST_YMAX(ST_Transform(rrrr.geometry, 4326)) AS north,
-    getWikipediaURL(rrrr.wikipedia, rrrr.calculated_country_code) AS wikipedia
+    rrrr.wikidata AS wikidata,
+    rrrr.wikipedia AS wikipedia
 FROM osm_merged_multi_linestring AS rrrr , getParentInfo(getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), parent_id, rank_search, ',') AS parentInfo 
 ;

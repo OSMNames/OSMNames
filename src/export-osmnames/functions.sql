@@ -237,27 +237,6 @@ $$
 LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION getWikipediaURL(wikipedia character varying, country_code VARCHAR(2)) returns TEXT as $$
-DECLARE
-  langs TEXT[];
-  i INT;
-  wiki_article_title TEXT;
-  wiki_article_language TEXT;
-  wiki_url_part TEXT;
-BEGIN
-  IF wikipedia IS NULL OR wikipedia <> '' IS FALSE THEN
-    RETURN '';
-  END IF;
-  wiki_url_part := '.wikipedia.org/wiki/';
-  wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');
-  wiki_article_language := split_part(wikipedia, ':', 1);
-
-  RETURN wiki_article_language || wiki_url_part || wiki_article_title;
-END;
-$$
-LANGUAGE plpgsql;
-
-
 CREATE OR REPLACE FUNCTION getOsmIdWithId(member_id BIGINT)
 RETURNS BIGINT AS $$
 DECLARE
