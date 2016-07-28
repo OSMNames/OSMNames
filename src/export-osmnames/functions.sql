@@ -20,6 +20,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, rank_search INTEGER) returns TEXT as $$
+DECLARE
+  retVal TEXT;
+BEGIN
+IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND rank_search = 16 THEN
+  SELECT type FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
+  IF retVal = 'city' THEN
+  RETURN retVal;
+  ELSE
+  RETURN type_value;
+  END IF;
+ELSE
+  return type_value;
+ END IF;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
 CREATE OR REPLACE FUNCTION road_class(type TEXT)
 RETURNS TEXT AS $$
 BEGIN
