@@ -1,6 +1,6 @@
 CREATE MATERIALIZED VIEW mv_merged_linestrings AS
 SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh) AS name,
-    'way' as osm_type,
+    'way'::TEXT as osm_type,
     getOsmIdWithId(rrrr.member_ids[1]::BIGINT) AS osm_id,
     road_class(rrrr.type) AS class,
     rrrr.type,

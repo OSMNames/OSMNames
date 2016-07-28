@@ -1,6 +1,6 @@
 CREATE MATERIALIZED VIEW mv_linestrings AS
 SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh) AS name,
-    'way' as osm_type,
+    'way'::TEXT as osm_type,
     osm_id,
     road_class(rrr.type) AS class,
     rrr.type,

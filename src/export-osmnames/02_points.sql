@@ -1,6 +1,6 @@
 CREATE MATERIALIZED VIEW mv_points AS
 SELECT getLanguageName(rr.name, rr.name_fr, rr.name_en, rr.name_de, rr.name_es, rr.name_ru, rr.name_zh) AS name,
-    'node' as osm_type,
+    'node'::TEXT as osm_type,
     osm_id,
     city_class(rr.type) AS class,
     rr.type AS type,
