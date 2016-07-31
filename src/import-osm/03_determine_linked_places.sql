@@ -1,21 +1,21 @@
 --determine linked places
--- places with admin_centre tag
-UPDATE osm_polygon p
+-- places with label tag
+	UPDATE osm_polygon p
 	SET linked_osm_id = r.member         
 	FROM osm_relation r                                     
 	WHERE 
-	r.type = 0 AND r.role = 'admin_centre' 
-	AND p.osm_id = r.osm_id;    
+	r.type = 0 AND r.role = 'label' 
+	AND p.osm_id = r.osm_id;   
 
--- places with label tag inside geometry
-UPDATE osm_polygon p
-	SET linked_osm_id = n.osm_id 
-	FROM osm_point  n, osm_polygon r WHERE n.name = r.name AND ST_WITHIN(n.geometry,r.geometry)
-	AND p.osm_id = r.osm_id      
-	AND r.osm_id NOT IN (
-	SELECT osm_id 
-	FROM osm_relation
-	WHERE role = 'label');  
+-- places with admin_centre tag
+	UPDATE osm_polygon p
+	SET linked_osm_id = r.member         
+	FROM osm_relation r                                     
+	WHERE 
+	r.type = 0 AND (r.role = 'admin_centre' OR r.role = 'admin_center')
+	AND p.name = r.name
+	AND p.osm_id = r.osm_id
+	AND p.linked_osm_id IS NULL;
 
 --tag linked places
 UPDATE osm_point p SET linked = TRUE
