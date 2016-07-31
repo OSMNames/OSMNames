@@ -24,7 +24,7 @@ CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value 
 DECLARE
   retVal TEXT;
 BEGIN
-IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND rank_search = 16 THEN
+IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (rank_search = 16 OR rank_search = 12) THEN
   SELECT type FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
   IF retVal = 'city' THEN
   RETURN retVal;
@@ -181,5 +181,19 @@ DECLARE
 BEGIN
   SELECT osm_id FROM osm_linestring WHERE id=member_id  INTO result;
     RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
+DECLARE
+  retVal TEXT;
+BEGIN
+IF type = 'city' THEN
+  SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
+  ELSE
+  retVal = '';
+  END IF;
+  return retVal;
 END;
 $$ LANGUAGE plpgsql;
