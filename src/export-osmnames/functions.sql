@@ -123,72 +123,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION constructDisplayName(id_value BIGINT, delimiter TEXT) RETURNS TEXT AS $$
-DECLARE
-  displayName TEXT;
-  oldName TEXT;
-  currentName TEXT;
-  current_id BIGINT;
-BEGIN
-  current_id := id_value;
-  WHILE current_id IS NOT NULL LOOP
-    SELECT parent_id, COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO current_id, currentName;
-    IF displayName IS NULL THEN
-  displayName := currentName;
-    ELSE
-      displayName := displayName || delimiter || ' ' || currentName;
-    END IF;
-  END LOOP;
-RETURN displayName;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION constructNodeDisplayName(id_value BIGINT, delimiter TEXT, name TEXT) RETURNS TEXT AS $$
-DECLARE
-  displayName TEXT;
-BEGIN
-  SELECT constructDisplayName(id_value,',') INTO displayName;
-  displayName := name || delimiter || ' ' || displayName;
-  IF displayName IS NULL THEN
-    return name;
-  END IF;
-RETURN displayName;
-END;
-$$ LANGUAGE plpgsql;
-
  CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
   SELECT COALESCE(name -> 'name:en',name -> 'name',name -> 'name:fr',name -> 'name:de',name -> 'name:es',name -> 'name:ru',name -> 'name:zh') FROM country_name WHERE partition = partition_id;
 $$ language 'sql';
-
-CREATE OR REPLACE FUNCTION constructSpecificParentName(id_value BIGINT, from_rank INTEGER, to_rank INTEGER) RETURNS TEXT AS $$
-DECLARE
-  current_id BIGINT;
-  currentName TEXT;
-  currentNameOld TEXT;
-  current_rank INTEGER;
-BEGIN
-  current_rank := from_rank;
-  current_id := id_value;
-  currentName := '';
-  currentNameOld := '';
-  IF current_rank = to_rank THEN
-    SELECT COALESCE(NULLIF(name_en,''), name) FROM osm_polygon WHERE id = current_id INTO currentName;
-    RETURN currentName;
-  END IF; 
-  WHILE current_rank > to_rank  LOOP
-  currentNameOld := currentName;
-    SELECT parent_id, COALESCE(NULLIF(name_en,''), name), rank_search FROM osm_polygon WHERE id = current_id INTO current_id, currentName, current_rank;
-    IF current_id IS NULL THEN
-  RETURN '';
-    END IF; 
-      IF current_rank < to_rank THEN
-  RETURN currentNameOld;
-    END IF; 
-  END LOOP;
-RETURN currentName;
-END;
-$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION getImportance(rank_search int, wikipedia character varying, country_code VARCHAR(2)) returns double precision as $$
