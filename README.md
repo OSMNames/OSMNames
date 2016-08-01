@@ -20,7 +20,7 @@ Does include hierarchy information without house numbers or zip codes.
 ## Sample search server
 
 - Powered by super fast open-source fulltext Sphinxsearch - inspired by Swiss GeoAdmin search service
-- JSON/JSONP API similar to Nominatim: http://nominatim.klokantech.com/?q=paris&format=jsonv2&addressdetails=1
+- JSON/JSONP API similar to Nominatim: nominatim.openstreetmap.org
 - Ready to use via Docker in minutes
 - https://github.com/klokantech/osmnames-sphinxsearch
 - osmnames.klokantech.com/
@@ -29,6 +29,9 @@ Does include hierarchy information without house numbers or zip codes.
 
 ```
 name 				the name of the feature (default language is en, others available(de,es,fr,ru,zh))
+alternative_names	all other available and distinct names separated by commas
+osm_type			the osm type of this feature (node, way, relation)
+osm_id				
 class				
 type
 lon
@@ -46,12 +49,27 @@ west				bbox
 south				bbox
 east				bbox
 north				bbox
+wikidata			the wikidata associated with this feature
 wikipedia 			the wikipedia URL associated with this feature
 
 ```
 
 REMARKs: 
 * Fields like housenumber and postalcode don't belong to this dataset.
+
+## Data
+
+The world extract can be downloaded here:
+https://github.com/geometalab/OSMNames/releases/download/v1.1/planet-latest.tsv.gz
+
+
+If you want to extract only the information for a specific country, you can use the following command
+
+```
+awk -F $'\t' 'BEGIN {OFS = FS}{if (NR!=1) {  if ($16 =="[country_code]")  { print}    } else {print}}' planet-latest.tsv > countryExtract.tsv
+```
+where country_code is the ISO-3166 2-letter country code.
+
 
 
 ### Get Started
