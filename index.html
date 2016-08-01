@@ -75,6 +75,19 @@ wikipedia           the wikipedia URL associated with this feature
 
 </code></pre>
 
+<h3>
+<a id="data" class="anchor" href="#data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data</h3>
+
+<p>The world extract can be downloaded here:
+<a href="https://github.com/geometalab/OSMNames/releases/download/v1.1/planet-latest.tsv.gz">https://github.com/geometalab/OSMNames/releases/download/v1.1/planet-latest.tsv.gz</a></p>
+
+<p>If you want to extract only the information for a specific country, you can use the following command</p>
+
+<pre><code>awk -F $'\t' 'BEGIN {OFS = FS}{if (NR!=1) {  if ($16 =="[country_code]")  { print}    } else {print}}' planet-latest.tsv &gt; countryExtract.tsv
+</code></pre>
+
+<p>where country_code is the ISO-3166 2-letter country code.</p>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/geometalab/OSMNames">Osmnames</a> is maintained by <a href="https://github.com/geometalab">geometalab</a>.</span>
 
