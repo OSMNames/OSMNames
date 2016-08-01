@@ -197,3 +197,22 @@ IF type = 'city' THEN
   return retVal;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION array_distinct(anyarray)
+RETURNS anyarray AS $$
+  SELECT ARRAY(SELECT DISTINCT unnest($1))
+$$ LANGUAGE sql;
+
+
+CREATE OR REPLACE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
+RETURNS TEXT AS $$
+DECLARE
+  alternativeNames TEXT[];
+BEGIN
+  alternativeNames := array_distinct(ARRAY[default_lang, en, fr, de, es, ru, zh]);
+  alternativeNames := array_remove(alternativeNames, '');
+  alternativeNames := array_remove(alternativeNames, name);
+RETURN array_to_string(alternativeNames,delimiter);
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
