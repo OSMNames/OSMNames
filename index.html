@@ -54,6 +54,9 @@
 <a id="data-format-of-tsv-export-of-osmnames" class="anchor" href="#data-format-of-tsv-export-of-osmnames" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data format of tsv export of OSMNames</h3>
 
 <pre><code>name                the name of the feature (default language is en, others available(de,es,fr,ru,zh))
+alternative_names   all other available and distinct names separated by commas
+osm_type            the osm type of this feature (node, way, relation)
+osm_id              
 class               
 type
 lon
@@ -71,6 +74,7 @@ west                bbox
 south               bbox
 east                bbox
 north               bbox
+wikidata            the wikidata associated with this feature
 wikipedia           the wikipedia URL associated with this feature
 
 </code></pre>
