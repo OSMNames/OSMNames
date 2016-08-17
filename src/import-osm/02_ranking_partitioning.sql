@@ -61,6 +61,8 @@ FROM
     osm_polygon_tmp p,
     determineRankPartitionCode(type, geometry, osm_id, country_code) AS rpc
 );
+ALTER TABLE osm_polygon ADD PRIMARY KEY (id);
+
 
 DROP TABLE IF EXISTS osm_point CASCADE;
 CREATE TABLE osm_point AS
@@ -90,6 +92,7 @@ FROM
 );
 DROP TABLE osm_point_tmp;
 DROP TABLE osm_polygon_tmp;
+ALTER TABLE osm_point ADD PRIMARY KEY (id);
 
 
 DROP TABLE IF EXISTS osm_linestring CASCADE;
@@ -119,6 +122,7 @@ FROM
     determineRankPartitionCode(type, geometry, NULL, NULL) AS rpc
 );
 DROP TABLE osm_linestring_tmp;
+ALTER TABLE osm_linestring ADD PRIMARY KEY (id);
 
 
 
