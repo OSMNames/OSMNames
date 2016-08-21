@@ -123,7 +123,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
- CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
+CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
   SELECT COALESCE(name -> 'name:en',name -> 'name',name -> 'name:fr',name -> 'name:de',name -> 'name:es',name -> 'name:ru',name -> 'name:zh') FROM country_name WHERE partition = partition_id;
 $$ language 'sql';
 

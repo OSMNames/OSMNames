@@ -84,11 +84,10 @@ RETURN retVal;
 END;
 $$ LANGUAGE plpgsql;
 
-DROP FUNCTION IF EXISTS findroadswithingeometry(BIGINT,INT,geometry);
+DROP FUNCTION IF EXISTS findRoadsWithinGeometry(BIGINT,INT,geometry);
 CREATE OR REPLACE FUNCTION findRoadsWithinGeometry(id_value BIGINT,partition_value INT, geometry_value GEOMETRY) RETURNS VOID AS $$
 BEGIN
 	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value,geometry);
---	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND (ST_Contains(geometry_value,geometry) OR ST_Intersects(geometry_value,geometry));
 END;
 $$ LANGUAGE plpgsql;
 
@@ -118,6 +117,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;
+
 
 CREATE OR REPLACE FUNCTION get_country_code(place geometry) RETURNS TEXT
   AS $$
@@ -155,53 +155,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;
-
-/*
-CREATE OR REPLACE FUNCTION mergeStreetsOfParentId(parent_id_value bigint, rowNumber bigint, sumOfRows bigint) RETURNS void AS $$
-BEGIN
-	RAISE NOTICE '% / % , merging streets of parent with id %', rowNumber, sumOfRows, parent_id_value;
-	INSERT INTO osm_merged_multi_linestring(member_ids, type, name, name_fr, name_en, name_de, name_es, name_ru, name_zh, wikipedia, geometry, partition, calculated_country_code, rank_search, parent_id) 
-	SELECT array_agg(DISTINCT sub.id), string_agg(DISTINCT type,','), sub.name, max(sub.name_fr), max(sub.name_en), max(sub.name_de), max(sub.name_es), max(sub.name_ru), max(sub.name_zh), max(sub.wikipedia),  ST_Collect(sub.geometry), bit_and(sub.partition), max(sub.calculated_country_code), min(sub.rank_search), parent_id_value FROM
-	(SELECT  a.id, a.type, a.name, a.name_fr, a.name_en, a.name_de, a.name_es, a.name_ru, a.name_zh, a.wikipedia, a.geometry, a.partition, a.calculated_country_code, a.rank_search FROM
-	osm_linestring AS a INNER JOIN osm_linestring AS b 
-	ON ST_Touches(a.geometry, b.geometry)
-	WHERE a.parent_id = parent_id_value AND b.parent_id=parent_id_value AND getLanguageName(a.name, a.name_fr, a.name_en, a.name_de, a.name_es, a.name_ru, a.name_zh) = getLanguageName(b.name, b.name_fr, b.name_en, b.name_de, b.name_es, b.name_ru, b.name_zh) AND a.id!=b.id) AS sub
-	GROUP BY sub.name ;
-END;
-$$ LANGUAGE plpgsql;
-*/
-
-CREATE OR REPLACE FUNCTION mergeStreetsOfParentId(parent_id_value bigint, rowNumber bigint, sumOfRows bigint) RETURNS void AS $$
-BEGIN
-  RAISE NOTICE '% / % , merging streets of parent with id %', rowNumber, sumOfRows, parent_id_value;
-  INSERT INTO osm_merged_multi_linestring(member_ids, type, name, name_fr, name_en, name_de, name_es, name_ru, name_zh, wikipedia, geometry, partition, calculated_country_code, rank_search, parent_id) 
-  SELECT array_agg(DISTINCT sub.id), string_agg(DISTINCT type,','), sub.name, max(sub.name_fr), max(sub.name_en), max(sub.name_de), max(sub.name_es), max(sub.name_ru), max(sub.name_zh), max(sub.wikipedia),  ST_UNION(sub.geometry), bit_and(sub.partition), max(sub.calculated_country_code), min(sub.rank_search), parent_id_value FROM
-  (SELECT  a.id, a.type, a.name, a.name_fr, a.name_en, a.name_de, a.name_es, a.name_ru, a.name_zh, a.wikipedia, a.geometry, a.partition, a.calculated_country_code, a.rank_search FROM
-  osm_linestring AS a INNER JOIN osm_linestring AS b 
-  ON ST_Touches(a.geometry, b.geometry)
-  WHERE a.parent_id = parent_id_value AND b.parent_id=parent_id_value AND a.name = b.name AND a.id!=b.id) AS sub
-  GROUP BY sub.name ;
-END;
-$$ LANGUAGE plpgsql;
     
-CREATE OR REPLACE FUNCTION updateMergedFlag() RETURNS TRIGGER AS $$
-DECLARE
-	member_id BIGINT;
-BEGIN
-	IF NEW.member_ids IS NOT NULL THEN
-		FOREACH member_id IN ARRAY NEW.member_ids LOOP
-			UPDATE osm_linestring SET merged = TRUE WHERE id=member_id;
-		END LOOP;
-	END IF;
-	return NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-DROP AGGREGATE IF EXISTS array_agg_mult(anyarray);
-CREATE AGGREGATE array_agg_mult (anyarray) (
- SFUNC = array_cat
- ,STYPE = anyarray
- ,INITCOND ='{}'); 
 
 CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,osm_id bigint, country_code character varying)
 RETURNS rankPartitionCode AS $$
@@ -245,32 +199,5 @@ DECLARE
 BEGIN
   SELECT partition, calculated_country_code from osm_polygon where ST_Within(ST_PointOnSurface(geom), geometry) AND rank_search = 4 AND NOT partition = 0 INTO result;
     RETURN result;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION findBestParentIDPoint(geometry_value GEOMETRY) RETURNS BIGINT AS $$
-DECLARE
-  retVal BIGINT;
-BEGIN
-SELECT id FROM osm_polygon 
-WHERE ST_Intersects(geometry,geometry_value) AND NOT ST_Equals(geometry, geometry_value)
-ORDER BY rank_search DESC
-LIMIT 1 INTO retVal;
-RETURN retVal;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION findBestParentID(geometry_value GEOMETRY) RETURNS BIGINT AS $$
-DECLARE
-  retVal BIGINT;
-BEGIN
-
-SELECT id FROM osm_polygon 
-WHERE ST_Intersects(geometry,geometry_value) AND NOT ST_Equals(geometry, geometry_value)
-ORDER BY ST_Area(ST_Intersection(geometry_value,geometry)) DESC, rank_search DESC
-LIMIT 1 INTO retVal;
-
-RETURN retVal;
 END;
 $$ LANGUAGE plpgsql;

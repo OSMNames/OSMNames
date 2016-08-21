@@ -42,5 +42,18 @@ ALTER TABLE osm_linestring
 
   */
 
-SET temp_buffers TO '3000MB';   -- default is 8MB
-SET work_mem TO '32MB';   -- default is 1MB
+--SET temp_buffers TO '3000MB';   -- default is 8MB
+--SET work_mem TO '32MB';   -- default is 1MB
+
+/*
+SET max_connections TO 20;
+SET shared_buffers TO 12800MB;
+SET effective_cache_size TO 38400MB;
+SET work_mem TO 320MB;
+SET maintenance_work_mem TO 2GB;
+SET min_wal_size TO 4GB;
+SET max_wal_size TO 8GB;
+SET checkpoint_completion_target TO 0.9;
+SET wal_buffers TO 16MB;
+SET default_statistics_target = 500;
+*/
