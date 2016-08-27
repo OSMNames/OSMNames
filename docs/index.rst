@@ -9,14 +9,10 @@ Welcome to OSMNames's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   introduction
+   components
+   install
+   architecture
+   implementation
