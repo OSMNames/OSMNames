@@ -171,7 +171,7 @@ This information is later on used in the export mainly to rule out point feature
 Create Hierarchy
 ----------------
 
-In order to create the *display_name* the parent feature of every feature is determined with the following function:
+In order to create the *display_name*, the parent feature of every feature is determined with the following function:
 
 .. code-block:: sql
 
@@ -189,12 +189,12 @@ In order to create the *display_name* the parent feature of every feature is det
 	END;
 	$$ LANGUAGE plpgsql;
 
-With the reverse loop it is ensured to match only features with the same or a lower rank. Also, with checking geometry equality it is ensured that no infinite loop emerge (parent of feature A is feature B whose parent is feature A). This phenomenon was identified with European OSM data where geometry duplicates with different ids exist. Finally, only features with the same partition are considered.
+With the reverse loop it is ensured to match only features with the same or a lower rank. Also, by checking geometry equality it is ensured that no infinite loop emerge (parent of feature A is feature B whose parent is feature A). This phenomenon was identified with European OSM data where geometry duplicates with different ids exist. Finally, only features with the same partition are considered.
 
 Finding Parent of Street segments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For every partition (country), all street segments that are contained in features having a rank of 22 or lower are determined and updated accordingly. 22 (neighborhood, residential) is the highest rank of features that can contain street segments. This way it is ensured, that the parent has the highest rank possible if a features is contained in two parent features with different ranks.
+For every partition (country), all street segments that are contained in features having a rank of 22 or lower are determined and updated accordingly. 22 (neighborhood, residential) is the highest rank of features that can contain street segments. This way it is ensured, that the parent has the highest rank possible when a feature is contained in two parent features with different ranks.
 
 .. code-block:: sql
 

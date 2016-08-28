@@ -1,7 +1,7 @@
 Export Data Format
 ==================
 
-The requirement to the export data format is being simple to use. The decision led to using an UTF-8 encoded TSV like with Geonames, where the first line contains the column names. Compared to a CSV name are now allowed to have usual delimiters such as commas or semicolons. Best practices from `GISGraphy <http://download.gisgraphy.com/format.txt>`_  have been adapted. The definition looks as follows:
+The requirement of the export data format is being simple to use. The decision led to using an UTF-8 encoded TSV like Geonames, where the first line contains the column names. Compared to a CSV, names are now allowed to have usual delimiters such as commas or semicolons. Best practices from `GISGraphy <http://download.gisgraphy.com/format.txt>`_  have been adapted. The definition looks as follows:
 
 =================	====================================================================================================================================
 Column name 		Description

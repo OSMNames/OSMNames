@@ -68,7 +68,7 @@ First, it checks if the feature itself has a rank of 16,12 or 8 (city, county, s
 
 Language Precedence
 -------------------
-Because the names are imported in seven different languages, there needs to be a unique of of weighing which language is more relevant for in the exported data. This happens in the following function with the precedence [English -> native name -> French -> German -> Spanish -> Russian -> Chinese]:
+Because the names are imported in seven different languages, there needs to be a unique way of weighing which language is more relevant in the exported data. This happens in the following function with the precedence [English -> native name -> French -> German -> Spanish -> Russian -> Chinese]:
 
 .. code-block:: sql
 

@@ -6,8 +6,6 @@
 Welcome to OSMNames's documentation!
 ====================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 3
 
