@@ -3,7 +3,7 @@
 Database of geographic place names from OpenStreetMap for full text search downloadable for free. Website: http://osmnames.org
 Does include hierarchy information without house numbers or zip codes.
 
-## Target of the project
+## Target of OSM Names
 
 - Downloadable gazeteer data a la GeoNames.org: http://download.geonames.org/export/dump/ but each record has bounding box and an importance rank known from Nominatim
 - Data are derived primarily from OpenStreetMap
@@ -11,7 +11,7 @@ Does include hierarchy information without house numbers or zip codes.
 - Different type of records are stored in different files (download and index just what you need, sometimes you don't need POIs or addresses with house numbers)
 - Possible to generate from a country specific extract of Open Street Map (together with vector tiles)
 
-## Why to make this
+## Benefits of OSM Names
 
 - Direct indexing via fulltext search engines (SphinxSearch, ElasticSearch, etc.)
 - Simple process to get a **basic** search in place names on a map within minutes
