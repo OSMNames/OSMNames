@@ -7,27 +7,14 @@ WORKDIR $GOPATH
 # because they are dynamically linked.
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      libprotobuf-dev \
-      libleveldb-dev \
-      libgeos-dev \
-      postgresql-client \
-      autoconf \
-      automake \
-      libtool \
-      --no-install-recommends \
- && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
- && git clone https://github.com/rescrv/HyperLevelDB.git /opt/HyperLevelDB \
- && cd /opt/HyperLevelDB \
- && autoreconf -i && ./configure \
- && make && make install && ldconfig
-
-RUN go get -d -x github.com/omniscale/imposm3
-RUN echo '##########################'
-RUN go install -x -v github.com/omniscale/imposm3
-
-RUN apt-get purge -y --auto-remove \
-    g++ gcc libc6-dev make git autoconf automake libtool \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -O imposm3.tar.gz https://imposm.org/static/rel/imposm3-0.3.0dev-20170119-353bc5d-linux-x86-64.tar.gz \
+    && tar -xf imposm3.tar.gz -C /tmp \
+    && mv /tmp/imposm3-* /opt/imposm3
+
+ENV PATH $PATH:/opt/imposm3
 
 VOLUME /data/import /data/cache
 ENV IMPORT_DATA_DIR=/data/import \
