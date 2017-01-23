@@ -1,2 +1,4 @@
 data/*.bin
 data/*.pbf
+data/*.tsv
+data/*.gz
