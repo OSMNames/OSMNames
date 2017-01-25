@@ -12,7 +12,7 @@ postgres:
   volumes_from:
    - pgdata
   ports:
-   - "5432"
+   - "5432:5432"
 import-osm:
   build: "src/import-osm"
   env_file: .env
