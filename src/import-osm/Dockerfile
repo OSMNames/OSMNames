@@ -1,20 +1,23 @@
-FROM golang:1.7
+FROM golang:1.4
 
-WORKDIR $GOPATH
-
-# Purge no longer needed packages at the end to keep image small.
-# Protobuf and LevelDB dependencies cannot be removed
-# because they are dynamically linked.
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    postgresql-client \
+      libprotobuf-dev \
+      libleveldb-dev \
+      libgeos-dev \
+      postgresql-client \
+      --no-install-recommends \
+ && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN go get github.com/omniscale/imposm3
+
+# Purge no longer needed packages to keep image small.
+# Protobuf and LevelDB dependencies cannot be removed
+# because they are dynamically linked.
+RUN apt-get purge -y --auto-remove \
+    g++ gcc libc6-dev make git \
     && rm -rf /var/lib/apt/lists/*
-
-RUN wget -O imposm3.tar.gz https://imposm.org/static/rel/imposm3-0.3.0dev-20170119-353bc5d-linux-x86-64.tar.gz \
-    && tar -xf imposm3.tar.gz -C /tmp \
-    && mv /tmp/imposm3-* /opt/imposm3
-
-ENV PATH $PATH:/opt/imposm3
 
 VOLUME /data/import /data/cache
 ENV IMPORT_DATA_DIR=/data/import \

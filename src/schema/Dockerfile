@@ -1,4 +1,4 @@
-FROM mdillon/postgis:9.6
+FROM mdillon/postgis:9.5
 
 COPY . /usr/src/app/
 WORKDIR /usr/src/app
