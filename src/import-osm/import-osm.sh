@@ -3,17 +3,14 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly IMPORT_DATA_DIR=${IMPORT_DATA_DIR:-/data/import}
-readonly IMPOSM_CACHE_DIR=${IMPOSM_CACHE_DIR:-/data/cache}
-readonly MAPPING_JSON=${MAPPING_JSON:-/usr/src/app/mapping.json}
+readonly IMPORT_DATA_DIR="${DATA_DIR}/import"
+readonly IMPOSM_CACHE_DIR="${DATA_DIR}/cache"
+readonly MAPPING_YAML="mapping.yml"
 
-readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
-readonly PG_CONNECT="postgis://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME"
-
-readonly DB_PORT=$DB_PORT_5432_TCP_PORT
+readonly PG_CONNECT="postgis://$PGUSER@$PGHOST/$DB_NAME"
 
 function import_pbf() {
-    
+
     local pbf_file="$1"
     imposm3 import \
         -connection "$PG_CONNECT" \
@@ -25,27 +22,13 @@ function import_pbf() {
         -write
 }
 
-function exec_psql_file() {
-    local file_name="$1"
-    PG_PASSWORD="$DB_PASSWORD" psql \
-        -v ON_ERROR_STOP=1 \
-        -A -t --variable="FETCH_COUNT=10000" \
-        --host="$DB_HOST" \
-        --port="$DB_PORT" \
-        --dbname="$DB_NAME" \
-        --username="$2" \
-        -f "$file_name"
-}
-
 function init_helper_tables() {
     echo "$(date +"%T"): init helper tables"
     exec_psql_file "00_create_hstore_extension.sql" "postgres"
-    exec_psql_file "$IMPORT_DATA_DIR/sql/country_name.sql" "postgres"
-    exec_psql_file "$IMPORT_DATA_DIR/sql/country_osm_grid.sql" "postgres"
-    #exec_psql_file "00_create_merged_linestring_table.sql" "postgres"
-    #exec_psql_file "00_alter_imposm_tables.sql" "$DB_USER"
-    exec_psql_file "00_index_helper_tables.sql" "$DB_USER"
-    
+    exec_psql_file "$DATA_DIR/sql/country_name.sql" "postgres"
+    exec_psql_file "$DATA_DIR/sql/country_osm_grid.sql" "postgres"
+    exec_psql_file "00_index_helper_tables.sql" $DB_USER
+
 }
 
 function indexing_phase() {
@@ -80,7 +63,7 @@ function reading_pbf_file() {
         echo "Please mount the $IMPORT_DATA_DIR volume to a folder containing OSM PBF files."
         exit 404
     fi
-} 
+}
 
 function main() {
     reading_pbf_file

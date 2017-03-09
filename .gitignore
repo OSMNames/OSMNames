@@ -1,4 +1,3 @@
-data/*.bin
-data/*.pbf
-data/*.tsv
-data/*.gz
+data/import/
+data/export/
+data/cache/

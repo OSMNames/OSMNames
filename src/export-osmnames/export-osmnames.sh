@@ -3,12 +3,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
-readonly DB_PORT=$DB_PORT_5432_TCP_PORT
-readonly EXPORT_DIR=${EXPORT_DIR:-"/data/"}
-
-readonly IMPORT_DATA_DIR=${IMPORT_DATA_DIR:-/data}
-
+readonly EXPORT_DIR="${DATA_DIR}/export"
+readonly IMPORT_DATA_DIR="${DATA_DIR}/import"
 
 function export_tsv() {
     local tsv_filename="$1"
@@ -20,21 +16,9 @@ function export_tsv() {
         -o "$tsv_file" \
         -dbname "$DB_NAME" \
         --username "$DB_USER" \
-        --host "$DB_HOST" \
-        --port "$DB_PORT" \
+        --host "$PGHOST" \
         --pass "$DB_PASSWORD" \
     tsv --header
-}
-
-function exec_psql_file() {
-    local file_name="$1"
-    PG_PASSWORD="$DB_PASSWORD" psql \
-        -v ON_ERROR_STOP=1 \
-        --host="$DB_HOST" \
-        --port="$DB_PORT" \
-        --dbname="$DB_NAME" \
-        --username="$2" \
-        -f "$file_name"
 }
 
 function gzip_tsv() {
