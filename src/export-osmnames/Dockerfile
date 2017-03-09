@@ -1,4 +1,4 @@
-FROM golang:1.7
+FROM golang:1.5.3
 
 RUN go get github.com/lukasmartinelli/pgclimb \
  && go install github.com/lukasmartinelli/pgclimb

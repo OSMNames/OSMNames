@@ -1,4 +1,4 @@
-FROM mdillon/postgis:9.6
+FROM mdillon/postgis:9.5
 MAINTAINER Lukas Martinelli <me@lukasmartinelli.ch>
 
 # copy new initdb file which enables the hstore extension and Mapbox vt-util functions
