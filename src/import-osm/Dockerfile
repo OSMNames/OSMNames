@@ -11,6 +11,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
  && rm -rf /var/lib/apt/lists/*
 
 RUN go get github.com/omniscale/imposm3
+RUN go install github.com/omniscale/imposm3/cmd/imposm3
 
 # Purge no longer needed packages to keep image small.
 # Protobuf and LevelDB dependencies cannot be removed
