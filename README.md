@@ -31,18 +31,18 @@ Does include hierarchy information without house numbers or zip codes.
 name 				the name of the feature (default language is en, others available(de,es,fr,ru,zh))
 alternative_names	all other available and distinct names separated by commas
 osm_type			the osm type of this feature (node, way, relation)
-osm_id				
-class				
+osm_id
+class
 type
 lon
 lat
 place_rank			rank from 1-30 ascending depending on the type and class
 importance			importance [0.0-1.0] depending on wikipedia if available otherwise just the ranking
-street 				
+street
 city
 county
-state	
-country	
+state
+country
 country_code		ISO-3166 2-letter country code
 display_name		the display name representing the hierarchy
 west				bbox
@@ -54,7 +54,7 @@ wikipedia 			the wikipedia URL associated with this feature
 
 ```
 
-REMARKs: 
+REMARKs:
 * Fields like housenumber and postalcode don't belong to this dataset.
 
 ## Data
@@ -126,7 +126,7 @@ The different components that attach to the `postgres` container are all located
 | Component         | Description
 |-------------------|--------------------------------------------------------------
 | postgres          | PostGIS data store for OSM data and to perform noise analysis
-| download-pbf      | automatically downloads the pbf file 
+| download-pbf      | automatically downloads the pbf file
 | import-wikipedia  | Imports wikipedia data for more accurate importance calculation
 | import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries, handles indexing and hierarchy reconstruction
 | export-osmnames   | Export names and their bounding boxes to TSV datasets
