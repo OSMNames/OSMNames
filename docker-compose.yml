@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   osmnames:
     build: .
@@ -6,6 +6,8 @@ services:
       - .:/osmnames
     depends_on:
       - postgres
+    volumes:
+      - ./data:/osmnames/data/
     env_file: .env
 
   postgres:
