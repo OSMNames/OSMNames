@@ -6,39 +6,17 @@ set -o nounset
 # credits to nominatim for providing the precalculated data
 readonly WIKIPEDIA_ARTICLE_TABLE="http://www.nominatim.org/data/wikipedia_article.sql.bin"
 
-readonly IMPORT_DATA_DIR=${IMPORT_DATA_DIR:-/data/import}
-readonly DB_HOST=$DB_PORT_5432_TCP_ADDR
-readonly PG_CONNECT="postgis://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME"
-
-readonly DB_PORT=$DB_PORT_5432_TCP_PORT
-
-
-function exec_psql_file() {
-    local file_name="$1"
-    PG_PASSWORD="$DB_PASSWORD" psql \
-        -v ON_ERROR_STOP=1 \
-        --host="$DB_HOST" \
-        --port="$DB_PORT" \
-        --dbname="$DB_NAME" \
-        --username="$2" \
-        -f "$file_name"
-}
-
 function load_wiki_dump() {
     echo "$(date +"%T"): try to load wikipedia dump.."
-    local file_name="$IMPORT_DATA_DIR/wikipedia_article.sql.bin"
+    local file_name="$IMPORT_DIR/wikipedia_article.sql.bin"
     exec_psql_file "wiki_privileges.sql" "postgres"
     if [ ! -f "$file_name" ]; then
         wget --output-document=$file_name $WIKIPEDIA_ARTICLE_TABLE
     fi
-    pg_restore -h $DB_HOST -d $DB_NAME -p $DB_PORT -U brian $file_name
+    pg_restore --dbname=$DB_NAME -U brian $file_name
     echo "$(date +"%T"): wikipedia loading complete.."
     exec_psql_file "wiki_transfer_ownership.sql" "postgres"
     exec_psql_file "create_index.sql" "postgres"
 }
 
-function main() {
-        load_wiki_dump
-}
-
-main
+load_wiki_dump
