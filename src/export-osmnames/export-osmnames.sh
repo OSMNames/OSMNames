@@ -3,9 +3,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly EXPORT_DIR="${DATA_DIR}/export"
-readonly IMPORT_DATA_DIR="${DATA_DIR}/import"
-
 function export_tsv() {
     local tsv_filename="$1"
     local tsv_file="$EXPORT_DIR/$tsv_filename"
@@ -28,8 +25,8 @@ function gzip_tsv() {
 }
 
 function determineOutputFilename() {
-    if [ "$(ls -A $IMPORT_DATA_DIR/*.pbf 2> /dev/null)" ]; then
-    filename=$(ls -t -U $IMPORT_DATA_DIR/**.pbf | xargs -n1 basename | sed -e 's/\..*$//')
+    if [ "$(ls -A $IMPORT_DIR/*.pbf 2> /dev/null)" ]; then
+    filename=$(ls -t -U $IMPORT_DIR/**.pbf | xargs -n1 basename | sed -e 's/\..*$//')
     echo "$filename"
     else
         echo "output"

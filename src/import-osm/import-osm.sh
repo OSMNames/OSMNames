@@ -3,8 +3,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly IMPORT_DATA_DIR="${DATA_DIR}/import"
-readonly IMPOSM_CACHE_DIR="${DATA_DIR}/cache"
 readonly MAPPING_YAML="mapping.yml"
 
 readonly PG_CONNECT="postgis://$PGUSER@$PGHOST/$DB_NAME"
@@ -16,7 +14,7 @@ function import_pbf() {
         -connection "$PG_CONNECT" \
         -mapping "$MAPPING_YAML" \
         -overwritecache \
-        -cachedir "$IMPOSM_CACHE_DIR" \
+        -cachedir "$CACHE_DIR" \
         -read "$pbf_file" \
         -dbschema-import="${DB_SCHEMA}" \
         -write
@@ -25,8 +23,8 @@ function import_pbf() {
 function init_helper_tables() {
     echo "$(date +"%T"): init helper tables"
     exec_psql_file "00_create_hstore_extension.sql" "postgres"
-    exec_psql_file "$DATA_DIR/sql/country_name.sql" "postgres"
-    exec_psql_file "$DATA_DIR/sql/country_osm_grid.sql" "postgres"
+    exec_psql_file "$IMPORT_DIR/sql/country_name.sql" "postgres"
+    exec_psql_file "$IMPORT_DIR/sql/country_osm_grid.sql" "postgres"
     exec_psql_file "00_index_helper_tables.sql" $DB_USER
 
 }
@@ -51,16 +49,16 @@ function init_functions() {
 }
 
 function reading_pbf_file() {
- if [ "$(ls -A $IMPORT_DATA_DIR/*.pbf 2> /dev/null)" ]; then
+ if [ "$(ls -A $IMPORt_DIR/*.pbf 2> /dev/null)" ]; then
         local pbf_file
-        for pbf_file in "$IMPORT_DATA_DIR"/*.pbf; do
+        for pbf_file in "$IMPORT_DIR"/*.pbf; do
             import_pbf "$pbf_file"
             break
         done
         return 0
     else
         echo "No PBF files for import found."
-        echo "Please mount the $IMPORT_DATA_DIR volume to a folder containing OSM PBF files."
+        echo "Please mount the $IMPORT_DIR volume to a folder containing OSM PBF files."
         exit 404
     fi
 }
