@@ -4,10 +4,9 @@ services:
     build: .
     volumes:
       - .:/osmnames
+      - ./data:${DATA_DIR}
     depends_on:
       - postgres
-    volumes:
-      - ./data:${DATA_DIR}
     env_file: .env
 
   postgres:

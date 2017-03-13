@@ -1,20 +1,21 @@
 FROM golang:1.8
 
-RUN go get github.com/lukasmartinelli/pgclimb \
- && go install github.com/lukasmartinelli/pgclimb
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' >> /etc/apt/sources.list && \
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       libprotobuf-dev \
       libleveldb-dev \
       libgeos-dev \
-      postgresql-client \
-      --no-install-recommends \
+      postgresql-client-9.6 \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
  && rm -rf /var/lib/apt/lists/*
 
-RUN go get github.com/omniscale/imposm3
-RUN go install github.com/omniscale/imposm3/cmd/imposm3
+RUN go get github.com/lukasmartinelli/pgclimb \
+ && go install github.com/lukasmartinelli/pgclimb
+RUN go get github.com/omniscale/imposm3 \
+ && go install github.com/omniscale/imposm3/cmd/imposm3
 
 # Purge no longer needed packages to keep image small.
 # Protobuf and LevelDB dependencies cannot be removed
