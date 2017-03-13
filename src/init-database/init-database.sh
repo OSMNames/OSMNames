@@ -25,6 +25,11 @@ function create_database() {
 }
 
 function main() {
+  if psql -c "select exists (select 1 from pg_type where typname = 'rankPartitionCode');" > /dev/null 2>&1; then
+      echo "Skipping database initializations, since it seems already initialized"
+      return
+    fi
+
     create_database
     create_template_postgis
     create_postgis_extensions
