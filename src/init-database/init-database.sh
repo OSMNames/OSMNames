@@ -3,17 +3,17 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-function create_hstore_extension() {
-    psql --user="postgres" --dbname="$DB_NAME" <<-'EOSQL'
-			CREATE EXTENSION IF NOT EXISTS hstore;
-		EOSQL
-}
-
 function create_database() {
     echo "Creating database $DB_NAME with owner $DB_USER"
     psql --user="postgres" --dbname="postgres" <<-EOSQL
 			CREATE USER $DB_USER WITH PASSWORD '$DB_PASSWORD';
 			CREATE DATABASE $DB_NAME WITH TEMPLATE template_postgis OWNER $DB_USER;
+		EOSQL
+}
+
+function create_hstore_extension() {
+    psql --user="postgres" --dbname="$DB_NAME" <<-'EOSQL'
+			CREATE EXTENSION IF NOT EXISTS hstore;
 		EOSQL
 }
 
