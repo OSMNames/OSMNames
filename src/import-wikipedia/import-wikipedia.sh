@@ -19,4 +19,13 @@ function load_wiki_dump() {
     exec_psql_file "create_index.sql" "postgres"
 }
 
-load_wiki_dump
+function main() {
+  if psql -c "SELECT 1 FROM wikipedia_article;" > /dev/null 2>&1; then
+    echo "Skipping wikipedia import, since it seems already imported"
+    return
+  fi
+
+  load_wiki_dump
+}
+
+main
