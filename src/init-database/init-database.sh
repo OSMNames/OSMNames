@@ -3,19 +3,6 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-function create_template_postgis() {
-    psql --user="postgres" --dbname="postgres" <<-'EOSQL'
-			CREATE DATABASE template_postgis;
-			UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template_postgis';
-		EOSQL
-}
-
-function create_postgis_extension() {
-    psql --user="postgres" --dbname="$DB_NAME" <<-'EOSQL'
-			CREATE EXTENSION IF NOT EXISTS postgis;
-		EOSQL
-}
-
 function create_hstore_extension() {
     psql --user="postgres" --dbname="$DB_NAME" <<-'EOSQL'
 			CREATE EXTENSION IF NOT EXISTS hstore;
@@ -37,8 +24,6 @@ function main() {
     fi
 
     create_database
-    create_template_postgis
-    create_postgis_extension
     create_hstore_extension
 
     echo "create schema"
