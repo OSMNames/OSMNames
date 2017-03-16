@@ -22,7 +22,6 @@ function import_pbf() {
 
 function init_helper_tables() {
     echo "$(date +"%T"): init helper tables"
-    exec_psql_file "00_create_hstore_extension.sql" "postgres"
     exec_psql_file "$DATA_DIR/sql/country_name.sql" "postgres"
     exec_psql_file "$DATA_DIR/sql/country_osm_grid.sql" "postgres"
     exec_psql_file "00_index_helper_tables.sql" $DB_USER
