@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION rank_place(type TEXT, osmID bigint)
 RETURNS int AS $$
 BEGIN
 	RETURN CASE
-		WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)  
+		WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)
 		WHEN type IN ('continent', 'sea') THEN 2
 		WHEN type IN ('country') THEN 4
 		WHEN type IN ('state') THEN 8
@@ -155,7 +155,7 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;
-    
+
 
 CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,osm_id bigint, country_code character varying)
 RETURNS rankPartitionCode AS $$
