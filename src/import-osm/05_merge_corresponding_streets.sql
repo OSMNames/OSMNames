@@ -1,6 +1,6 @@
 -- create merged linestrings
 DROP TABLE IF EXISTS osm_merged_multi_linestring CASCADE;
-CREATE TABLE osm_merged_multi_linestring AS 
+CREATE TABLE osm_merged_multi_linestring AS
  	SELECT array_agg(DISTINCT a.id) AS member_ids,
  	string_agg(DISTINCT a.type,',') AS type,
  	a.name, max(a.name_fr) AS name_fr,
@@ -15,24 +15,24 @@ CREATE TABLE osm_merged_multi_linestring AS
  	bit_and(a.partition) AS partition,
  	max(a.calculated_country_code) AS calculated_country_code,
  	min(a.rank_search) AS rank_search,
- 	a.parent_id 
+ 	a.parent_id
 	FROM
 		osm_linestring AS a,
 		osm_linestring AS b
-	WHERE 
-		ST_Touches(ST_MakeValid(a.geometry), ST_MakeValid(b.geometry)) AND 
-		a.parent_id = b.parent_id AND 
-		a.parent_id IS  NOT NULL AND 
-		a.name = b.name AND 
+	WHERE
+		ST_Touches(ST_MakeValid(a.geometry), ST_MakeValid(b.geometry)) AND
+		a.parent_id = b.parent_id AND
+		a.parent_id IS  NOT NULL AND
+		a.name = b.name AND
 		a.id!=b.id
-	GROUP BY 
+	GROUP BY
 		a.parent_id,
 		a.name;
 
 ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (member_ids);
 
 
-UPDATE osm_linestring SET merged = TRUE WHERE id IN 
+UPDATE osm_linestring SET merged = TRUE WHERE id IN
 	(SELECT  unnest(member_ids) FROM osm_merged_multi_linestring);
 
 --create index
