@@ -3,8 +3,8 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-readonly FILE_NAME="switzerland-latest.osm.pbf"
-readonly FILE_URL="http://download.geofabrik.de/europe/${FILE_NAME}"
+readonly FILE_NAME="planet-latest.osm.pbf"
+readonly FILE_URL="http://planet.osm.org/pbf/${FILE_NAME}"
 readonly EXPORT_DIR="${DATA_DIR}/export/"
 
 if [ ! -f "$IMPORT_DIR/$FILE_NAME" ]; then
