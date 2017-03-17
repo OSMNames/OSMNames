@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS osm_polygon CASCADE;
 CREATE TABLE osm_polygon AS
-(SELECT     
+(SELECT
     id,
     osm_id,
     type,
@@ -61,7 +61,7 @@ ALTER TABLE osm_point ADD PRIMARY KEY (id);
 
 DROP TABLE IF EXISTS osm_linestring CASCADE;
 CREATE TABLE osm_linestring AS
-(SELECT 
+(SELECT
     id,
     osm_id,
     type,
