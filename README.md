@@ -74,60 +74,28 @@ where country_code is the ISO-3166 2-letter country code.
 
 ### Get Started
 
-You need a complete OSM PBF data dump either from a [country extract](http://download.geofabrik.de/index.html) or of the [entire world](http://planet.osm.org/).
-Download the data and put it into the `data` directory.
+The OSM PBF data dump will be download when starting the process. By default it
+will download the entire world. If you want to change this, simply open the
+file `src/download-pbf/download-pbf.sh` and edit FILE_NAME / FILE_URL accordingly. (For
+example, to process only a specific country you can use the PBF-files from
+`http://download.geofabrik.de/index.html`)
 
+We can now start the process with:
 ```bash
-wget --directory-prefix=./data http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+docker-compose run --rm osmnames
 ```
 
-Alternatively there is a docker-compose, just edit FILE_URL in download-pbf.sh accordingly
+This will call the script `src/run.sh` in the docker container, which will execute following steps:
+* Initialize the database
+* Download the pbf
+* Download and import the wikipedia dump
+* Import the pbf file to the database
+* Export names and their bounding boxes to a TSV datasets
+
+If you run the command a second time, some steps will be skipped. To run it
+from scratch, remove the postgres container, which will destroy the database.
 
 ```bash
-docker-compose run download-pbf
+docker-compose kill postgres
+docker-compose rm postgres
 ```
-
-Now we need to set up the database and import the data using the `import-osm` Docker container.
-
-```bash
-# This will automatically initialize the database
-docker-compose up -d postgres
-```
-
-```bash
-# Import additional wikipedia data to the ./data folder
-docker-compose run import-wikipedia
-```
-
-Create the database schema
-
-```bash
-docker-compose run schema
-```
-
-Import the pbf file from the data folder
-
-```bash
-# Import the OSM data dump from the ./data folder
-docker-compose run import-osm
-```
-
-
-We can now export the ranked geonames and their geometries.
-
-```bash
-docker-compose run export-osmnames
-```
-
-### Components
-
-The different components that attach to the `postgres` container are all located in the `src` directory.
-
-| Component         | Description
-|-------------------|--------------------------------------------------------------
-| postgres          | PostGIS data store for OSM data and to perform noise analysis
-| download-pbf      | automatically downloads the pbf file
-| import-wikipedia  | Imports wikipedia data for more accurate importance calculation
-| import-osm        | Imposm3 based import tool with custom mapping to import selective OSM into the database and reconstruct it as GIS geometries, handles indexing and hierarchy reconstruction
-| export-osmnames   | Export names and their bounding boxes to TSV datasets
-| schema            | Contains views, tables, functions for the schema
