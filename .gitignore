@@ -3,6 +3,7 @@ data/export/*
 data/cache/*
 
 !.gitkeep
+!/data/import/mapping.yml
 
 __pycache__/
 *.py[cod]
