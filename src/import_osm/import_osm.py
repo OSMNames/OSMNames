@@ -1,7 +1,7 @@
 import glob
 import os
 from subprocess import check_call
-from shared.helpers import psql_exec
+from helpers.database import psql_exec
 
 
 def run():

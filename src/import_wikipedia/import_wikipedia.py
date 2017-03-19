@@ -1,6 +1,6 @@
 import os
 from subprocess import check_call
-from shared.helpers import exec_sql, psql_exec
+from helpers.database import psql_exec, exec_sql, exists
 
 
 def run():
