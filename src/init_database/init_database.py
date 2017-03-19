@@ -2,6 +2,21 @@ import os
 from helpers.database import exec_sql, psql_exec, exists
 
 
+def run():
+    exists_query = "SELECT 1 AS result FROM pg_database WHERE datname='{}'".format(os.getenv("DB_NAME"))
+    if exists(exists_query, user="postgres", database="postgres"):
+        print("skip database init, since it is already initialized")
+        return
+
+    create_hstore_extension()
+    create_database()
+    create_database_functions()
+
+
+def create_hstore_extension():
+    exec_sql("CREATE EXTENSION hstore;", user="postgres", database="template_postgis")
+
+
 def create_database():
     create_user_query = "CREATE USER {} WITH PASSWORD '{}';".format(os.getenv("DB_USER"),
                                                                     os.getenv("DB_PASSWORD"))
@@ -14,15 +29,5 @@ def create_database():
     exec_sql(create_database_query, user="postgres", database="postgres")
 
 
-def create_hstore_extension():
-    exec_sql("CREATE EXTENSION hstore;", user="postgres", database="template_postgis")
-
-
 def create_database_functions():
     psql_exec("functions.sql", cwd=os.path.dirname(__file__))
-
-
-def run():
-    create_hstore_extension()
-    create_database()
-    create_database_functions()
