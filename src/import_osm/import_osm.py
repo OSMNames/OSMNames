@@ -5,10 +5,17 @@ from shared.helpers import psql_exec
 
 
 def run():
+    download_pbf()
     import_pbf_files()
     create_helper_tables()
     create_functions()
     prepare_imported_data()
+
+
+def download_pbf():
+    url = os.getenv("PBF_URL")
+    destination_dir = os.getenv("IMPORT_DIR")
+    check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
 
 def import_pbf_files():
