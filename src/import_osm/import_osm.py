@@ -4,6 +4,13 @@ from subprocess import check_call
 from shared.helpers import psql_exec
 
 
+def run():
+    import_pbf_files()
+    create_helper_tables()
+    create_functions()
+    prepare_imported_data()
+
+
 def import_pbf_files():
     import_dir = os.getenv("IMPORT_DIR")
     pbf_files = glob.glob("{}/*.pbf".format(import_dir))
@@ -29,23 +36,46 @@ def import_pbf_file(pbf_file):
                            "-overwritecache"])
 
 
-def initalize_helper_tables():
-    data_dir = os.getenv("DATA_DIR")
+def create_helper_tables():
+    create_country_name_table()
+    create_osm_grid_table()
 
-    psql_exec("{}/sql/country_name.sql".format(data_dir), user="postgres")
-    psql_exec("{}/sql/count_osm_grid.sql".format(data_dir), user="postgres")
-    psql_exec("00_index_helper_tables.sql")
+
+def create_country_name_table():
+    psql_exec("country_name.sql", cwd="{}/sql/".format(os.getenv("DATA_DIR")))
+
+
+def create_osm_grid_table():
+    psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(os.getenv("DATA_DIR")))
+
+
+def create_functions():
+    psql_exec("functions.sql", cwd=os.path.dirname(__file__))
 
 
 def prepare_imported_data():
-    psql_exec("01_delete_unusable_entries.sql")
-    psql_exec("02_ranking_partitioning.sql")
-    psql_exec("03_determine_linked_places.sql")
-    psql_exec("04_create_hierarchy.sql")
-    psql_exec("05_merge_corresponding_streets.sql")
+    delete_unusable_entries()
+    ranking_partitioning()
+    determine_linked_places()
+    create_hierarchy()
+    merge_corresponding_streets()
 
 
-def run():
-    import_pbf_files()
-    initalize_helper_tables()
-    prepare_imported_data()
+def delete_unusable_entries():
+    psql_exec("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+
+
+def ranking_partitioning():
+    psql_exec("02_ranking_partitioning.sql", cwd=os.path.dirname(__file__))
+
+
+def determine_linked_places():
+    psql_exec("03_determine_linked_places.sql", cwd=os.path.dirname(__file__))
+
+
+def create_hierarchy():
+    psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
+
+
+def merge_corresponding_streets():
+    psql_exec("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
