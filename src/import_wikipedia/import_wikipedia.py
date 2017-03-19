@@ -4,6 +4,10 @@ from helpers.database import psql_exec, exec_sql, exists
 
 
 def run():
+    if exists("SELECT * FROM information_schema.tables WHERE table_name='wikipedia_article'"):
+        print("skip wikipedia import, since table already exists")
+        return
+
     download_wikipedia_dump()
     restore_wikipedia_dump()
     create_wikipedia_index()
