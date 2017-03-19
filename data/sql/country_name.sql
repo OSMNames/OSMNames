@@ -15,7 +15,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: country_name; Type: TABLE; Schema: public; Owner: brian; Tablespace: 
+-- Name: country_name; Type: TABLE; Schema: public; Owner: brian; Tablespace:
 --
 DROP TABLE IF EXISTS country_name;
 CREATE TABLE country_name (
@@ -286,16 +286,13 @@ bq	"name"=>"Caribbean Netherlands", "name:en"=>"Caribbean Netherlands"	\N	250
 
 
 --
--- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: brian; Tablespace: 
+-- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: brian; Tablespace:
 --
 
 CREATE INDEX IF NOT EXISTS idx_country_name_country_code ON country_name USING btree (country_code);
-
-
-
+CREATE INDEX idx_country_name_partition ON country_name (partition);
 
 
 --
 -- PostgreSQL database dump complete
 --
-
