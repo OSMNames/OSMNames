@@ -14,3 +14,5 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_PASSWORD
+    ports:
+      - "54320:5432"
