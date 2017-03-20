@@ -11,7 +11,7 @@ CREATE TABLE osm_merged_multi_linestring AS
  	max(a.name_zh) AS name_zh,
  	max(a.wikipedia) AS wikipedia,
  	max(a.wikidata) AS wikidata,
- 	ST_UNION(array_agg(ST_MakeValid(a.geometry))) AS geometry,
+ 	ST_UNION(array_agg(a.geometry)) AS geometry,
  	bit_and(a.partition) AS partition,
  	max(a.calculated_country_code) AS calculated_country_code,
  	min(a.rank_search) AS rank_search,
@@ -20,7 +20,7 @@ CREATE TABLE osm_merged_multi_linestring AS
 		osm_linestring AS a,
 		osm_linestring AS b
 	WHERE
-		ST_Touches(ST_MakeValid(a.geometry), ST_MakeValid(b.geometry)) AND
+		ST_Touches(a.geometry, b.geometry) AND
 		a.parent_id = b.parent_id AND
 		a.parent_id IS  NOT NULL AND
 		a.name = b.name AND
