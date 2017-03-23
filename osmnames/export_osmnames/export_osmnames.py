@@ -42,7 +42,13 @@ def collect_merged_linestrings():
 
 def export_tsv():
     export_sql_filepath = "{}/export.sql".format(os.path.dirname(__file__))
-    check_call(["pgclimb", "-f", export_sql_filepath, "-o", _export_filepath(), "tsv", "--header"])
+    check_call(["pgclimb", "-f", export_sql_filepath,
+                           "-o", _export_filepath(),
+                           "--host", settings.get("DB_HOST"),
+                           "--dbname", settings.get("DB_NAME"),
+                           "--username", settings.get("DB_USER"),
+                           "--pass", settings.get("DB_PASSWORD"),
+                           "tsv", "--header"])
 
 
 def gzip_tsv():
