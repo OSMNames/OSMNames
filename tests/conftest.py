@@ -1,0 +1,38 @@
+import pytest
+
+from sqlalchemy.engine import create_engine
+from sqlalchemy.orm.session import Session
+from geoalchemy2 import Geometry # NOQA
+
+from osmnames import settings
+from osmnames.init_database import init_database
+from osmnames.helpers.database import exec_sql
+
+
+@pytest.fixture(scope="module")
+def engine():
+    _recreate_database()
+
+    return create_engine("postgresql+psycopg2://{}:{}@{}/{}".format(
+            settings.get("DB_USER"),
+            settings.get("DB_PASSWORD"),
+            settings.get("DB_HOST"),
+            settings.get("DB_NAME"),
+        )
+    )
+
+
+@pytest.fixture(scope="function")
+def session(engine):
+    return Session(engine)
+
+
+def _recreate_database():
+    print("drop database")
+    drop_database_query = "DROP DATABASE IF EXISTS {};".format(settings.get("DB_NAME"))
+    drop_user_query = "DROP USER IF EXISTS {};".format(settings.get("DB_USER"))
+    exec_sql(drop_database_query, user="postgres", database="postgres")
+    exec_sql(drop_user_query, user="postgres", database="postgres")
+
+    print("create database")
+    init_database.run()
