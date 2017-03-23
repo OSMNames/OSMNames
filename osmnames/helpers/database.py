@@ -1,8 +1,19 @@
 import psycopg2
+from subprocess import check_call
 from osmnames import settings
 
 
-def psql_exec(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd=""):
+def psql_exec(filepath, user=settings.get("DB_USER"), cwd=""):
+    check_call([
+            "psql",
+            "--username={}".format(user),
+            "--dbname={}".format(settings.get("DB_NAME")),
+            "--file={}/{}".format(cwd, filepath)
+        ]
+    )
+
+
+def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd=""):
     file_path = "{}/{}".format(cwd, filename)
     connection = _connection(user=user, database=database)
     connection.set_session(autocommit=True)

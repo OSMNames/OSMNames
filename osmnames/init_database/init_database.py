@@ -1,5 +1,5 @@
 import os
-from osmnames.helpers.database import exec_sql, psql_exec, exists
+from osmnames.helpers.database import exec_sql, exec_sql_from_file, exists
 from osmnames import settings
 
 
@@ -31,4 +31,4 @@ def create_database():
 
 
 def create_database_functions():
-    psql_exec("functions.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))

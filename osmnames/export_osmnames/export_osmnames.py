@@ -2,7 +2,7 @@ import os
 import gzip
 import shutil
 from subprocess import check_call
-from osmnames.helpers.database import psql_exec
+from osmnames.helpers.database import exec_sql_from_file
 from osmnames import settings
 
 
@@ -14,7 +14,7 @@ def run():
 
 
 def create_functions():
-    psql_exec("functions.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
 
 
 def prepare_data():
@@ -25,19 +25,19 @@ def prepare_data():
 
 
 def collect_polygons():
-    psql_exec("01_polygons.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("01_polygons.sql", cwd=os.path.dirname(__file__))
 
 
 def collect_points():
-    psql_exec("02_points.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("02_points.sql", cwd=os.path.dirname(__file__))
 
 
 def collect_linestrings():
-    psql_exec("03_linestrings.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("03_linestrings.sql", cwd=os.path.dirname(__file__))
 
 
 def collect_merged_linestrings():
-    psql_exec("04_merged_linestrings.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("04_merged_linestrings.sql", cwd=os.path.dirname(__file__))
 
 
 def export_tsv():

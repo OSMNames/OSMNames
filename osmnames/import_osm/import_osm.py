@@ -1,7 +1,7 @@
 import glob
 import os
 from subprocess import check_call
-from osmnames.helpers.database import psql_exec
+from osmnames.helpers.database import psql_exec, exec_sql_from_file
 from osmnames import settings
 
 
@@ -50,15 +50,17 @@ def create_helper_tables():
 
 
 def create_country_name_table():
+    # does not work with exec_sql_from_file
     psql_exec("country_name.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def create_osm_grid_table():
+    # does not work with exec_sql_from_file
     psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def create_functions():
-    psql_exec("functions.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
 
 
 def prepare_imported_data():
@@ -70,20 +72,21 @@ def prepare_imported_data():
 
 
 def delete_unusable_entries():
-    psql_exec("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
 
 
 def ranking_partitioning():
-    psql_exec("02_ranking_partitioning.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("02_ranking_partitioning.sql", cwd=os.path.dirname(__file__))
 
 
 def determine_linked_places():
-    psql_exec("03_determine_linked_places.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("03_determine_linked_places.sql", cwd=os.path.dirname(__file__))
 
 
 def create_hierarchy():
+    # does not work with exec_sql_from_file
     psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():
-    psql_exec("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))

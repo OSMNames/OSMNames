@@ -1,6 +1,6 @@
 import os
 from subprocess import check_call
-from osmnames.helpers.database import psql_exec, exec_sql, exists
+from osmnames.helpers.database import exec_sql_from_file, exec_sql, exists
 from osmnames import settings
 
 
@@ -13,7 +13,7 @@ def run():
     restore_wikipedia_dump()
     create_wikipedia_index()
 
-    psql_exec("create_index.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("create_index.sql", cwd=os.path.dirname(__file__))
 
 
 def download_wikipedia_dump():

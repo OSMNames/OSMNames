@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from osmnames.helpers.database import psql_exec
+from osmnames.helpers.database import exec_sql_from_file
 from osmnames.import_osm import import_osm
 from helpers.database import table_class_for
 
@@ -9,7 +9,7 @@ from helpers.database import table_class_for
 @pytest.fixture(scope="module")
 def schema():
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    psql_exec('fixtures/test_delete_unusable_entries_schema.sql.dump', cwd=current_directory)
+    exec_sql_from_file('fixtures/test_delete_unusable_entries_schema.sql.dump', cwd=current_directory)
 
 
 def test_osm_polygon_tmp_with_blank_names_get_deleted(engine, session, schema):
