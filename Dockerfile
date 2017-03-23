@@ -34,4 +34,4 @@ WORKDIR /osmnames
 
 RUN pip install -r requirements.txt.lock
 
-CMD ["./osmnames/run.py"]
+CMD ["./run.py"]
