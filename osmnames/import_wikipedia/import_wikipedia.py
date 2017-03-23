@@ -1,6 +1,7 @@
 import os
 from subprocess import check_call
-from helpers.database import psql_exec, exec_sql, exists
+from osmnames.helpers.database import exec_sql_from_file, exec_sql, exists
+from osmnames import settings
 
 
 def run():
@@ -12,20 +13,20 @@ def run():
     restore_wikipedia_dump()
     create_wikipedia_index()
 
-    psql_exec("create_index.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("create_index.sql", cwd=os.path.dirname(__file__))
 
 
 def download_wikipedia_dump():
-    url = os.getenv("WIKIPEDIA_DUMP_URL")
-    destination_dir = os.getenv("IMPORT_DIR")
+    url = settings.get("WIKIPEDIA_DUMP_URL")
+    destination_dir = settings.get("IMPORT_DIR")
     check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
 
 def restore_wikipedia_dump():
     _create_temporary_user_for_dump()
 
-    dump_filename = os.getenv("WIKIPEDIA_DUMP_URL").split("/")[-1]
-    dump_path = "{}/{}".format(os.getenv("IMPORT_DIR"), dump_filename)
+    dump_filename = settings.get("WIKIPEDIA_DUMP_URL").split("/")[-1]
+    dump_path = "{}/{}".format(settings.get("IMPORT_DIR"), dump_filename)
 
     check_call(["pg_restore", "-j", "2", "--dbname", "osm", "-U", "brian", dump_path])
 
@@ -36,7 +37,7 @@ def _create_temporary_user_for_dump():
     query = """
         CREATE ROLE brian LOGIN PASSWORD 'brian';
         GRANT ALL PRIVILEGES ON DATABASE {database} to brian;
-    """.format(database=os.getenv("DB_NAME"))
+    """.format(database=settings.get("DB_NAME"))
 
     exec_sql(query, user="postgres")
 
@@ -44,7 +45,7 @@ def _create_temporary_user_for_dump():
 def _alter_wikipedia_dump_owner():
     query = """
         ALTER TABLE wikipedia_article OWNER TO {username};
-    """.format(username=os.getenv("DB_USER"))
+    """.format(username=settings.get("DB_USER"))
 
     exec_sql(query, user="postgres")
 

@@ -16,7 +16,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN pip install --upgrade pip
 RUN pip install -U setuptools
-RUN pip install pytest psycopg2 sqlalchemy
 
 RUN go get github.com/lukasmartinelli/pgclimb \
  && go install github.com/lukasmartinelli/pgclimb
@@ -31,6 +30,8 @@ RUN apt-get purge -y --auto-remove \
       && rm -rf /var/lib/apt/lists/*
 
 ADD . /osmnames
-WORKDIR /osmnames/src
+WORKDIR /osmnames
 
-CMD ["./run.sh"]
+RUN pip install -r requirements.txt.lock
+
+CMD ["./run.py"]

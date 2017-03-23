@@ -101,6 +101,9 @@ CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
 
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_id ON osm_linestring (id);
 
+--delete entries with faulty geometries from import
+DELETE FROM osm_polygon WHERE ST_IsEmpty(geometry);
+
 --determine missed partition and country codes from import dataset
 UPDATE osm_polygon SET partition = determinePartitionFromImportedData(geometry)
 WHERE partition = 0;

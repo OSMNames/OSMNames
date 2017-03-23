@@ -1,3 +1,4 @@
+DROP MATERIALIZED VIEW IF EXISTS mv_linestrings;
 CREATE MATERIALIZED VIEW mv_linestrings AS
 SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh) AS name,
     getAlternativesNames(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh,getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh),',') AS alternative_names,
@@ -15,7 +16,7 @@ SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name
     parentInfo.state  AS state,
     countryName(rrr.partition) AS country,
     rrr.calculated_country_code AS country_code,
-    parentInfo.displayName  AS display_name,  
+    parentInfo.displayName  AS display_name,
     ST_XMIN(ST_Transform(rrr.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(rrr.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(rrr.geometry, 4326)) AS east,
