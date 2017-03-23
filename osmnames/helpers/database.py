@@ -1,26 +1,21 @@
-import os
 import psycopg2
-from subprocess import check_call
-import settings
+from osmnames import settings
 
 
-def psql_exec(file_path, user=settings.get("DB_USER"), cwd=""):
-    check_call([
-            "psql",
-            "--username={}".format(user),
-            "--database={}".format(settings.get("DB_NAME")),
-            "--file={}/{}".format(cwd, file_path)
-        ]
-    )
+def psql_exec(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd=""):
+    file_path = "{}/{}".format(cwd, filename)
+    connection = _connection(user=user, database=database)
+    connection.set_session(autocommit=True)
+    connection.cursor().execute(open(file_path, "r").read())
 
 
-def exec_sql(sql, user=os.getenv('PGUSER'), database=os.getenv('DB_NAME')):
+def exec_sql(sql, user=settings.get('DB_USER'), database=settings.get('DB_NAME')):
     connection = _connection(user=user, database=database)
     connection.set_session(autocommit=True)
     connection.cursor().execute(sql)
 
 
-def exists(query, user=os.getenv('PGUSER'), database=os.getenv('DB_NAME')):
+def exists(query, user=settings.get('DB_USER'), database=settings.get('DB_NAME')):
     cursor = _connection(user=user, database=database).cursor()
     cursor.execute("SELECT EXISTS({});".format(query))
     return cursor.fetchone()[0]

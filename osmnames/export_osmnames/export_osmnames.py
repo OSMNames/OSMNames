@@ -51,4 +51,4 @@ def gzip_tsv():
 
 
 def _export_filepath():
-    return "{}/export.tsv".format(os.getenv("EXPORT_DIR"))
+    return "{}/export.tsv".format(settings.get("EXPORT_DIR"))
