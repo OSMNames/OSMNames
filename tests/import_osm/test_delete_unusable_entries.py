@@ -1,28 +1,48 @@
+import pytest
 import os
 
-from subprocess import check_call
-from sqlalchemy import MetaData, Table
+from osmnames.helpers.database import psql_exec
+from osmnames.import_osm import import_osm
+from helpers.database import table_class_for
 
 
-def test_if_empty_osm_polygon_tmp_get_deleted(session, engine):
-    load_sql_dump('fixtures/unusable_entries.sql.dump')
-
-    table = Table('osm_polygon_tmp', MetaData(), autoload=True, autoload_with=engine)
-
-    count = session.query(table).count()
-    assert count == 1
-
-    psql_exec("01_delete_unusable_entries.sql")
-
-    count = session.query(table).count()
-    assert count == 0
-
-
-def load_sql_dump(path):
+@pytest.fixture(scope="module")
+def schema():
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    check_call(["psql", "-f", path], cwd=current_directory)
+    psql_exec('fixtures/test_delete_unusable_entries_schema.sql.dump', cwd=current_directory)
 
 
-def psql_exec(filename):
-    directory = "{1}/import-osm/".format(os.getenv('SRC_DIR'))
-    check_call(["psql", "-f", "{1}/{2}".format(directory, filename)])
+def test_osm_polygon_tmp_with_blank_names_get_deleted(engine, session, schema):
+    osm_polygon_tmp = table_class_for("osm_polygon_tmp", engine)
+
+    session.add(osm_polygon_tmp(name="gugus"))
+    session.add(osm_polygon_tmp(name_en=""))
+    session.commit()
+
+    import_osm.delete_unusable_entries()
+
+    assert session.query(osm_polygon_tmp).count(), 1
+
+
+def test_osm_point_tmp_with_blank_names_get_deleted(engine, session, schema):
+    osm_point_tmp = table_class_for("osm_point_tmp", engine)
+
+    session.add(osm_point_tmp(name_de="gugus"))
+    session.add(osm_point_tmp(name_en=""))
+    session.commit()
+
+    import_osm.delete_unusable_entries()
+
+    assert session.query(osm_point_tmp).count(), 1
+
+
+def test_osm_linestring_tmp_with_blank_names_get_deleted(engine, session, schema):
+    osm_linestring_tmp = table_class_for("osm_linestring_tmp", engine)
+
+    session.add(osm_linestring_tmp(name_zh="gugus"))
+    session.add(osm_linestring_tmp(name_en=""))
+    session.commit()
+
+    import_osm.delete_unusable_entries()
+
+    assert session.query(osm_linestring_tmp).count(), 1
