@@ -11,7 +11,7 @@ from osmnames.import_osm import import_osm
 from osmnames.export_osmnames import export_osmnames
 
 
-while os.system("psql --username=postgres postgres -c 'select 1'"):
+while os.system("psql --username=postgres postgres -c 'select 1' > /dev/null 2>&1"):
     print("waiting for postgresql")
     time.sleep(2)
 
