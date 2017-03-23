@@ -30,8 +30,8 @@ def import_pbf_files():
 
 
 def import_pbf_file(pbf_file):
-    imposm_connection = "postgis://{}@{}/{}".format(os.getenv("PGUSER"),
-                                                    os.getenv("PGHOST"),
+    imposm_connection = "postgis://{}@{}/{}".format(os.getenv("DB_USER"),
+                                                    os.getenv("DB_HOST"),
                                                     os.getenv("DB_NAME"))
 
     check_call(["imposm3", "import",

@@ -1,12 +1,14 @@
 import os
 import psycopg2
 from subprocess import check_call
+import settings
 
 
-def psql_exec(file_path, user=os.getenv('PGUSER'), cwd=""):
+def psql_exec(file_path, user=settings.get("DB_USER"), cwd=""):
     check_call([
             "psql",
             "--username={}".format(user),
+            "--database={}".format(settings.get("DB_NAME")),
             "--file={}/{}".format(cwd, file_path)
         ]
     )

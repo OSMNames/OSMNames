@@ -2,7 +2,8 @@ import os
 import gzip
 import shutil
 from subprocess import check_call
-from helpers.database import psql_exec
+from osmnames.helpers.database import psql_exec
+from osmnames import settings
 
 
 def run():
