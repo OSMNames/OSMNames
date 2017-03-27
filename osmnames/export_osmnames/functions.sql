@@ -63,7 +63,7 @@ BEGIN
     RETURN 'way';
   ELSE
     RETURN 'relation';
-  END IF;  
+  END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -78,38 +78,38 @@ BEGIN
   current_rank := from_rank;
   retVal.displayName := name_value;
   current_id := id_value;
-  
-  IF current_rank BETWEEN 16 AND 20 THEN  
+
+  IF current_rank BETWEEN 16 AND 20 THEN
     retVal.city := retVal.displayName;
   ELSE
     retVal.city := '';
   END IF;
-  IF current_rank BETWEEN 12 AND 15 THEN  
+  IF current_rank BETWEEN 12 AND 15 THEN
     retVal.county := retVal.displayName;
   ELSE
     retVal.county := '';
   END IF;
-  IF current_rank BETWEEN 8 AND 11 THEN  
-    retVal.state := retVal.displayName; 
+  IF current_rank BETWEEN 8 AND 11 THEN
+    retVal.state := retVal.displayName;
   ELSE
-    retVal.state := ''; 
+    retVal.state := '';
   END IF;
   --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
-  
+
   WHILE current_rank >= 8 LOOP
     SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
     IF currentName IS NOT NULL THEN
       retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
     END IF;
 
-    IF current_rank = 16 THEN  
+    IF current_rank = 16 THEN
       retVal.city := currentName;
     END IF;
-    IF current_rank = 12 THEN  
+    IF current_rank = 12 THEN
       retVal.county := currentName;
     END IF;
-    IF current_rank = 8 THEN  
-      retVal.state := currentName;  
+    IF current_rank = 8 THEN
+      retVal.state := currentName;
     END IF;
   END LOOP;
 RETURN retVal;
@@ -158,7 +158,7 @@ BEGIN
       END IF;
     i := i + 1;
   END LOOP;
-  -- return default calculated value if no match found  
+  -- return default calculated value if no match found
     IF rank_search IS NOT NULL THEN
       return 0.75-(rank_search::double precision/40);
     END IF;
@@ -166,6 +166,21 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_country_language_code(search_country_code VARCHAR(2)) RETURNS TEXT
+  AS $$
+DECLARE
+  nearcountry RECORD;
+BEGIN
+  FOR nearcountry IN select distinct country_default_language_code from country_name where country_code = search_country_code limit 1
+  LOOP
+    RETURN lower(nearcountry.country_default_language_code);
+  END LOOP;
+  RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION getOsmIdWithId(member_id BIGINT)

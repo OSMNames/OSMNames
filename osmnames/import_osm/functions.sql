@@ -97,22 +97,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION get_country_language_code(search_country_code VARCHAR(2)) RETURNS TEXT
-  AS $$
-DECLARE
-  nearcountry RECORD;
-BEGIN
-  FOR nearcountry IN select distinct country_default_language_code from country_name where country_code = search_country_code limit 1
-  LOOP
-    RETURN lower(nearcountry.country_default_language_code);
-  END LOOP;
-  RETURN NULL;
-END;
-$$
-LANGUAGE plpgsql IMMUTABLE;
-
-
 CREATE OR REPLACE FUNCTION get_country_code(place geometry) RETURNS TEXT
   AS $$
 DECLARE
