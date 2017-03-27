@@ -7,10 +7,9 @@ VACUUM ANALYZE osm_polygon;
 VACUUM ANALYZE osm_point;
 VACUUM ANALYZE osm_linestring;
 
-
 --determine parents
-UPDATE osm_polygon SET parent_id = determineParentPlace(id, partition, rank_search, geometry);
-UPDATE osm_point SET parent_id = determineParentPlace(id, partition, rank_search, geometry) WHERE linked IS FALSE;
+UPDATE osm_polygon SET parent_id = determine_parent_id(id, partition, rank_search, geometry);
+UPDATE osm_point SET parent_id = determine_parent_id(id, partition, rank_search, geometry) WHERE linked IS FALSE;
 SELECT determineRoadHierarchyForEachCountry();
 
 

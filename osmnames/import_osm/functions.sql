@@ -64,17 +64,20 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE FUNCTION determineParentPlace(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+CREATE OR REPLACE FUNCTION determine_parent_id(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
 DECLARE
-  retVal BIGINT;
+  parent_id BIGINT;
 BEGIN
-  FOR current_rank  IN REVERSE rank_search_value..1 LOOP
-     SELECT id FROM osm_polygon WHERE partition=partition_value AND rank_search = current_rank AND NOT id=id_value AND ST_Contains(geometry, geometry_value) AND NOT ST_Equals(geometry, geometry_value) INTO retVal;
-     IF retVal IS NOT NULL THEN
-      return retVal;
-    END IF;
-  END LOOP;
-RETURN retVal;
+  SELECT id FROM osm_polygon WHERE partition=partition_value
+                                   AND ST_Contains(geometry, geometry_value)
+                                   AND NOT id=id_value
+                                   AND NOT ST_Equals(geometry, geometry_value)
+                                   AND rank_search <= rank_search_value
+                             ORDER BY rank_search DESC
+                             LIMIT 1
+                             INTO parent_id;
+
+RETURN parent_id;
 END;
 $$ LANGUAGE plpgsql;
 
