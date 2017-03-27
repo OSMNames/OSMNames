@@ -94,16 +94,10 @@ ALTER TABLE osm_linestring ADD PRIMARY KEY (id);
 CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
-
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_partition_rank ON osm_polygon (partition,rank_search);
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_id ON osm_polygon (id);
-
 CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
-
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_id ON osm_linestring (id);
-
---delete entries with faulty geometries from import
-DELETE FROM osm_polygon WHERE ST_IsEmpty(geometry);
 
 --determine missed partition and country codes from import dataset
 UPDATE osm_polygon SET partition = determinePartitionFromImportedData(geometry)

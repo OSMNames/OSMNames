@@ -1,6 +1,7 @@
 import pytest
 import os
 
+from geoalchemy2.elements import WKTElement
 from osmnames.helpers.database import exec_sql_from_file
 from osmnames.import_osm import import_osm
 from helpers.database import table_class_for
@@ -58,3 +59,15 @@ def test_osm_linestring_tmp_with_blank_names_get_deleted(engine, session, schema
     import_osm.delete_unusable_entries()
 
     assert session.query(osm_linestring_tmp).count(), 1
+
+
+def test_osm_polygon_tmp_with_empty_geometries_get_deleted(engine, session, schema):
+    osm_polygon_tmp = table_class_for("osm_polygon_tmp", engine)
+
+    session.add(osm_polygon_tmp(geometry=WKTElement('POLYGON((1 2, 3 4, 5 6, 1 2))', srid=3857)))
+    session.add(osm_polygon_tmp(geometry=WKTElement('POLYGON EMPTY', srid=3857)))
+    session.commit()
+
+    import_osm.delete_unusable_entries()
+
+    assert session.query(osm_polygon_tmp).count(), 1
