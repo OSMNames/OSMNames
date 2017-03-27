@@ -13,17 +13,25 @@ from osmnames.helpers.database import exec_sql
 def engine():
     _recreate_database()
 
-    return create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
+    engine = create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
         user=settings.get("DB_USER"),
         password=settings.get("DB_PASSWORD"),
         host=settings.get("DB_HOST"),
         db_name=settings.get("DB_NAME"),
-    ))
+        ))
+
+    yield engine
+
+    engine.dispose()
 
 
 @pytest.fixture(scope="function")
 def session(engine):
-    return Session(engine)
+    session = Session(engine)
+
+    yield session
+
+    session.close()
 
 
 def _recreate_database():
