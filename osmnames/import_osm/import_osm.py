@@ -1,4 +1,3 @@
-import glob
 import os
 from subprocess import check_call
 from osmnames.helpers.database import psql_exec, exec_sql_from_file
@@ -7,30 +6,27 @@ from osmnames import settings
 
 def import_osm():
     download_pbf()
-    import_pbf_files()
+    import_pbf_file()
     create_helper_tables()
     create_functions()
     prepare_imported_data()
 
 
 def download_pbf():
+    if settings.get("PBF_FILE"):
+        print("skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE")))
+        return
+
     url = settings.get("PBF_URL")
     destination_dir = settings.get("IMPORT_DIR")
     check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
 
-def import_pbf_files():
+def import_pbf_file():
     import_dir = settings.get("IMPORT_DIR")
-    pbf_files = glob.glob("{}/*.pbf".format(import_dir))
+    pbf_filename = settings.get("PBF_FILE") or settings.get("PBF_URL").split('/')[-1]
+    pbf_filepath = import_dir + pbf_filename
 
-    if len(pbf_files) == 0:
-        raise IOError("No PBF files for import found in path {}.".format(import_dir))
-
-    for pbf_file in pbf_files:
-        import_pbf_file(pbf_file)
-
-
-def import_pbf_file(pbf_file):
     imposm_connection = "postgis://{user}@{host}/{db_name}".format(
             user=settings.get("DB_USER"),
             host=settings.get("DB_HOST"),
@@ -42,7 +38,7 @@ def import_pbf_file(pbf_file):
         "-connection", imposm_connection,
         "-mapping", "{}/mapping.yml".format(settings.get("IMPORT_DIR")),
         "-dbschema-import", settings.get("DB_SCHEMA"),
-        "-read", pbf_file,
+        "-read", pbf_filepath,
         "-write",
         "-overwritecache",
     ])

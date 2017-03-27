@@ -1,3 +1,5 @@
+import os
+
 DB_HOST = 'postgres'
 DB_NAME = 'osm'
 DB_USER = 'osm'
@@ -9,6 +11,7 @@ IMPORT_DIR = '/osmnames/data/import/'
 EXPORT_DIR = '/osmnames/data/export/'
 CACHE_DIR = '/osmnames/data/cache/'
 
+PBF_FILE = os.getenv('PBF_FILE', '')
 PBF_URL = 'http://download.geofabrik.de/europe/switzerland-latest.osm.pbf'
 # credits to nominatim for providing the precalculated data
 WIKIPEDIA_DUMP_URL = 'http://www.nominatim.org/data/wikipedia_article.sql.bin'
