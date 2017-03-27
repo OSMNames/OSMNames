@@ -9,7 +9,7 @@
 CREATE OR REPLACE FUNCTION rank_type(type TEXT, osmID bigint)
 RETURNS int AS $$
 BEGIN
-	RETURN CASE
+  RETURN CASE
     WHEN type IN ('administrative') AND osmID IS NULL THEN 30
     WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)
 		WHEN type IN ('continent','sea','ocean') THEN 2
@@ -62,7 +62,6 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION determineParentPlace(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
