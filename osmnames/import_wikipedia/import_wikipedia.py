@@ -1,6 +1,5 @@
-import os
 from subprocess import check_call
-from osmnames.helpers.database import exec_sql_from_file, exec_sql, exists
+from osmnames.helpers.database import exec_sql, exists
 from osmnames import settings
 
 
@@ -12,8 +11,6 @@ def import_wikipedia():
     download_wikipedia_dump()
     restore_wikipedia_dump()
     create_wikipedia_index()
-    
-    #exec_sql_from_file("create_index.sql", cwd=os.path.dirname(__file__))
 
 
 def download_wikipedia_dump():
