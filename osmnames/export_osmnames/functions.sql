@@ -37,29 +37,24 @@ ELSE
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION road_class(type TEXT)
+CREATE OR REPLACE FUNCTION determine_class(type TEXT)
 RETURNS TEXT AS $$
 BEGIN
   RETURN CASE
-    WHEN type IN (  'motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','tertiary_link',
-                    'unclassified','residential','road','living_street','raceway','construction','track','service','path','cycleway',
-                    'steps','bridleway','footway','corridor','crossing'
-                    ) THEN 'highway'
+    WHEN type IN ('motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','tertiary_link',
+                  'unclassified','residential','road','living_street','raceway','construction','track','service','path','cycleway',
+                  'steps','bridleway','footway','corridor','crossing') THEN 'highway'
+    WHEN type IN ('river','riverbank','stream','canal','drain','ditch') THEN 'waterway'
+    WHEN type IN ('mountain_range','water','bay','desert','peak','volcano','hill') THEN 'natural'
+    WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
+    WHEN type IN ('city','borough','suburb','quarter','neighbourhood','town','village','hamlet',
+                  'island','ocean','sea','continent','country','state') THEN 'place'
+    WHEN type IN ('residential','reservoir') THEN 'landuse'
     ELSE 'multiple'
   END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION city_class(type TEXT)
-RETURNS TEXT AS $$
-BEGIN
-  RETURN CASE
-    WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
-    WHEN type IN ('city','borough','suburb','quarter','neighbourhood','town','village','hamlet') THEN 'place'
-    WHEN type IN ('residential') THEN 'landuse'
-  END;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION get_osm_type_polygon(osm_id BIGINT)
 RETURNS TEXT AS $$
@@ -84,22 +79,21 @@ BEGIN
   retVal.displayName := name_value;
   current_id := id_value;
   
-  IF current_rank = 16 THEN  
+  IF current_rank BETWEEN 16 AND 20 THEN  
     retVal.city := retVal.displayName;
   ELSE
     retVal.city := '';
   END IF;
-  IF current_rank = 12 THEN  
+  IF current_rank BETWEEN 12 AND 15 THEN  
     retVal.county := retVal.displayName;
   ELSE
     retVal.county := '';
   END IF;
-  IF current_rank = 8 THEN  
+  IF current_rank BETWEEN 8 AND 11 THEN  
     retVal.state := retVal.displayName; 
   ELSE
     retVal.state := ''; 
   END IF;
-
   --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
   
   WHILE current_rank >= 8 LOOP

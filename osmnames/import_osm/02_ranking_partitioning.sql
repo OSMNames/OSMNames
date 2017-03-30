@@ -55,7 +55,7 @@ FROM
     determineRankPartitionCode(type, geometry, osm_id, NULL) AS rpc
 );
 DROP TABLE osm_point_tmp;
-DROP TABLE osm_polygon_tmp;
+/*DROP TABLE osm_polygon_tmp;*/
 ALTER TABLE osm_point ADD PRIMARY KEY (id);
 
 
@@ -86,6 +86,7 @@ FROM
     determineRankPartitionCode(type, geometry, NULL, NULL) AS rpc
 );
 DROP TABLE osm_linestring_tmp;
+DROP TABLE osm_polygon_tmp;
 ALTER TABLE osm_linestring ADD PRIMARY KEY (id);
 
 

@@ -4,7 +4,7 @@ SELECT COALESCE(NULLIF(getNameForRelations(r.linked_osm_id, getTypeForRelations(
     getAlternativesNames(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh, COALESCE(NULLIF(getNameForRelations(r.linked_osm_id, getTypeForRelations(r.linked_osm_id, r.type, r.rank_search)),''), getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh)),',') AS alternative_names,
     get_osm_type_polygon(osm_id) as osm_type,
     abs(osm_id) as osm_id,
-    city_class(getTypeForRelations(r.linked_osm_id, r.type, r.rank_search)) AS class,
+    determine_class(getTypeForRelations(r.linked_osm_id, r.type, r.rank_search)) AS class,
     getTypeForRelations(r.linked_osm_id, r.type, r.rank_search) AS type,
     ST_X(ST_PointOnSurface(ST_Buffer(ST_Transform(r.geometry, 4326),0.0))) AS lon,
     ST_Y(ST_PointOnSurface(ST_Buffer(ST_Transform(r.geometry, 4326),0.0))) AS lat,

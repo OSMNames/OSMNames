@@ -4,7 +4,7 @@ SELECT getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr
     getAlternativesNames(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh,getLanguageName(rrrr.name, rrrr.name_fr, rrrr.name_en, rrrr.name_de, rrrr.name_es, rrrr.name_ru, rrrr.name_zh),',') AS alternative_names,
     'way'::TEXT as osm_type,
     getOsmIdWithId(rrrr.member_ids[1]::BIGINT) AS osm_id,
-    road_class(rrrr.type) AS class,
+    determine_class(rrrr.type) AS class,
     rrrr.type,
     ST_X(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lon,
     ST_Y(ST_PointOnSurface(ST_Transform(rrrr.geometry, 4326))) AS lat,
