@@ -64,11 +64,12 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE FUNCTION determine_parent_id(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DROP FUNCTION IF EXISTS determine_parent_id(BIGINT, VARCHAR, INT, GEOMETRY);
+CREATE FUNCTION determine_parent_id(id_value BIGINT, country_code_in VARCHAR(2), rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
 DECLARE
   parent_id BIGINT;
 BEGIN
-  SELECT id FROM osm_polygon WHERE partition=partition_value
+  SELECT id FROM osm_polygon WHERE country_code=country_code_in
                                    AND ST_Contains(geometry, geometry_value)
                                    AND NOT id=id_value
                                    AND NOT ST_Equals(geometry, geometry_value)
@@ -82,10 +83,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS findRoadsWithinGeometry(BIGINT,INT,geometry);
-CREATE OR REPLACE FUNCTION findRoadsWithinGeometry(id_value BIGINT,partition_value INT, geometry_value GEOMETRY) RETURNS VOID AS $$
+DROP FUNCTION IF EXISTS findRoadsWithinGeometry(BIGINT, geometry);
+CREATE FUNCTION findRoadsWithinGeometry(id_value BIGINT, geometry_value GEOMETRY) RETURNS VOID AS $$
 BEGIN
-	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value,geometry);
+  UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -94,17 +95,16 @@ CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS void A
 DECLARE
   retVal BIGINT;
 BEGIN
-  FOR current_partition  IN 1..255 LOOP
-    FOR current_rank  IN REVERSE 22..4 LOOP
-       PERFORM findRoadsWithinGeometry(id, current_partition, geometry) FROM osm_polygon WHERE partition = current_partition AND rank_search = current_rank;
-    END LOOP;
+  FOR current_rank  IN REVERSE 22..4 LOOP
+    PERFORM findRoadsWithinGeometry(id, geometry) FROM osm_polygon WHERE rank_search = current_rank;
   END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION get_partition(geometry GEOMETRY) RETURNS INTEGER
-  AS $$
+DROP FUNCTION IF EXISTS get_country_code_from_geometry(GEOMETRY);
+CREATE FUNCTION get_country_code_from_geometry(geometry GEOMETRY)
+RETURNS VARCHAR(2) AS $$
 DECLARE
   geometry_centre GEOMETRY;
   country RECORD;
@@ -114,14 +114,14 @@ BEGIN
   FOR country IN SELECT country_code FROM country_osm_grid WHERE ST_COVERS(country_osm_grid.geometry, geometry_centre)
                                                            ORDER BY area ASC LIMIT 1
   LOOP
-    RETURN get_partition_by_country_code(country.country_code);
+    RETURN country.country_code;
   END LOOP;
 
   FOR country IN SELECT country_code FROM country_osm_grid WHERE ST_DWITHIN(country_osm_grid.geometry, geometry_centre, 0.5)
-                                                           ORDER BY ST_DISTANCE(country_oms_grid.geometry, geometry_centre) ASC,
+                                                           ORDER BY ST_DISTANCE(country_osm_grid.geometry, geometry_centre) ASC,
                                                            area ASC LIMIT 1
   LOOP
-    RETURN get_partition_by_country_code(country.country_code);
+    RETURN country.country_code;
   END LOOP;
 
   RETURN NULL;
@@ -129,7 +129,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION get_rank_search(type VARCHAR, osm_id bigint)
+DROP FUNCTION IF EXISTS get_rank_search(VARCHAR, BIGINT);
+CREATE FUNCTION get_rank_search(type VARCHAR, osm_id BIGINT)
 RETURNS INTEGER AS $$
 BEGIN
   IF (osm_id IS NULL) THEN
@@ -141,46 +142,38 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION get_rank_search_and_partition(type VARCHAR, geometry GEOMETRY, osm_id BIGINT, country_code VARCHAR)
-RETURNS rankPartitionCode AS $$
-DECLARE
-  place_centroid GEOMETRY;
-  result rankPartitionCode;
+DROP FUNCTION IF EXISTS get_country_code(INTEGER, GEOMETRY, VARCHAR);
+CREATE FUNCTION get_country_code(rank_search INTEGER, geometry GEOMETRY, imported_country_code VARCHAR)
+RETURNS VARCHAR(2) AS $$
 BEGIN
-  result.rank_search = get_rank_search(type, osm_id);
-
-  IF result.rank_search = 4 THEN
+  IF rank_search = 4 AND imported_country_code IS NOT NULL THEN
     -- for countries, believe the mapped country code,
     -- so that we remain in the right partition if the boundaries
     -- suddenly expand.
-    result.partition := get_partition_by_country_code(country_code);
-
-    IF result.partition = 0 THEN
-      result.partition := get_partition(ST_PointOnSurface(geometry));
-    END IF;
-  ELSIF result.rank_search > 4 THEN
-    result.partition := get_partition(ST_PointOnSurface(geometry));
+    RETURN imported_country_code;
   END IF;
 
-  RETURN result;
+  IF rank_search >= 4 THEN
+    RETURN get_country_code_from_geometry(geometry);
+  END IF;
+
+  RETURN NULL;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION get_partition_by_country_code(country_code_in VARCHAR) RETURNS INTEGER AS $$
-  SELECT partition FROM country_name WHERE lower(country_code) = lower(country_code_in);
-$$ LANGUAGE 'sql' IMMUTABLE;
 
-
-CREATE OR REPLACE FUNCTION determinePartitionFromImportedData(geom geometry)
-RETURNS INTEGER AS $$
+DROP FUNCTION IF EXISTS get_country_code_from_imported_data(GEOMETRY);
+CREATE FUNCTION get_country_code_from_imported_data(geom GEOMETRY)
+RETURNS VARCHAR(2) AS $$
 DECLARE
-  result INTEGER;
+  result VARCHAR(2);
 BEGIN
-  SELECT partition FROM osm_polygon WHERE ST_Within(ST_PointOnSurface(geom), geometry)
-                                          AND rank_search = 4
-                                          AND NOT partition = 0
-                                    INTO result;
-    RETURN result;
+  SELECT country_code FROM osm_polygon WHERE ST_Within(ST_PointOnSurface(geom), geometry)
+                                             AND rank_search = 4
+                                             AND NOT country_code IS NULL
+                                       LIMIT 1
+                                       INTO result;
+  return result;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;

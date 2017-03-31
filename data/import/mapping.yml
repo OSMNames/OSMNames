@@ -83,7 +83,8 @@ tables:
       type: geometry
     - name: type
       type: mapping_value
-    - name: country_code
+    - key: country_code
+      name: imported_country_code
       type: string
       key: ISO3166-1:alpha2
     - key: name
