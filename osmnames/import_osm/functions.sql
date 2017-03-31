@@ -81,12 +81,14 @@ RETURN parent_id;
 END;
 $$ LANGUAGE plpgsql;
 
+
 DROP FUNCTION IF EXISTS findRoadsWithinGeometry(BIGINT,INT,geometry);
 CREATE OR REPLACE FUNCTION findRoadsWithinGeometry(id_value BIGINT,partition_value INT, geometry_value GEOMETRY) RETURNS VOID AS $$
 BEGIN
 	UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value,geometry);
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS void AS $$
 DECLARE
@@ -100,81 +102,85 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_country_code(place geometry) RETURNS TEXT
+
+CREATE OR REPLACE FUNCTION get_partition(geometry GEOMETRY) RETURNS INTEGER
   AS $$
 DECLARE
-  place_centre GEOMETRY;
-  nearcountry RECORD;
+  geometry_centre GEOMETRY;
+  country RECORD;
 BEGIN
-  place_centre := ST_PointOnSurface(place);
+  geometry_centre := ST_PointOnSurface(geometry);
 
-  FOR nearcountry IN select country_code from country_osm_grid where st_covers(geometry, place_centre) order by area asc limit 1
+  FOR country IN SELECT country_code FROM country_osm_grid WHERE ST_COVERS(country_osm_grid.geometry, geometry_centre)
+                                                           ORDER BY area ASC LIMIT 1
   LOOP
-    RETURN nearcountry.country_code;
+    RETURN get_partition_by_country_code(country.country_code);
   END LOOP;
 
-  FOR nearcountry IN select country_code from country_osm_grid where st_dwithin(geometry, place_centre, 0.5) order by st_distance(geometry, place_centre) asc, area asc limit 1
+  FOR country IN SELECT country_code FROM country_osm_grid WHERE ST_DWITHIN(country_osm_grid.geometry, geometry_centre, 0.5)
+                                                           ORDER BY ST_DISTANCE(country_oms_grid.geometry, geometry_centre) ASC,
+                                                           area ASC LIMIT 1
   LOOP
-    RETURN nearcountry.country_code;
+    RETURN get_partition_by_country_code(country.country_code);
   END LOOP;
 
   RETURN NULL;
 END;
-$$
-LANGUAGE plpgsql IMMUTABLE;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION get_partition(in_country_code character varying(2)) RETURNS INTEGER
-  AS $$
-DECLARE
-  nearcountry RECORD;
+
+CREATE OR REPLACE FUNCTION get_rank_search(type VARCHAR, osm_id bigint)
+RETURNS INTEGER AS $$
 BEGIN
-  FOR nearcountry IN select partition from country_name where country_code = in_country_code
-  LOOP
-    RETURN nearcountry.partition;
-  END LOOP;
-  RETURN 0;
+  IF (osm_id IS NULL) THEN
+    RETURN rank_address(type);
+  ELSE
+    RETURN rank_place(type, osm_id);
+  END IF;
 END;
-$$
-LANGUAGE plpgsql IMMUTABLE;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION determineRankPartitionCode(type character varying ,geom geometry,osm_id bigint, country_code character varying)
+CREATE OR REPLACE FUNCTION get_rank_search_and_partition(type VARCHAR, geometry GEOMETRY, osm_id BIGINT, country_code VARCHAR)
 RETURNS rankPartitionCode AS $$
 DECLARE
   place_centroid GEOMETRY;
   result rankPartitionCode;
 BEGIN
-    --RAISE NOTICE 'determine rank with type % and osm_id %', type, osm_id;
-    place_centroid := ST_PointOnSurface(geom);
-    result.rank_search := rank_type(type, osm_id);
-    -- recalculate country and partition
-    IF result.rank_search = 4 THEN
-      -- for countries, believe the mapped country code,
-      -- so that we remain in the right partition if the boundaries
-      -- suddenly expand.
-      result.partition := get_partition(lower(country_code));
-      IF result.partition = 0 THEN
-        result.calculated_country_code := lower(get_country_code(place_centroid));
-        result.partition := get_partition(result.calculated_country_code);
-      ELSE
-        result.calculated_country_code := lower(country_code);
-      END IF;
-    ELSE
-      IF result.rank_search > 4 THEN
-        result.calculated_country_code := lower(get_country_code(place_centroid));
-        result.partition := get_partition(result.calculated_country_code);
-      END IF;
+  result.rank_search = get_rank_search(type, osm_id);
+
+  IF result.rank_search = 4 THEN
+    -- for countries, believe the mapped country code,
+    -- so that we remain in the right partition if the boundaries
+    -- suddenly expand.
+    result.partition := get_partition_by_country_code(country_code);
+
+    IF result.partition = 0 THEN
+      result.partition := get_partition(ST_PointOnSurface(geometry));
     END IF;
-    RETURN result;
+  ELSIF result.rank_search > 4 THEN
+    result.partition := get_partition(ST_PointOnSurface(geometry));
+  END IF;
+
+  RETURN result;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+
+CREATE OR REPLACE FUNCTION get_partition_by_country_code(country_code_in VARCHAR) RETURNS INTEGER AS $$
+  SELECT partition FROM country_name WHERE lower(country_code) = lower(country_code_in);
+$$ LANGUAGE 'sql' IMMUTABLE;
+
 
 CREATE OR REPLACE FUNCTION determinePartitionFromImportedData(geom geometry)
 RETURNS INTEGER AS $$
 DECLARE
   result INTEGER;
 BEGIN
-  SELECT partition, calculated_country_code from osm_polygon where ST_Within(ST_PointOnSurface(geom), geometry) AND rank_search = 4 AND NOT partition = 0 INTO result;
+  SELECT partition FROM osm_polygon WHERE ST_Within(ST_PointOnSurface(geom), geometry)
+                                          AND rank_search = 4
+                                          AND NOT partition = 0
+                                    INTO result;
     RETURN result;
 END;
 $$ LANGUAGE plpgsql;

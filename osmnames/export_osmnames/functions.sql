@@ -117,12 +117,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
-  SELECT COALESCE(name -> 'name:en',name -> 'name',name -> 'name:fr',name -> 'name:de',name -> 'name:es',name -> 'name:ru',name -> 'name:zh') FROM country_name WHERE partition = partition_id;
-$$ language 'sql';
+CREATE OR REPLACE FUNCTION country_name(partition_in INTEGER) returns TEXT as $$
+  SELECT COALESCE(name -> 'name:en',
+                  name -> 'name',
+                  name -> 'name:fr',
+                  name -> 'name:de',
+                  name -> 'name:es',
+                  name -> 'name:ru',
+                  name -> 'name:zh')
+          FROM country_name WHERE partition = partition_in;
+$$ LANGUAGE 'sql' IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION getImportance(rank_search int, wikipedia character varying, country_code VARCHAR(2)) returns double precision as $$
+CREATE OR REPLACE FUNCTION get_importance(rank_search int, wikipedia VARCHAR, partition INT) returns double precision as $$
 
 DECLARE
   langs TEXT[];
@@ -146,7 +153,7 @@ BEGIN
   WHILE langs[i] IS NOT NULL LOOP
 
   -- try default language for this country, English and then every other language for possible match
-    wiki_article_language := CASE WHEN langs[i] = 'english' THEN 'en' WHEN langs[i] = 'country' THEN get_country_language_code(country_code) ELSE langs[i] END;
+    wiki_article_language := CASE WHEN langs[i] = 'english' THEN 'en' WHEN langs[i] = 'country' THEN get_country_language_code(partition) ELSE langs[i] END;
 
   SELECT importance FROM wikipedia_article WHERE language = wiki_article_language AND title = wiki_article_title ORDER BY importance DESC LIMIT 1 INTO result;
     IF result IS NOT NULL THEN
@@ -168,14 +175,14 @@ $$
 LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION get_country_language_code(search_country_code VARCHAR(2)) RETURNS TEXT
+CREATE OR REPLACE FUNCTION get_country_language_code(partition_in INT) RETURNS TEXT
   AS $$
 DECLARE
-  nearcountry RECORD;
+  country RECORD;
 BEGIN
-  FOR nearcountry IN select distinct country_default_language_code from country_name where country_code = search_country_code limit 1
+  FOR country IN SELECT DISTINCT country_default_language_code FROM country_name WHERE partition = partition_in LIMIT 1
   LOOP
-    RETURN lower(nearcountry.country_default_language_code);
+    RETURN lower(country.country_default_language_code);
   END LOOP;
   RETURN NULL;
 END;

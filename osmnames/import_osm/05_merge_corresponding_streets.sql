@@ -13,7 +13,6 @@ CREATE TABLE osm_merged_multi_linestring AS
  	max(a.wikidata) AS wikidata,
  	ST_UNION(array_agg(a.geometry)) AS geometry,
  	bit_and(a.partition) AS partition,
- 	max(a.calculated_country_code) AS calculated_country_code,
  	min(a.rank_search) AS rank_search,
  	a.parent_id
 	FROM
