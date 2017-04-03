@@ -1,3 +1,4 @@
+DROP MATERIALIZED VIEW IF EXISTS mv_polygons;
 CREATE MATERIALIZED VIEW mv_polygons AS
 SELECT COALESCE(NULLIF(getNameForRelations(r.linked_osm_id, getTypeForRelations(r.linked_osm_id, r.type, r.rank_search)),''), getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh)) AS name,
     getAlternativesNames(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh, COALESCE(NULLIF(getNameForRelations(r.linked_osm_id, getTypeForRelations(r.linked_osm_id, r.type, r.rank_search)),''), getLanguageName(r.name, r.name_fr, r.name_en, r.name_de, r.name_es, r.name_ru, r.name_zh)),',') AS alternative_names,
@@ -15,7 +16,7 @@ SELECT COALESCE(NULLIF(getNameForRelations(r.linked_osm_id, getTypeForRelations(
     parentInfo.state  AS state,
     countryName(r.partition) AS country,
     r.calculated_country_code AS country_code,
-    parentInfo.displayName  AS display_name,  
+    parentInfo.displayName  AS display_name,
     ST_XMIN(ST_Transform(r.geometry, 4326)) AS west,
     ST_YMIN(ST_Transform(r.geometry, 4326)) AS south,
     ST_XMAX(ST_Transform(r.geometry, 4326)) AS east,

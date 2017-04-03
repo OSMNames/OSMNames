@@ -1,8 +1,10 @@
 data/import/*
 data/export/*
 data/cache/*
+data/logs/*
 
 !.gitkeep
+!/data/import/mapping.yml
 
 __pycache__/
 *.py[cod]
