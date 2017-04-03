@@ -2,7 +2,7 @@
 -- places with label tag
 	UPDATE osm_polygon p
 	SET linked_osm_id = r.member
-	FROM osm_relation r
+	FROM osm_relation_member r
 	WHERE
 	r.type = 0 AND r.role = 'label'
 	AND p.osm_id = r.osm_id;
@@ -10,7 +10,7 @@
 -- places with admin_centre tag
 	UPDATE osm_polygon p
 	SET linked_osm_id = r.member
-	FROM osm_relation r
+	FROM osm_relation_member r
 	WHERE
 	r.type = 0 AND (r.role = 'admin_centre' OR r.role = 'admin_center')
 	AND p.name = r.name

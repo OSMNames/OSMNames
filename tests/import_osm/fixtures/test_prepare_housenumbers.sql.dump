@@ -1,0 +1,228 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX IF EXISTS public.osm_relation_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_relation_member_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_relation_member_geom;
+DROP INDEX IF EXISTS public.osm_housenumber_tmp_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_housenumber_tmp_geom;
+ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_housenumber_tmp DROP CONSTRAINT IF EXISTS osm_housenumber_tmp_pkey;
+ALTER TABLE IF EXISTS public.osm_relation_member ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.osm_relation ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.osm_housenumber_tmp ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.osm_relation_member_id_seq;
+DROP TABLE IF EXISTS public.osm_relation_member;
+DROP SEQUENCE IF EXISTS public.osm_relation_id_seq;
+DROP TABLE IF EXISTS public.osm_relation;
+DROP SEQUENCE IF EXISTS public.osm_housenumber_tmp_id_seq;
+DROP TABLE IF EXISTS public.osm_housenumber_tmp;
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: osm_housenumber_tmp; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_housenumber_tmp (
+    id integer NOT NULL,
+    osm_id bigint,
+    name character varying,
+    type character varying,
+    country character varying,
+    street character varying,
+    postcode character varying,
+    city character varying,
+    housenumber character varying,
+    geometry geometry(Point,3857)
+);
+
+
+--
+-- Name: osm_housenumber_tmp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE osm_housenumber_tmp_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: osm_housenumber_tmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE osm_housenumber_tmp_id_seq OWNED BY osm_housenumber_tmp.id;
+
+
+--
+-- Name: osm_relation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_relation (
+    id integer NOT NULL,
+    osm_id bigint,
+    name character varying,
+    type character varying
+);
+
+
+--
+-- Name: osm_relation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE osm_relation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: osm_relation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE osm_relation_id_seq OWNED BY osm_relation.id;
+
+
+--
+-- Name: osm_relation_member; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_relation_member (
+    id integer NOT NULL,
+    osm_id bigint,
+    member_id bigint,
+    role character varying,
+    member_type smallint,
+    relation_type character varying,
+    name character varying,
+    geometry geometry(Geometry,3857)
+);
+
+
+--
+-- Name: osm_relation_member_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE osm_relation_member_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: osm_relation_member_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE osm_relation_member_id_seq OWNED BY osm_relation_member.id;
+
+
+--
+-- Name: osm_housenumber_tmp id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_housenumber_tmp ALTER COLUMN id SET DEFAULT nextval('osm_housenumber_tmp_id_seq'::regclass);
+
+
+--
+-- Name: osm_relation id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_relation ALTER COLUMN id SET DEFAULT nextval('osm_relation_id_seq'::regclass);
+
+
+--
+-- Name: osm_relation_member id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_relation_member ALTER COLUMN id SET DEFAULT nextval('osm_relation_member_id_seq'::regclass);
+
+
+--
+-- Name: osm_housenumber_tmp osm_housenumber_tmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_housenumber_tmp
+    ADD CONSTRAINT osm_housenumber_tmp_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_relation_member osm_relation_member_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_relation_member
+    ADD CONSTRAINT osm_relation_member_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_relation osm_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_relation
+    ADD CONSTRAINT osm_relation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_housenumber_tmp_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_housenumber_tmp_geom ON osm_housenumber_tmp USING gist (geometry);
+
+
+--
+-- Name: osm_housenumber_tmp_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_housenumber_tmp_osm_id_idx ON osm_housenumber_tmp USING btree (osm_id);
+
+
+--
+-- Name: osm_relation_member_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_relation_member_geom ON osm_relation_member USING gist (geometry);
+
+
+--
+-- Name: osm_relation_member_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_relation_member_osm_id_idx ON osm_relation_member USING btree (osm_id);
+
+
+--
+-- Name: osm_relation_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_relation_osm_id_idx ON osm_relation USING btree (osm_id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

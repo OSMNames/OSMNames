@@ -90,3 +90,7 @@ def create_hierarchy():
 
 def merge_corresponding_streets():
     exec_sql_from_file("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
+
+
+def prepare_housenumbers():
+    conn.execute(users.update().values(fullname=stmt))

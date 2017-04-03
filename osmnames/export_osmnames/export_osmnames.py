@@ -7,13 +7,25 @@ from osmnames import settings
 
 
 EXPORT_FILE_PATH = "{}/export.tsv".format(settings.get("EXPORT_DIR"))
+HOUSENUMBERS_EXPORT_FILE_PATH = "{}/housenumbers.tsv".format(settings.get("EXPORT_DIR"))
 
 
 def export_osmnames():
     create_functions()
     prepare_data()
     export_tsv()
+    export_housenumbers()
     gzip_tsv()
+
+
+def export_housenumbers():
+    check_call(["pgclimb", "-c", "SELECT * FROM osm_housenumbers;",
+                           "-o", HOUSENUMBERS_EXPORT_FILE_PATH,
+                           "--host", settings.get("DB_HOST"),
+                           "--dbname", settings.get("DB_NAME"),
+                           "--username", settings.get("DB_USER"),
+                           "--pass", settings.get("DB_PASSWORD"),
+                           "tsv", "--header"])
 
 
 def create_functions():
