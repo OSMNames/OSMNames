@@ -24,6 +24,18 @@ def test_osm_polygon_tmp_with_blank_names_get_deleted(engine, session, schema):
     assert session.query(osm_polygon_tmp).count(), 1
 
 
+def test_osm_polygon_tmp_with_null_names_get_deleted(engine, session, schema):
+    osm_polygon_tmp = table_class_for("osm_polygon_tmp", engine)
+
+    session.add(osm_polygon_tmp(name="gugus"))
+    session.add(osm_polygon_tmp())
+    session.commit()
+
+    import_osm.delete_unusable_entries()
+
+    assert session.query(osm_polygon_tmp).count(), 1
+
+
 def test_osm_point_tmp_with_blank_names_get_deleted(engine, session, schema):
     osm_point_tmp = table_class_for("osm_point_tmp", engine)
 

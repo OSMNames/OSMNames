@@ -6,7 +6,10 @@ from osmnames.helpers.database import exec_sql_from_file
 from osmnames import settings
 
 
-def run():
+EXPORT_FILE_PATH = "{}/export.tsv".format(settings.get("EXPORT_DIR"))
+
+
+def export_osmnames():
     create_functions()
     prepare_data()
     export_tsv()
@@ -43,7 +46,7 @@ def collect_merged_linestrings():
 def export_tsv():
     export_sql_filepath = "{}/export.sql".format(os.path.dirname(__file__))
     check_call(["pgclimb", "-f", export_sql_filepath,
-                           "-o", _export_filepath(),
+                           "-o", EXPORT_FILE_PATH,
                            "--host", settings.get("DB_HOST"),
                            "--dbname", settings.get("DB_NAME"),
                            "--username", settings.get("DB_USER"),
@@ -52,9 +55,5 @@ def export_tsv():
 
 
 def gzip_tsv():
-    with open(_export_filepath(), 'rb') as f_in, gzip.open(_export_filepath() + ".gz", 'wb') as f_out:
+    with open(EXPORT_FILE_PATH, 'rb') as f_in, gzip.open(EXPORT_FILE_PATH, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
-
-
-def _export_filepath():
-    return "{}/export.tsv".format(settings.get("EXPORT_DIR"))

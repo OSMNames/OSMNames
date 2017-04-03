@@ -5,7 +5,7 @@ from osmnames.helpers.database import psql_exec, exec_sql_from_file
 from osmnames import settings
 
 
-def run():
+def import_osm():
     download_pbf()
     import_pbf_files()
     create_helper_tables()
@@ -31,17 +31,21 @@ def import_pbf_files():
 
 
 def import_pbf_file(pbf_file):
-    imposm_connection = "postgis://{}@{}/{}".format(settings.get("DB_USER"),
-                                                    settings.get("DB_HOST"),
-                                                    settings.get("DB_NAME"))
+    imposm_connection = "postgis://{user}@{host}/{db_name}".format(
+            user=settings.get("DB_USER"),
+            host=settings.get("DB_HOST"),
+            db_name=settings.get("DB_NAME"),
+            )
 
-    check_call(["imposm3", "import",
-                           "-connection", imposm_connection,
-                           "-mapping", "{}/mapping.yml".format(settings.get("IMPORT_DIR")),
-                           "-dbschema-import", settings.get("DB_SCHEMA"),
-                           "-read", pbf_file,
-                           "-write",
-                           "-overwritecache"])
+    check_call([
+        "imposm3", "import",
+        "-connection", imposm_connection,
+        "-mapping", "{}/mapping.yml".format(settings.get("IMPORT_DIR")),
+        "-dbschema-import", settings.get("DB_SCHEMA"),
+        "-read", pbf_file,
+        "-write",
+        "-overwritecache",
+    ])
 
 
 def create_helper_tables():

@@ -3,7 +3,7 @@ from osmnames.helpers.database import exec_sql, exec_sql_from_file, exists
 from osmnames import settings
 
 
-def run():
+def init_database():
     exists_query = "SELECT 1 AS result FROM pg_database WHERE datname='{}'".format(settings.get("DB_NAME"))
     if exists(exists_query, user="postgres", database="postgres"):
         print("skip database init, since it is already initialized")

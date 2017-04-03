@@ -4,7 +4,7 @@ from osmnames.helpers.database import exec_sql_from_file, exec_sql, exists
 from osmnames import settings
 
 
-def run():
+def import_wikipedia():
     if exists("SELECT * FROM information_schema.tables WHERE table_name='wikipedia_article'"):
         print("skip wikipedia import, since table already exists")
         return
