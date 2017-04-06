@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS osm_polygon CASCADE;
 CREATE TABLE osm_polygon AS
 (SELECT
-    id,
+    100000000 + id AS id,
     osm_id,
     type,
     name,
@@ -30,7 +30,7 @@ ALTER TABLE osm_polygon ADD PRIMARY KEY (id);
 DROP TABLE IF EXISTS osm_point CASCADE;
 CREATE TABLE osm_point AS
 (SELECT
-    id,
+    200000000 + id AS id,
     osm_id,
     type,
     name,
@@ -53,15 +53,13 @@ FROM
     get_rank_search(type, osm_id) AS rank_search,
     get_country_code(rank_search, geometry, NULL) AS country_code
 );
-DROP TABLE osm_point_tmp;
-/*DROP TABLE osm_polygon_tmp;*/
 ALTER TABLE osm_point ADD PRIMARY KEY (id);
 
 
 DROP TABLE IF EXISTS osm_linestring CASCADE;
 CREATE TABLE osm_linestring AS
 (SELECT
-    id,
+    300000000 + id AS id,
     osm_id,
     type,
     name,

@@ -1,7 +1,10 @@
 -- create merged linestrings
 DROP TABLE IF EXISTS osm_merged_multi_linestring CASCADE;
 CREATE TABLE osm_merged_multi_linestring AS
-  SELECT array_agg(DISTINCT a.id) AS member_ids,
+  SELECT
+    min(a.id) AS id,
+    array_agg(DISTINCT a.id) AS member_ids,
+    min(a.osm_id) AS osm_id,
     string_agg(DISTINCT a.type,',') AS type,
     a.name,
     max(a.name_fr) AS name_fr,
@@ -29,7 +32,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     a.parent_id,
     a.name;
 
-ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (member_ids);
+ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (id);
 
 
 UPDATE osm_linestring SET merged = TRUE WHERE id IN
