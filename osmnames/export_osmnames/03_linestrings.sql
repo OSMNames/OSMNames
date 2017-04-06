@@ -17,6 +17,7 @@ SELECT
   parentInfo.county  AS county,
   parentInfo.state  AS state,
   country_name(country_code) AS country,
+  country_code,
   parentInfo.displayName  AS display_name,
   ST_XMIN(ST_Transform(geometry, 4326)) AS west,
   ST_YMIN(ST_Transform(geometry, 4326)) AS south,

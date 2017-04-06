@@ -64,13 +64,12 @@ BEGIN
 END;
 
 
-DROP FUNCTION IF EXISTS determine_parent_id(BIGINT, VARCHAR, INT, GEOMETRY);
-CREATE FUNCTION determine_parent_id(id_value BIGINT, country_code_in VARCHAR(2), rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+DROP FUNCTION IF EXISTS determine_parent_id(BIGINT, INT, GEOMETRY);
+CREATE FUNCTION determine_parent_id(id_value BIGINT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
 DECLARE
   parent_id BIGINT;
 BEGIN
-  SELECT id FROM osm_polygon WHERE country_code=country_code_in
-                                   AND ST_Contains(geometry, geometry_value)
+  SELECT id FROM osm_polygon WHERE ST_Contains(geometry, geometry_value)
                                    AND NOT id=id_value
                                    AND NOT ST_Equals(geometry, geometry_value)
                                    AND rank_search <= rank_search_value
