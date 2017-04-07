@@ -10,6 +10,7 @@ VACUUM ANALYZE osm_linestring;
 --determine parents
 UPDATE osm_polygon SET parent_id = determine_parent_id(id, rank_search, geometry);
 UPDATE osm_point SET parent_id = determine_parent_id(id, rank_search, geometry) WHERE linked IS FALSE;
+UPDATE osm_housenumber SET parent_id = determine_parent_id(id, 25, geometry);
 SELECT determineRoadHierarchyForEachCountry();
 
 
