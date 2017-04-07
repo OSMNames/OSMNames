@@ -98,3 +98,10 @@ from scratch, remove the postgres container, which will destroy the database.
 docker-compose kill postgres
 docker-compose rm postgres
 ```
+
+## Development
+
+To run the tests execute following command:
+```
+docker-compose run --rm osmnames bash run_tests.sh
+```
