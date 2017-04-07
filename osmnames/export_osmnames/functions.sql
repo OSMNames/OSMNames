@@ -4,7 +4,8 @@
 --                               --
 -----------------------------------
 
-CREATE OR REPLACE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
+DROP FUNCTION IF EXISTS getLanguageName(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
+CREATE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
 RETURNS TEXT AS $$
 BEGIN
   RETURN CASE
@@ -20,6 +21,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+
+DROP FUNCTION IF EXISTS getTypeForRelations(BIGINT, TEXT, INTEGER);
 CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, rank_search INTEGER) returns TEXT as $$
 DECLARE
   retVal TEXT;
@@ -57,7 +60,8 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 
-CREATE OR REPLACE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
+DROP FUNCTION IF EXISTS getParentInfo(TEXT, BIGINT, INTEGER, VARCHAR);
+CREATE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
 DECLARE
   retVal parentInfo;
   current_rank INTEGER;
@@ -103,10 +107,11 @@ BEGIN
   END LOOP;
 RETURN retVal;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION country_name(country_code_in VARCHAR(2)) returns TEXT as $$
+DROP FUNCTION IF EXISTS country_name(VARCHAR);
+CREATE FUNCTION country_name(country_code_in VARCHAR(2)) returns TEXT as $$
   SELECT COALESCE(name -> 'name:en',
                   name -> 'name',
                   name -> 'name:fr',
@@ -118,8 +123,8 @@ CREATE OR REPLACE FUNCTION country_name(country_code_in VARCHAR(2)) returns TEXT
 $$ LANGUAGE 'sql' IMMUTABLE;
 
 
+DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
 CREATE OR REPLACE FUNCTION get_importance(rank_search int, wikipedia VARCHAR, country_code VARCHAR(2)) returns double precision as $$
-
 DECLARE
   langs TEXT[];
   i INT;
@@ -161,10 +166,11 @@ BEGIN
   RETURN NULL;
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS TEXT
+DROP FUNCTION IF EXISTS get_country_language_code(VARCHAR);
+CREATE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS TEXT
   AS $$
 DECLARE
   country RECORD;
@@ -179,7 +185,8 @@ $$
 LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
+DROP FUNCTION IF EXISTS getNameForRelations(BIGINT, TEXT);
+CREATE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
 DECLARE
   retVal TEXT;
 BEGIN
@@ -190,7 +197,7 @@ IF type = 'city' THEN
   END IF;
   return retVal;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION array_distinct(anyarray)
@@ -199,7 +206,8 @@ RETURNS anyarray AS $$
 $$ LANGUAGE sql;
 
 
-CREATE OR REPLACE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
+DROP FUNCTION IF EXISTS getAlternativesNames(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, VARCHAR);
+CREATE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
 RETURNS TEXT AS $$
 DECLARE
   alternativeNames TEXT[];
