@@ -87,6 +87,24 @@ DROP TABLE osm_polygon_tmp;
 ALTER TABLE osm_linestring ADD PRIMARY KEY (id);
 
 
+DROP TABLE IF EXISTS osm_housenumber CASCADE;
+CREATE TABLE osm_housenumber AS
+(SELECT
+    400000000 + id AS id,
+    osm_id,
+    housenumber,
+    city,
+    street,
+    name,
+    geometry,
+    NULL::bigint AS parent_id,
+    NULL::bigint AS street_id
+FROM
+    osm_housenumber_tmp
+);
+ALTER TABLE osm_housenumber ADD PRIMARY KEY (id);
+
+
 --create indexes
 CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);

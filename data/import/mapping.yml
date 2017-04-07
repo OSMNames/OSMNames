@@ -197,7 +197,7 @@ tables:
       - volcano # 19
       - hill  # 20
       - mountain_range
-  housenumber:
+  housenumber_tmp:
     type: point
     fields:
     - name: osm_id

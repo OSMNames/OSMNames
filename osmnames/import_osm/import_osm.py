@@ -2,6 +2,7 @@ import os
 from subprocess import check_call
 from osmnames.helpers.database import psql_exec, exec_sql_from_file
 from osmnames import settings
+from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 
 
 def import_osm():
@@ -14,7 +15,7 @@ def import_osm():
 
 def download_pbf():
     if settings.get("PBF_FILE"):
-        print("skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE")))
+        print "skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE"))
         return
 
     url = settings.get("PBF_URL")
@@ -28,10 +29,10 @@ def import_pbf_file():
     pbf_filepath = import_dir + pbf_filename
 
     imposm_connection = "postgis://{user}@{host}/{db_name}".format(
-            user=settings.get("DB_USER"),
-            host=settings.get("DB_HOST"),
-            db_name=settings.get("DB_NAME"),
-            )
+        user=settings.get("DB_USER"),
+        host=settings.get("DB_HOST"),
+        db_name=settings.get("DB_NAME"),
+        )
 
     check_call([
         "imposm3", "import",
@@ -69,6 +70,7 @@ def prepare_imported_data():
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_streets()
+    prepare_housenumbers()
 
 
 def delete_unusable_entries():
@@ -90,7 +92,3 @@ def create_hierarchy():
 
 def merge_corresponding_streets():
     exec_sql_from_file("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
-
-
-def prepare_housenumbers():
-    conn.execute(users.update().values(fullname=stmt))

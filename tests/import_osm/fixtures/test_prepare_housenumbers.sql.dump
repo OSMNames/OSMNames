@@ -19,20 +19,25 @@ SET search_path = public, pg_catalog;
 DROP INDEX IF EXISTS public.osm_relation_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_relation_member_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_relation_member_geom;
-DROP INDEX IF EXISTS public.osm_housenumber_tmp_osm_id_idx;
-DROP INDEX IF EXISTS public.osm_housenumber_tmp_geom;
+DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_housenumber_geom;
+DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
+DROP INDEX IF EXISTS public.idx_osm_linestring_id;
+DROP INDEX IF EXISTS public.idx_osm_linestring_geom;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
-ALTER TABLE IF EXISTS ONLY public.osm_housenumber_tmp DROP CONSTRAINT IF EXISTS osm_housenumber_tmp_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_linestring DROP CONSTRAINT IF EXISTS osm_linestring_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_housenumber DROP CONSTRAINT IF EXISTS osm_housenumber_pkey;
 ALTER TABLE IF EXISTS public.osm_relation_member ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_relation ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE IF EXISTS public.osm_housenumber_tmp ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.osm_housenumber ALTER COLUMN id DROP DEFAULT;
 DROP SEQUENCE IF EXISTS public.osm_relation_member_id_seq;
 DROP TABLE IF EXISTS public.osm_relation_member;
 DROP SEQUENCE IF EXISTS public.osm_relation_id_seq;
 DROP TABLE IF EXISTS public.osm_relation;
-DROP SEQUENCE IF EXISTS public.osm_housenumber_tmp_id_seq;
-DROP TABLE IF EXISTS public.osm_housenumber_tmp;
+DROP TABLE IF EXISTS public.osm_linestring;
+DROP SEQUENCE IF EXISTS public.osm_housenumber_id_seq;
+DROP TABLE IF EXISTS public.osm_housenumber;
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -40,12 +45,14 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: osm_housenumber_tmp; Type: TABLE; Schema: public; Owner: -
+-- Name: osm_housenumber; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE osm_housenumber_tmp (
+CREATE TABLE osm_housenumber (
     id integer NOT NULL,
     osm_id bigint,
+    parent_id integer,
+    street_id integer,
     name character varying,
     type character varying,
     country character varying,
@@ -58,10 +65,10 @@ CREATE TABLE osm_housenumber_tmp (
 
 
 --
--- Name: osm_housenumber_tmp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: osm_housenumber_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE osm_housenumber_tmp_id_seq
+CREATE SEQUENCE osm_housenumber_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -70,10 +77,36 @@ CREATE SEQUENCE osm_housenumber_tmp_id_seq
 
 
 --
--- Name: osm_housenumber_tmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: osm_housenumber_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE osm_housenumber_tmp_id_seq OWNED BY osm_housenumber_tmp.id;
+ALTER SEQUENCE osm_housenumber_id_seq OWNED BY osm_housenumber.id;
+
+
+--
+-- Name: osm_linestring; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_linestring (
+    id integer NOT NULL,
+    osm_id bigint,
+    type character varying,
+    name character varying,
+    name_fr character varying,
+    name_en character varying,
+    name_de character varying,
+    name_es character varying,
+    name_ru character varying,
+    name_zh character varying,
+    wikipedia character varying,
+    wikidata character varying,
+    admin_level integer,
+    geometry geometry(LineString,3857),
+    rank_search integer,
+    country_code character varying,
+    parent_id bigint,
+    merged boolean
+);
 
 
 --
@@ -143,10 +176,10 @@ ALTER SEQUENCE osm_relation_member_id_seq OWNED BY osm_relation_member.id;
 
 
 --
--- Name: osm_housenumber_tmp id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: osm_housenumber id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_housenumber_tmp ALTER COLUMN id SET DEFAULT nextval('osm_housenumber_tmp_id_seq'::regclass);
+ALTER TABLE ONLY osm_housenumber ALTER COLUMN id SET DEFAULT nextval('osm_housenumber_id_seq'::regclass);
 
 
 --
@@ -164,11 +197,19 @@ ALTER TABLE ONLY osm_relation_member ALTER COLUMN id SET DEFAULT nextval('osm_re
 
 
 --
--- Name: osm_housenumber_tmp osm_housenumber_tmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: osm_housenumber osm_housenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_housenumber_tmp
-    ADD CONSTRAINT osm_housenumber_tmp_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY osm_housenumber
+    ADD CONSTRAINT osm_housenumber_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_linestring osm_linestring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_linestring
+    ADD CONSTRAINT osm_linestring_pkey PRIMARY KEY (id);
 
 
 --
@@ -188,17 +229,40 @@ ALTER TABLE ONLY osm_relation
 
 
 --
--- Name: osm_housenumber_tmp_geom; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_osm_linestring_geom; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX osm_housenumber_tmp_geom ON osm_housenumber_tmp USING gist (geometry);
+CREATE INDEX idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
+
+ALTER TABLE osm_linestring CLUSTER ON idx_osm_linestring_geom;
 
 
 --
--- Name: osm_housenumber_tmp_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_osm_linestring_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX osm_housenumber_tmp_osm_id_idx ON osm_housenumber_tmp USING btree (osm_id);
+CREATE INDEX idx_osm_linestring_id ON osm_linestring USING btree (id);
+
+
+--
+-- Name: idx_osm_linestring_merged_false; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring USING btree (merged) WHERE (merged IS FALSE);
+
+
+--
+-- Name: osm_housenumber_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_housenumber_geom ON osm_housenumber USING gist (geometry);
+
+
+--
+-- Name: osm_housenumber_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_housenumber_osm_id_idx ON osm_housenumber USING btree (osm_id);
 
 
 --
