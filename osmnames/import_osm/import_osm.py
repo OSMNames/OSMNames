@@ -18,14 +18,14 @@ def download_pbf():
         print "skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE"))
         return
 
-    url = settings.get("PBF_URL")
+    url = settings.get("PBF_FILE_URL")
     destination_dir = settings.get("IMPORT_DIR")
     check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
 
 def import_pbf_file():
     import_dir = settings.get("IMPORT_DIR")
-    pbf_filename = settings.get("PBF_FILE") or settings.get("PBF_URL").split('/')[-1]
+    pbf_filename = settings.get("PBF_FILE") or settings.get("PBF_FILE_URL").split('/')[-1]
     pbf_filepath = import_dir + pbf_filename
 
     imposm_connection = "postgis://{user}@{host}/{db_name}".format(
