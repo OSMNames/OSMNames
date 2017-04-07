@@ -4,7 +4,6 @@ import os
 from geoalchemy2.elements import WKTElement
 from osmnames.helpers.database import exec_sql_from_file
 from osmnames.import_osm.import_osm import create_hierarchy, create_functions
-from helpers.database import table_class_for
 
 
 @pytest.fixture(scope="function")
@@ -14,98 +13,99 @@ def schema(engine):
     create_functions()
 
 
-def test_osm_polygon_parent_id_get_set_if_covered(engine, session, schema):
+def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
     """ test if parent_id of polygon is set if there is a different polygon, which covers it """
 
-    osm_polygon = table_class_for("osm_polygon", engine)
+    session.add(
+            tables.osm_polygon(
+                id=1,
+                name="Some Polygon with missing parent",
+                rank_search=30,
+                partition=10,
+                geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
+            )
+        )
 
     session.add(
-            osm_polygon(id=1,
-                        name="Some Polygon with missing parent",
-                        rank_search=30,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
-                        )
+            tables.osm_polygon(
+                id=2,
+                name="Some Polygon covering the other polygon",
+                rank_search=25,
+                partition=10,
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
-
-    session.add(
-            osm_polygon(id=2,
-                        name="Some Polygon covering the other polygon",
-                        rank_search=25,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
-                        )
-            )
+        )
 
     session.commit()
 
     create_hierarchy()
 
-    assert session.query(osm_polygon).get(1).parent_id == 2
+    assert session.query(tables.osm_polygon).get(1).parent_id == 2
 
 
-def test_osm_polygon_parent_id_get_set_with_nearest_rank(engine, session, schema):
-    osm_polygon = table_class_for("osm_polygon", engine)
+def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables):
+    session.add(
+            tables.osm_polygon(
+                id=1,
+                name="Some Polygon with missing parent",
+                rank_search=30,
+                partition=10,
+                geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
+            )
+        )
 
     session.add(
-            osm_polygon(id=1,
-                        name="Some Polygon with missing parent",
-                        rank_search=30,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
-                        )
+            tables.osm_polygon(
+                id=2,
+                name="Some Polygon with lower rank covering the other polygon",
+                rank_search=26,
+                partition=10,
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
+        )
 
     session.add(
-            osm_polygon(id=2,
-                        name="Some Polygon with lower rank covering the other polygon",
-                        rank_search=26,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
-                        )
+            tables.osm_polygon(
+                id=3,
+                name="Some Polygon with same rank covering the other polygon",
+                rank_search=30,
+                partition=10,
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
-
-    session.add(
-            osm_polygon(id=3,
-                        name="Some Polygon with same rank covering the other polygon",
-                        rank_search=30,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
-                        )
-            )
+        )
 
     session.commit()
 
     create_hierarchy()
 
-    assert session.query(osm_polygon).get(1).parent_id == 3
+    assert session.query(tables.osm_polygon).get(1).parent_id == 3
 
 
-def test_osm_polygon_parent_id_get_NOT_set_if_rank_is_higher(engine, session, schema):
+def test_osm_polygon_parent_id_get_NOT_set_if_rank_is_higher(session, schema, tables):
     """ do not set the parent_id if the covering polygon has a higher rank """
 
-    osm_polygon = table_class_for("osm_polygon", engine)
+    session.add(
+            tables.osm_polygon(
+                id=1,
+                name="Some Polygon with missing parent",
+                rank_search=30,
+                partition=10,
+                geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
+            )
+        )
 
     session.add(
-            osm_polygon(id=1,
-                        name="Some Polygon with missing parent",
-                        rank_search=30,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
-                        )
+            tables.osm_polygon(
+                id=2,
+                name="Some Polygon covering the other polygon",
+                rank_search=40,
+                partition=10,
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
-
-    session.add(
-            osm_polygon(id=2,
-                        name="Some Polygon covering the other polygon",
-                        rank_search=40,
-                        partition=10,
-                        geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
-                        )
-            )
+        )
 
     session.commit()
 
     create_hierarchy()
 
-    assert session.query(osm_polygon).get(1).parent_id is None
+    assert session.query(tables.osm_polygon).get(1).parent_id is None

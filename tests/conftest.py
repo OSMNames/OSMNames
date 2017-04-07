@@ -7,6 +7,7 @@ from geoalchemy2 import Geometry # NOQA
 from osmnames import settings
 from osmnames.init_database.init_database import init_database
 from osmnames.helpers.database import exec_sql
+from helpers.database import Tables
 
 
 @pytest.fixture(scope="module")
@@ -32,6 +33,11 @@ def session(engine):
     yield session
 
     session.close()
+
+
+@pytest.fixture(scope="function")
+def tables(engine):
+    return Tables(engine)
 
 
 def _recreate_database():
