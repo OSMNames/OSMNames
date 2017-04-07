@@ -34,36 +34,6 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION determineCountryCodeAndPartition()
-RETURNS TRIGGER AS $$
-DECLARE
-  place_centroid GEOMETRY;
-BEGIN
-
-  	place_centroid := ST_PointOnSurface(NEW.geometry);
-
-    -- recalculate country and partition
-    IF NEW.rank_search = 4 THEN
-      -- for countries, believe the mapped country code,
-      -- so that we remain in the right partition if the boundaries
-      -- suddenly expand.
-      NEW.partition := get_partition(lower(NEW.country_code));
-      IF NEW.partition = 0 THEN
-        NEW.calculated_country_code := lower(get_country_code(place_centroid));
-        NEW.partition := get_partition(NEW.calculated_country_code);
-      ELSE
-        NEW.calculated_country_code := lower(NEW.country_code);
-      END IF;
-    ELSE
-      IF NEW.rank_search > 4 THEN
-        NEW.calculated_country_code := lower(get_country_code(place_centroid));
-      	NEW.partition := get_partition(NEW.calculated_country_code);
-      END IF;
-    END IF;
-    RETURN NEW;
-END;
-
-
 DROP FUNCTION IF EXISTS determine_parent_id(BIGINT, INT, GEOMETRY);
 CREATE FUNCTION determine_parent_id(id_value BIGINT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
 DECLARE
