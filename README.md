@@ -27,6 +27,7 @@ Does include hierarchy information without house numbers or zip codes.
 
 | Column            | Description |
 | -------------     | ------------- |
+| id                | internal identifier
 | name              | the name of the feature (default language is en, others available(de,es,fr,ru,zh))
 | alternative_names | all other available and distinct names separated by commas
 | osm_type          | the osm type of this feature (node, way, relation)
@@ -36,7 +37,7 @@ Does include hierarchy information without house numbers or zip codes.
 | lon               |
 | lat               |
 | place_rank        | rank from 1-30 ascending depending on the type and class
-| importance        | importance [0.0-1.0] depending on wikipedia if available otherwise just the ranking
+| importance        | importance [0.0-1.0] depending on wikipedia
 | street            |
 | city              |
 | county            |
