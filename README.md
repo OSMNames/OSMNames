@@ -101,7 +101,13 @@ docker-compose rm postgres
 
 ## Development
 
+### Tests
+
 To run the tests execute following command:
 ```
 docker-compose run --rm osmnames bash run_tests.sh
 ```
+
+### SQL Style Guide
+
+To have a consistent style of SQL code, try to follow this guideline: http://www.sqlstyle.guide/
