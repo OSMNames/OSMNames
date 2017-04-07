@@ -73,7 +73,7 @@ BEGIN
                                    AND NOT id=id_value
                                    AND NOT ST_Equals(geometry, geometry_value)
                                    AND rank_search <= rank_search_value
-                             ORDER BY rank_search DESC
+                             ORDER BY rank_search DESC, admin_level DESC
                              LIMIT 1
                              INTO parent_id;
 
