@@ -83,7 +83,8 @@ tables:
       type: geometry
     - name: type
       type: mapping_value
-    - name: country_code
+    - key: country_code
+      name: imported_country_code
       type: string
       key: ISO3166-1:alpha2
     - key: name
@@ -129,8 +130,8 @@ tables:
       - island  # 8
       landuse:
       - residential
-      - reservoir # 9      
-      boundary: 
+      - reservoir # 9
+      boundary:
       - administrative
       natural:
       - water  # 10
@@ -196,20 +197,71 @@ tables:
       - volcano # 19
       - hill  # 20
       - mountain_range
+  housenumber_tmp:
+    type: point
+    fields:
+    - name: osm_id
+      type: id
+    - name: parent_id
+      type: integer
+    - name: street_id
+      type: integer
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    - key: addr:country
+      name: country
+      type: string
+    - key: addr:street
+      name: street
+      type: string
+    - key: addr:postcode
+      name: postcode
+      type: string
+    - key: addr:city
+      name: city
+      type: string
+    - key: addr:housenumber
+      name: housenumber
+      type: string
+    mapping:
+      addr:housenumber:
+      - __any__
   relation:
-  relation:
+    type: relation
+    columns:
+    - name: osm_id
+      type: id
+    - key: name
+      name: name
+      type: string
+    - key: type
+      name: type
+      type: string
+    mapping:
+      type:
+      - associatedStreet
+      - street
+  relation_member:
     type: relation_member
     columns:
     - name: osm_id
       type: id
-    - name: member
+    - name: member_id
       type: member_id
     - name: role
       type: member_role
-    - name: type
+    - name: member_type
       type: member_type
     - name: geometry
       type: geometry
+    - key: type
+      name: relation_type
+      type: string
     - name: name
       key: name
       type: string
@@ -217,5 +269,10 @@ tables:
     mapping:
       landuse:
       - residential
-      boundary: 
+      boundary:
       - administrative
+      type:
+      - associatedStreet
+      - street
+tags:
+  load_all: true

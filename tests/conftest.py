@@ -7,23 +7,37 @@ from geoalchemy2 import Geometry # NOQA
 from osmnames import settings
 from osmnames.init_database.init_database import init_database
 from osmnames.helpers.database import exec_sql
+from helpers.database import Tables
 
 
 @pytest.fixture(scope="module")
 def engine():
     _recreate_database()
 
-    return create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
+    engine = create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
         user=settings.get("DB_USER"),
         password=settings.get("DB_PASSWORD"),
         host=settings.get("DB_HOST"),
         db_name=settings.get("DB_NAME"),
-    ))
+        ))
+
+    yield engine
+
+    engine.dispose()
 
 
 @pytest.fixture(scope="function")
 def session(engine):
-    return Session(engine)
+    session = Session(engine)
+
+    yield session
+
+    session.close()
+
+
+@pytest.fixture(scope="function")
+def tables(engine):
+    return Tables(engine)
 
 
 def _recreate_database():

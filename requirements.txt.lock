@@ -5,6 +5,7 @@ colorama==0.3.2
 configobj==5.0.6
 GeoAlchemy2==0.4.0
 html5lib==0.999
+lazy-property==0.0.1
 mercurial==3.1.2
 packaging==16.8
 psycopg2==2.5.4

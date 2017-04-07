@@ -1,10 +1,9 @@
 DROP TABLE IF EXISTS osm_polygon CASCADE;
 CREATE TABLE osm_polygon AS
 (SELECT
-    id,
+    100000000 + id AS id,
     osm_id,
     type,
-    country_code,
     name,
     name_fr,
     name_en,
@@ -16,14 +15,14 @@ CREATE TABLE osm_polygon AS
     wikidata,
     admin_level,
     geometry,
-    rpc.rank_search AS rank_search,
-    rpc.partition AS partition,
-    rpc.calculated_country_code AS calculated_country_code,
+    rank_search,
+    country_code,
     NULL::bigint AS parent_id,
     NULL::bigint AS linked_osm_id
 FROM
     osm_polygon_tmp p,
-    determineRankPartitionCode(type, geometry, osm_id, country_code) AS rpc
+    get_rank_search(type, osm_id) AS rank_search,
+    get_country_code(rank_search, geometry, imported_country_code) AS country_code
 );
 ALTER TABLE osm_polygon ADD PRIMARY KEY (id);
 
@@ -31,7 +30,7 @@ ALTER TABLE osm_polygon ADD PRIMARY KEY (id);
 DROP TABLE IF EXISTS osm_point CASCADE;
 CREATE TABLE osm_point AS
 (SELECT
-    id,
+    200000000 + id AS id,
     osm_id,
     type,
     name,
@@ -45,24 +44,22 @@ CREATE TABLE osm_point AS
     wikidata,
     admin_level,
     geometry,
-    rpc.rank_search AS rank_search,
-    rpc.partition AS partition,
-    rpc.calculated_country_code AS calculated_country_code,
+    rank_search,
+    country_code,
     NULL::bigint AS parent_id,
     FALSE::boolean AS linked
 FROM
     osm_point_tmp,
-    determineRankPartitionCode(type, geometry, osm_id, NULL) AS rpc
+    get_rank_search(type, osm_id) AS rank_search,
+    get_country_code(rank_search, geometry, NULL) AS country_code
 );
-DROP TABLE osm_point_tmp;
-/*DROP TABLE osm_polygon_tmp;*/
 ALTER TABLE osm_point ADD PRIMARY KEY (id);
 
 
 DROP TABLE IF EXISTS osm_linestring CASCADE;
 CREATE TABLE osm_linestring AS
 (SELECT
-    id,
+    300000000 + id AS id,
     osm_id,
     type,
     name,
@@ -76,53 +73,53 @@ CREATE TABLE osm_linestring AS
     wikidata,
     admin_level,
     geometry,
-    rpc.rank_search AS rank_search,
-    rpc.partition AS partition,
-    rpc.calculated_country_code AS calculated_country_code,
+    rank_search,
+    country_code,
     NULL::bigint AS parent_id,
     FALSE::boolean AS merged
 FROM
     osm_linestring_tmp,
-    determineRankPartitionCode(type, geometry, NULL, NULL) AS rpc
+    get_rank_search(type, NULL) AS rank_search,
+    get_country_code(rank_search, geometry, NULL) AS country_code
 );
 DROP TABLE osm_linestring_tmp;
 DROP TABLE osm_polygon_tmp;
 ALTER TABLE osm_linestring ADD PRIMARY KEY (id);
 
 
+DROP TABLE IF EXISTS osm_housenumber CASCADE;
+CREATE TABLE osm_housenumber AS
+(SELECT
+    400000000 + id AS id,
+    osm_id,
+    housenumber,
+    city,
+    street,
+    name,
+    geometry,
+    NULL::bigint AS parent_id,
+    NULL::bigint AS street_id
+FROM
+    osm_housenumber_tmp
+);
+ALTER TABLE osm_housenumber ADD PRIMARY KEY (id);
+
+
 --create indexes
 CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
-
-CREATE INDEX IF NOT EXISTS idx_osm_polygon_partition_rank ON osm_polygon (partition,rank_search);
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_country_code_rank ON osm_polygon (country_code, rank_search);
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_id ON osm_polygon (id);
-
 CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
-
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_id ON osm_linestring (id);
 
---delete entries with faulty geometries from import
-DELETE FROM osm_polygon WHERE ST_IsEmpty(geometry);
-
 --determine missed partition and country codes from import dataset
-UPDATE osm_polygon SET partition = determinePartitionFromImportedData(geometry)
-WHERE partition = 0;
+UPDATE osm_polygon SET country_code = get_country_code_from_imported_data(geometry)
+WHERE country_code IS NULL;
 
-UPDATE osm_polygon SET calculated_country_code = c.country_code
-FROM country_name c
-WHERE calculated_country_code IS NULL AND osm_polygon.partition = c.partition;
+UPDATE osm_point SET country_code = get_country_code_from_imported_data(geometry)
+WHERE country_code IS NULL;
 
-UPDATE osm_point SET partition = determinePartitionFromImportedData(geometry)
-WHERE partition = 0;
-
-UPDATE osm_point SET calculated_country_code = c.country_code
-FROM country_name c
-WHERE calculated_country_code IS NULL AND osm_point.partition = c.partition;
-
-UPDATE osm_linestring SET partition = determinePartitionFromImportedData(geometry)
-WHERE partition = 0;
-
-UPDATE osm_linestring SET calculated_country_code = c.country_code
-FROM country_name c
-WHERE calculated_country_code IS NULL AND osm_linestring.partition = c.partition;
+UPDATE osm_linestring SET country_code = get_country_code_from_imported_data(geometry)
+WHERE country_code IS NULL;

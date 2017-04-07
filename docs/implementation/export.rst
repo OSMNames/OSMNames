@@ -22,39 +22,39 @@ The data for the TSV is extracted with the help of the pgclimb tool which takes 
 	  current_rank := from_rank;
 	  retVal.displayName := name_value;
 	  current_id := id_value;
-	  
-	  IF current_rank = 16 THEN  
+
+	  IF current_rank = 16 THEN
 	    retVal.city := retVal.displayName;
 	  ELSE
 	    retVal.city := '';
 	  END IF;
-	  IF current_rank = 12 THEN  
+	  IF current_rank = 12 THEN
 	    retVal.county := retVal.displayName;
 	  ELSE
 	    retVal.county := '';
 	  END IF;
-	  IF current_rank = 8 THEN  
-	    retVal.state := retVal.displayName; 
+	  IF current_rank = 8 THEN
+	    retVal.state := retVal.displayName;
 	  ELSE
-	    retVal.state := ''; 
+	    retVal.state := '';
 	  END IF;
 
 	  --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
-	  
+
 	  WHILE current_rank >= 8 LOOP
 	    SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
 	    IF currentName IS NOT NULL THEN
 	      retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
 	    END IF;
 
-	    IF current_rank = 16 THEN  
+	    IF current_rank = 16 THEN
 	      retVal.city := currentName;
 	    END IF;
-	    IF current_rank = 12 THEN  
+	    IF current_rank = 12 THEN
 	      retVal.county := currentName;
 	    END IF;
-	    IF current_rank = 8 THEN  
-	      retVal.state := currentName;  
+	    IF current_rank = 8 THEN
+	      retVal.state := currentName;
 	    END IF;
 	  END LOOP;
 	RETURN retVal;
@@ -133,18 +133,18 @@ In order to have an importance value for each feature, a wikipedia helper table 
 If a feature has a wikipedia URL a matching entry in the wikipedia helper table is taken for calculating the importance with the following formula:
 
 .. code-block:: bash
-	
+
 	importance = log (totalcount) / log( max(totalcount))
 
 where totalcount is the number of references to the article from other wikipedia articles. In case there is no wikipedia information or no match was found, the following formula is applied:
 
 .. code-block:: bash
-	
+
 	importance = 0.75 - (rank/40)
 
 Since every feature has a rank, it is ensured that every feature also has an importance.
 
-The function *getImportance* for calculating the importance is called during the export.
+The function *get_importance* for calculating the importance is called during the export.
 
 Type of relations
 -----------------------------

@@ -290,7 +290,6 @@ bq	"name"=>"Caribbean Netherlands", "name:en"=>"Caribbean Netherlands"	\N	250
 --
 
 CREATE INDEX IF NOT EXISTS idx_country_name_country_code ON country_name USING btree (country_code);
-CREATE INDEX idx_country_name_partition ON country_name (partition);
 
 
 --

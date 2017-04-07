@@ -4,7 +4,8 @@
 --                               --
 -----------------------------------
 
-CREATE OR REPLACE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
+DROP FUNCTION IF EXISTS getLanguageName(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
+CREATE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
 RETURNS TEXT AS $$
 BEGIN
   RETURN CASE
@@ -20,6 +21,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+
+DROP FUNCTION IF EXISTS getTypeForRelations(BIGINT, TEXT, INTEGER);
 CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, rank_search INTEGER) returns TEXT as $$
 DECLARE
   retVal TEXT;
@@ -56,19 +59,9 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION get_osm_type_polygon(osm_id BIGINT)
-RETURNS TEXT AS $$
-BEGIN
-  IF osm_id > 0 THEN
-    RETURN 'way';
-  ELSE
-    RETURN 'relation';
-  END IF;  
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
 
-
-CREATE OR REPLACE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
+DROP FUNCTION IF EXISTS getParentInfo(TEXT, BIGINT, INTEGER, VARCHAR);
+CREATE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
 DECLARE
   retVal parentInfo;
   current_rank INTEGER;
@@ -78,52 +71,60 @@ BEGIN
   current_rank := from_rank;
   retVal.displayName := name_value;
   current_id := id_value;
-  
-  IF current_rank BETWEEN 16 AND 20 THEN  
+
+  IF current_rank BETWEEN 16 AND 20 THEN
     retVal.city := retVal.displayName;
   ELSE
     retVal.city := '';
   END IF;
-  IF current_rank BETWEEN 12 AND 15 THEN  
+  IF current_rank BETWEEN 12 AND 15 THEN
     retVal.county := retVal.displayName;
   ELSE
     retVal.county := '';
   END IF;
-  IF current_rank BETWEEN 8 AND 11 THEN  
-    retVal.state := retVal.displayName; 
+  IF current_rank BETWEEN 8 AND 11 THEN
+    retVal.state := retVal.displayName;
   ELSE
-    retVal.state := ''; 
+    retVal.state := '';
   END IF;
   --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
-  
+
   WHILE current_rank >= 8 LOOP
     SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
     IF currentName IS NOT NULL THEN
       retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
     END IF;
 
-    IF current_rank = 16 THEN  
+    IF current_rank = 16 THEN
       retVal.city := currentName;
     END IF;
-    IF current_rank = 12 THEN  
+    IF current_rank = 12 THEN
       retVal.county := currentName;
     END IF;
-    IF current_rank = 8 THEN  
-      retVal.state := currentName;  
+    IF current_rank = 8 THEN
+      retVal.state := currentName;
     END IF;
   END LOOP;
 RETURN retVal;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION countryName(partition_id int) returns TEXT as $$
-  SELECT COALESCE(name -> 'name:en',name -> 'name',name -> 'name:fr',name -> 'name:de',name -> 'name:es',name -> 'name:ru',name -> 'name:zh') FROM country_name WHERE partition = partition_id;
-$$ language 'sql';
+DROP FUNCTION IF EXISTS country_name(VARCHAR);
+CREATE FUNCTION country_name(country_code_in VARCHAR(2)) returns TEXT as $$
+  SELECT COALESCE(name -> 'name:en',
+                  name -> 'name',
+                  name -> 'name:fr',
+                  name -> 'name:de',
+                  name -> 'name:es',
+                  name -> 'name:ru',
+                  name -> 'name:zh')
+          FROM country_name WHERE country_code = country_code_in;
+$$ LANGUAGE 'sql' IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION getImportance(rank_search int, wikipedia character varying, country_code VARCHAR(2)) returns double precision as $$
-
+DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
+CREATE OR REPLACE FUNCTION get_importance(rank_search int, wikipedia VARCHAR, country_code VARCHAR(2)) returns double precision as $$
 DECLARE
   langs TEXT[];
   i INT;
@@ -158,28 +159,34 @@ BEGIN
       END IF;
     i := i + 1;
   END LOOP;
-  -- return default calculated value if no match found  
+  -- return default calculated value if no match found
     IF rank_search IS NOT NULL THEN
       return 0.75-(rank_search::double precision/40);
     END IF;
   RETURN NULL;
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION getOsmIdWithId(member_id BIGINT)
-RETURNS BIGINT AS $$
+DROP FUNCTION IF EXISTS get_country_language_code(VARCHAR);
+CREATE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS TEXT
+  AS $$
 DECLARE
-  result BIGINT;
+  country RECORD;
 BEGIN
-  SELECT osm_id FROM osm_linestring WHERE id=member_id  INTO result;
-    RETURN result;
+  FOR country IN SELECT DISTINCT country_default_language_code FROM country_name WHERE country_code = country_code_in LIMIT 1
+  LOOP
+    RETURN lower(country.country_default_language_code);
+  END LOOP;
+  RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$
+LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE OR REPLACE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
+DROP FUNCTION IF EXISTS getNameForRelations(BIGINT, TEXT);
+CREATE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
 DECLARE
   retVal TEXT;
 BEGIN
@@ -190,7 +197,7 @@ IF type = 'city' THEN
   END IF;
   return retVal;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION array_distinct(anyarray)
@@ -199,7 +206,8 @@ RETURNS anyarray AS $$
 $$ LANGUAGE sql;
 
 
-CREATE OR REPLACE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
+DROP FUNCTION IF EXISTS getAlternativesNames(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, VARCHAR);
+CREATE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
 RETURNS TEXT AS $$
 DECLARE
   alternativeNames TEXT[];

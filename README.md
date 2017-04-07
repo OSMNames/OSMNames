@@ -1,6 +1,4 @@
-# OSM Names
-
-Database of geographic place names from OpenStreetMap for full text search downloadable for free. Website: http://osmnames.org
+# OSM Names Database of geographic place names from OpenStreetMap for full text search downloadable for free. Website: http://osmnames.org
 Does include hierarchy information without house numbers or zip codes.
 
 ## Target of OSM Names
@@ -27,32 +25,32 @@ Does include hierarchy information without house numbers or zip codes.
 
 ## Data format of tsv export of OSMNames
 
-```
-name 				the name of the feature (default language is en, others available(de,es,fr,ru,zh))
-alternative_names	all other available and distinct names separated by commas
-osm_type			the osm type of this feature (node, way, relation)
-osm_id
-class
-type
-lon
-lat
-place_rank			rank from 1-30 ascending depending on the type and class
-importance			importance [0.0-1.0] depending on wikipedia if available otherwise just the ranking
-street
-city
-county
-state
-country
-country_code		ISO-3166 2-letter country code
-display_name		the display name representing the hierarchy
-west				bbox
-south				bbox
-east				bbox
-north				bbox
-wikidata			the wikidata associated with this feature
-wikipedia 			the wikipedia URL associated with this feature
-
-```
+| Column            | Description |
+| -------------     | ------------- |
+| id                | internal identifier
+| name              | the name of the feature (default language is en, others available(de,es,fr,ru,zh))
+| alternative_names | all other available and distinct names separated by commas
+| osm_type          | the osm type of this feature (node, way, relation)
+| osm_id            |
+| class             |
+| type              |
+| lon               |
+| lat               |
+| place_rank        | rank from 1-30 ascending depending on the type and class
+| importance        | importance [0.0-1.0] depending on wikipedia
+| street            |
+| city              |
+| county            |
+| state             |
+| country           |
+| country_code      | ISO-3166 2-letter country code
+| display_name      | the display name representing the hierarchy
+| west              | bbox
+| south             | bbox
+| east              | bbox
+| north             | bbox
+| wikidata          | the wikidata associated with this feature
+| wikipedia         | the wikipedia URL associated with this feature
 
 REMARKs:
 * Fields like housenumber and postalcode don't belong to this dataset.
@@ -75,9 +73,10 @@ where country_code is the ISO-3166 2-letter country code.
 ### Get Started
 
 The OSM PBF data dump will be download when starting the process. By default it
-will download the entire world. If you want to change this, simply open the
-file `src/download-pbf/download-pbf.sh` and edit FILE_NAME / FILE_URL accordingly. (For
-example, to process only a specific country you can use the PBF-files from
+will download the entire world. If you want to change this, edit the `.env`
+file and change `PBF_FILE_URL`. Alternatively, you can manually place a PBF
+file in the `data/import` directory and define `PBF_FILE` with the filename.
+(For example, to process only a specific country you can use the PBF-files from
 `http://download.geofabrik.de/index.html`)
 
 We can now start the process with:
