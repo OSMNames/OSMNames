@@ -4,7 +4,7 @@ SELECT getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name
     getAlternativesNames(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh,getLanguageName(rrr.name, rrr.name_fr, rrr.name_en, rrr.name_de, rrr.name_es, rrr.name_ru, rrr.name_zh),',') AS alternative_names,
     'way'::TEXT as osm_type,
     osm_id,
-    road_class(rrr.type) AS class,
+    determine_class(rrr.type) AS class,
     rrr.type,
     ST_X(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lon,
     ST_Y(ST_LineInterpolatePoint(ST_Transform(rrr.geometry, 4326), 0.5)) AS lat,

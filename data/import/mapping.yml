@@ -65,6 +65,15 @@ tables:
       - footway
       - corridor
       - crossing
+      waterway:
+      - river # 1
+      - riverbank # 2
+      - stream  # 3
+      - canal # 4
+      - drain # 5
+      - ditch # 6
+      natural:
+      - mountain_range  # 7
   polygon_tmp:
     type: polygon
     fields:
@@ -117,10 +126,16 @@ tables:
       - town
       - village
       - hamlet
+      - island  # 8
       landuse:
       - residential
+      - reservoir # 9      
       boundary: 
       - administrative
+      natural:
+      - water  # 10
+      - bay # 11
+      - desert  #12
   point_tmp:
     type: point
     fields:
@@ -170,6 +185,18 @@ tables:
       - town
       - village
       - hamlet
+      - island
+      - ocean # 13
+      - sea # 14
+      - continent # 15
+      - country # 16
+      - state # 17
+      natural:
+      - peak  # 18
+      - volcano # 19
+      - hill  # 20
+      - mountain_range
+  relation:
   relation:
     type: relation_member
     columns:

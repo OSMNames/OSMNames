@@ -4,36 +4,31 @@
 --                               --
 -----------------------------------
 
-CREATE OR REPLACE FUNCTION rank_place(type TEXT, osmID bigint)
+/* See Nominatim functions.sql placex_insert() line 676 for determining ranks
+   Reference: https://github.com/openstreetmap/Nominatim/blob/master/sql/functions.sql */
+CREATE OR REPLACE FUNCTION rank_type(type TEXT, osmID bigint)
 RETURNS int AS $$
 BEGIN
 	RETURN CASE
-		WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)
-		WHEN type IN ('continent', 'sea') THEN 2
+    WHEN type IN ('administrative') AND osmID IS NULL THEN 30
+    WHEN type IN ('administrative') THEN 2*(SELECT COALESCE(admin_level,15) FROM osm_polygon_tmp o WHERE osm_id = osmID)
+		WHEN type IN ('continent','sea','ocean') THEN 2
 		WHEN type IN ('country') THEN 4
 		WHEN type IN ('state') THEN 8
 		WHEN type IN ('county') THEN 12
-		WHEN type IN ('city') THEN 16
-		WHEN type IN ('island') THEN 17
-		WHEN type IN ('region') THEN 18 -- dropped from previous value of 10
+		WHEN type IN ('city','water','desert') THEN 16
+		WHEN type IN ('island','bay','river') THEN 17
+		WHEN type IN ('region','peak','volcano') THEN 18 -- region dropped from previous value of 10
 		WHEN type IN ('town') THEN 18
 		WHEN type IN ('village','hamlet','municipality','district','unincorporated_area','borough') THEN 19
-		WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass') THEN 20
-		WHEN type IN ('neighbourhood', 'residential') THEN 22
+		WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass','hill') THEN 20
+		WHEN type IN ('neighbourhood', 'residential','reservoir','stream') THEN 22
+    WHEN type IN ('motorway','trunk','primary','secondary','tertiary','unclassified','residential','road','living_street','raceway','construction','track','crossing',
+                  'riverbank','canal') THEN 26
+    WHEN type IN ('motorway_link','trunk_link','primary_link','secondary_link','tertiary_link','service','path','cycleway','steps','bridleway','footway','corridor') THEN 27
 		WHEN type IN ('houses') THEN 28
-		WHEN type IN ('house','building') THEN 30
+		WHEN type IN ('house','building','drain','ditch') THEN 30
 		WHEN type IN ('quarter') THEN 30
-	END;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
-
-CREATE OR REPLACE FUNCTION rank_address(type TEXT)
-RETURNS int AS $$
-BEGIN
-	RETURN CASE
-		WHEN type IN ('service','cycleway','path','footway','steps','bridleway','motorway_link','primary_link','trunk_link','secondary_link','tertiary_link') THEN 27
-		ELSE 26
 	END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
@@ -165,11 +160,7 @@ DECLARE
 BEGIN
     --RAISE NOTICE 'determine rank with type % and osm_id %', type, osm_id;
     place_centroid := ST_PointOnSurface(geom);
-    IF (osm_id IS NULL) THEN
-    result.rank_search := rank_address(type);
-  ELSE
-    result.rank_search := rank_place(type, osm_id);
-  END IF;
+    result.rank_search := rank_type(type, osm_id);
     -- recalculate country and partition
     IF result.rank_search = 4 THEN
       -- for countries, believe the mapped country code,
