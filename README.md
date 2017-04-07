@@ -73,9 +73,10 @@ where country_code is the ISO-3166 2-letter country code.
 ### Get Started
 
 The OSM PBF data dump will be download when starting the process. By default it
-will download the entire world. If you want to change this, simply open the
-file `src/download-pbf/download-pbf.sh` and edit FILE_NAME / FILE_URL accordingly. (For
-example, to process only a specific country you can use the PBF-files from
+will download the entire world. If you want to change this, edit the `.env`
+file and change `PBF_FILE_URL`. Alternatively, you can manually place a PBF
+file in the `data/import` directory and define `PBF_FILE` with the filename.
+(For example, to process only a specific country you can use the PBF-files from
 `http://download.geofabrik.de/index.html`)
 
 We can now start the process with:
