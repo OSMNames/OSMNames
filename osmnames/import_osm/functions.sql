@@ -34,43 +34,6 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS determine_parent_id(BIGINT, INT, GEOMETRY);
-CREATE FUNCTION determine_parent_id(id_value BIGINT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
-DECLARE
-  parent_id BIGINT;
-BEGIN
-  SELECT id FROM osm_polygon WHERE ST_Contains(geometry, geometry_value)
-                                   AND NOT id=id_value
-                                   AND NOT ST_Equals(geometry, geometry_value)
-                                   AND rank_search <= rank_search_value
-                             ORDER BY rank_search DESC, admin_level DESC
-                             LIMIT 1
-                             INTO parent_id;
-
-RETURN parent_id;
-END;
-$$ LANGUAGE plpgsql;
-
-
-DROP FUNCTION IF EXISTS findRoadsWithinGeometry(BIGINT, geometry);
-CREATE FUNCTION findRoadsWithinGeometry(id_value BIGINT, geometry_value GEOMETRY) RETURNS VOID AS $$
-BEGIN
-  UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE OR REPLACE FUNCTION determineRoadHierarchyForEachCountry() RETURNS void AS $$
-DECLARE
-  retVal BIGINT;
-BEGIN
-  FOR current_rank  IN REVERSE 22..4 LOOP
-    PERFORM findRoadsWithinGeometry(id, geometry) FROM osm_polygon WHERE rank_search = current_rank;
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
-
 DROP FUNCTION IF EXISTS get_country_code_from_geometry(GEOMETRY);
 CREATE FUNCTION get_country_code_from_geometry(geometry GEOMETRY)
 RETURNS VARCHAR(2) AS $$
@@ -146,3 +109,26 @@ BEGIN
   return result;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+
+DROP FUNCTION IF EXISTS set_parent_id_for_containing_entities(BIGINT, geometry);
+CREATE FUNCTION set_parent_id_for_containing_entities(id_value BIGINT, geometry_value GEOMETRY) RETURNS VOID AS $$
+BEGIN
+  UPDATE osm_linestring SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
+  UPDATE osm_polygon SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
+  UPDATE osm_housenumber SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
+  UPDATE osm_point SET parent_id = id_value WHERE parent_id IS NULL AND ST_Contains(geometry_value, geometry);
+END;
+$$ LANGUAGE plpgsql;
+
+
+DROP FUNCTION IF EXISTS determine_parent_ids();
+CREATE FUNCTION determine_parent_ids() RETURNS void AS $$
+DECLARE
+  retVal BIGINT;
+BEGIN
+  FOR current_rank  IN REVERSE 22..4 LOOP
+    PERFORM set_parent_id_for_containing_entities(id, geometry) FROM osm_polygon WHERE rank_search = current_rank;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
