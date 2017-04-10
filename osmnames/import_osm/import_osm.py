@@ -12,7 +12,6 @@ def import_osm():
     create_functions()
     prepare_imported_data()
 
-
 def download_pbf():
     if settings.get("PBF_FILE"):
         print "skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE"))
@@ -86,8 +85,7 @@ def determine_linked_places():
 
 
 def create_hierarchy():
-    # does not work with exec_sql_from_file
-    psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():
