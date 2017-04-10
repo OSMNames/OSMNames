@@ -97,10 +97,12 @@ CREATE TABLE osm_housenumber AS
     street,
     name,
     geometry,
+    country_code,
     NULL::bigint AS parent_id,
     NULL::bigint AS street_id
 FROM
-    osm_housenumber_tmp
+    osm_housenumber_tmp,
+    get_country_code_from_geometry(geometry) AS country_code
 );
 ALTER TABLE osm_housenumber ADD PRIMARY KEY (id);
 
@@ -109,6 +111,7 @@ ALTER TABLE osm_housenumber ADD PRIMARY KEY (id);
 CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
+CREATE INDEX IF NOT EXISTS idx_osm_housenumber_geom ON osm_housenumber USING gist (geometry);
 
 --determine missed partition and country codes from import dataset
 UPDATE osm_polygon SET country_code = get_country_code_from_imported_data(geometry)
