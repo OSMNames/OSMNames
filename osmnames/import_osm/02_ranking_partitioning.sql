@@ -109,10 +109,6 @@ ALTER TABLE osm_housenumber ADD PRIMARY KEY (id);
 CREATE INDEX IF NOT EXISTS idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_point_geom ON osm_point USING gist (geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
-CREATE INDEX IF NOT EXISTS idx_osm_polygon_country_code_rank ON osm_polygon (country_code, rank_search);
-CREATE INDEX IF NOT EXISTS idx_osm_polygon_id ON osm_polygon (id);
-CREATE INDEX IF NOT EXISTS idx_osm_point_osm_id ON osm_point (osm_id);
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_id ON osm_linestring (id);
 
 --determine missed partition and country codes from import dataset
 UPDATE osm_polygon SET country_code = get_country_code_from_imported_data(geometry)
