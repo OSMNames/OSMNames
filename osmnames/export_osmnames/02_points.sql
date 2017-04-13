@@ -10,14 +10,14 @@ SELECT
   type,
   ST_X(ST_Transform(geometry, 4326)) AS lon,
   ST_Y(ST_Transform(geometry, 4326)) AS lat,
-  rank_search AS place_rank,
-  get_importance(rank_search, wikipedia, country_code) AS importance,
+  place_rank AS place_rank,
+  get_importance(place_rank, wikipedia, country_code) AS importance,
   ''::TEXT AS street,
-  parentInfo.city AS city,
-  parentInfo.county  AS county,
-  parentInfo.state  AS state,
-  country_name(country_code) AS country,
-  country_code,
+  COALESCE(parentInfo.city, '') AS city,
+  COALESCE(parentInfo.county, '') AS county,
+  COALESCE(parentInfo.state, '') AS state,
+  COALESCE(country_name(country_code), '') AS country,
+  COALESCE(country_code, '') AS country_code,
   parentInfo.displayName  AS display_name,
   ST_XMIN(ST_Transform(geometry, 4326)) AS west,
   ST_YMIN(ST_Transform(geometry, 4326)) AS south,
@@ -28,7 +28,7 @@ SELECT
 FROM
   osm_point,
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
-  getParentInfo(languageName, parent_id, rank_search, ',') AS parentInfo,
+  get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
   getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, languageName, ',') AS alternative_names
 WHERE
   linked IS FALSE;

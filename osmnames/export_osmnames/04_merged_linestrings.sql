@@ -10,14 +10,14 @@ SELECT
   type,
   ST_X(ST_PointOnSurface(ST_Transform(geometry, 4326))) AS lon,
   ST_Y(ST_PointOnSurface(ST_Transform(geometry, 4326))) AS lat,
-  rank_search AS place_rank,
-  get_importance(rank_search, wikipedia, country_code) AS importance,
-  name AS street,
-  parentInfo.city AS city,
-  parentInfo.county  AS county,
-  parentInfo.state  AS state,
-  country_name(country_code) AS country,
-  country_code,
+  place_rank AS place_rank,
+  get_importance(place_rank, wikipedia, country_code) AS importance,
+  COALESCE(name, '') AS street,
+  COALESCE(parentInfo.city, '') AS city,
+  COALESCE(parentInfo.county, '') AS county,
+  COALESCE(parentInfo.state, '') AS state,
+  COALESCE(country_name(country_code), '') AS country,
+  COALESCE(country_code, '') AS country_code,
   parentInfo.displayName  AS display_name,
   ST_XMIN(ST_Transform(geometry, 4326)) AS west,
   ST_YMIN(ST_Transform(geometry, 4326)) AS south,
@@ -27,7 +27,7 @@ SELECT
   wikipedia AS wikipedia
 FROM
   osm_merged_multi_linestring,
-  getParentInfo(getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), parent_id, rank_search, ',') AS parentInfo,
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
+  get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
   getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, languageName, ',') AS alternative_names
 ;

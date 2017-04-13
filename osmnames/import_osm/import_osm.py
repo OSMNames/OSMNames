@@ -1,13 +1,16 @@
 import os
+
 from subprocess import check_call
-from osmnames.helpers.database import psql_exec, exec_sql_from_file
+from osmnames.helpers.database import exec_sql, psql_exec, exec_sql_from_file
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 
 
 def import_osm():
     download_pbf()
+    sanatize_for_import()
     import_pbf_file()
+    create_custom_columns()
     create_helper_tables()
     create_functions()
     prepare_imported_data()
@@ -20,6 +23,10 @@ def download_pbf():
     url = settings.get("PBF_FILE_URL")
     destination_dir = settings.get("IMPORT_DIR")
     check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
+
+
+def sanatize_for_import():
+    exec_sql('DROP TABLE IF EXISTS osm_linestring, osm_point, osm_polygon, osm_housenumber CASCADE')
 
 
 def import_pbf_file():
@@ -42,6 +49,10 @@ def import_pbf_file():
         "-write",
         "-overwritecache",
     ])
+
+
+def create_custom_columns():
+    exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
 
 
 def create_helper_tables():
@@ -85,7 +96,7 @@ def determine_linked_places():
 
 
 def create_hierarchy():
-    exec_sql_from_file("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():

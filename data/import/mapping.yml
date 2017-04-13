@@ -1,5 +1,5 @@
 tables:
-  linestring_tmp:
+  linestring:
     type: linestring
     fields:
     - name: osm_id
@@ -74,7 +74,7 @@ tables:
       - ditch # 6
       natural:
       - mountain_range  # 7
-  polygon_tmp:
+  polygon:
     type: polygon
     fields:
     - name: osm_id
@@ -137,7 +137,7 @@ tables:
       - water  # 10
       - bay # 11
       - desert  #12
-  point_tmp:
+  point:
     type: point
     fields:
     - name: osm_id
@@ -197,15 +197,11 @@ tables:
       - volcano # 19
       - hill  # 20
       - mountain_range
-  housenumber_tmp:
+  housenumber:
     type: point
     fields:
     - name: osm_id
       type: id
-    - name: parent_id
-      type: integer
-    - name: street_id
-      type: integer
     - name: geometry
       type: geometry
     - key: name
