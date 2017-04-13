@@ -72,5 +72,5 @@ def export_housenumbers():
 
 
 def gzip_tsv():
-    with open(EXPORT_FILE_PATH, 'rb') as f_in, gzip.open(EXPORT_FILE_PATH, 'wb') as f_out:
+    with open(EXPORT_FILE_PATH, 'rb') as f_in, gzip.open("{}.gz".format(EXPORT_FILE_PATH), 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)
