@@ -48,4 +48,4 @@ def _alter_wikipedia_dump_owner():
 
 
 def create_wikipedia_index():
-    exec_sql("CREATE INDEX idx_wikipedia_article_language_title ON wikipedia_article (language,title);")
+    exec_sql("CREATE INDEX idx_wikipedia_article_title ON wikipedia_article (title);")

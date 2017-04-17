@@ -121,43 +121,31 @@ $$ LANGUAGE 'sql' IMMUTABLE;
 DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
 CREATE OR REPLACE FUNCTION get_importance(place_rank int, wikipedia VARCHAR, country_code VARCHAR(2)) returns double precision as $$
 DECLARE
-  langs TEXT[];
-  i INT;
   wiki_article_title TEXT;
-  wiki_article_language TEXT;
+  wiki_article_language VARCHAR(2);
+  country_language_code VARCHAR(2);
   result double precision;
 BEGIN
-
   wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');
   wiki_article_language := split_part(wikipedia, ':', 1);
+  country_language_code = get_country_language_code(country_code);
 
-  SELECT importance FROM wikipedia_article WHERE language = wiki_article_language AND title = wiki_article_title ORDER BY importance DESC LIMIT 1 INTO result;
+  SELECT importance
+  FROM wikipedia_article
+  WHERE title = wiki_article_title
+  ORDER BY (language = wiki_article_language) DESC,
+           (language = country_language_code) DESC,
+           (language = 'en') DESC,
+           importance DESC
+  LIMIT 1
+  INTO result;
+
   IF result IS NOT NULL THEN
     return result;
+  ELSE
+    return 0.75-(place_rank::double precision/40);
   END IF;
 
-  langs := ARRAY['english','country','ar','bg','ca','cs','da','de','en','es','eo','eu','fa','fr','ko','hi','hr','id','it','he','lt','hu','ms','nl','ja','no','pl','pt','kk','ro','ru','sk','sl','sr','fi','sv','tr','uk','vi','vo','war','zh'];
-  i := 1;
-
-  WHILE langs[i] IS NOT NULL LOOP
-
-  -- try default language for this country, English and then every other language for possible match
-    wiki_article_language := CASE WHEN langs[i] = 'english' THEN 'en' WHEN langs[i] = 'country' THEN get_country_language_code(country_code) ELSE langs[i] END;
-
-  SELECT importance FROM wikipedia_article WHERE language = wiki_article_language AND title = wiki_article_title ORDER BY importance DESC LIMIT 1 INTO result;
-    IF result IS NOT NULL THEN
-      return result;
-    END IF;
-
-      IF result IS NOT NULL THEN
-        return result;
-      END IF;
-    i := i + 1;
-  END LOOP;
-  -- return default calculated value if no match found
-    IF place_rank IS NOT NULL THEN
-      return 0.75-(place_rank::double precision/40);
-    END IF;
   RETURN NULL;
 END;
 $$

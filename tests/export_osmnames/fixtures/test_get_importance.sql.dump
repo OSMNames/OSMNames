@@ -1,0 +1,97 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET search_path = public, pg_catalog;
+
+DROP INDEX IF EXISTS public.idx_wikipedia_article_language_title;
+DROP INDEX IF EXISTS public.idx_osm_id;
+ALTER TABLE IF EXISTS ONLY public.wikipedia_article DROP CONSTRAINT IF EXISTS pagelinks_pkey;
+ALTER TABLE IF EXISTS ONLY public.country_name DROP CONSTRAINT IF EXISTS country_name_pkey;
+DROP TABLE IF EXISTS public.wikipedia_article;
+DROP TABLE IF EXISTS public.country_name;
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: country_name; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE country_name (
+    country_code character varying(2) NOT NULL,
+    name hstore,
+    country_default_language_code character varying(2),
+    partition integer
+);
+
+
+--
+-- Name: wikipedia_article; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE wikipedia_article (
+    language text NOT NULL,
+    title text NOT NULL,
+    langcount integer,
+    othercount integer,
+    totalcount integer,
+    lat double precision,
+    lon double precision,
+    importance double precision,
+    osm_type character(1),
+    osm_id bigint,
+    infobox_type text,
+    population bigint,
+    website text
+);
+
+
+--
+-- Name: country_name country_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY country_name
+    ADD CONSTRAINT country_name_pkey PRIMARY KEY (country_code);
+
+
+--
+-- Name: wikipedia_article pagelinks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY wikipedia_article
+    ADD CONSTRAINT pagelinks_pkey PRIMARY KEY (language, title);
+
+
+--
+-- Name: idx_osm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_id ON wikipedia_article USING btree (osm_type, osm_id);
+
+
+--
+-- Name: idx_wikipedia_article_language_title; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_wikipedia_article_language_title ON wikipedia_article USING btree (language, title);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
