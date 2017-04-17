@@ -11,9 +11,10 @@ def import_osm():
     sanatize_for_import()
     import_pbf_file()
     create_custom_columns()
+    create_indizes()
     create_helper_tables()
-    create_functions()
     prepare_imported_data()
+
 
 def download_pbf():
     if settings.get("PBF_FILE"):
@@ -55,6 +56,10 @@ def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
 
 
+def create_indizes():
+    exec_sql_from_file("create_indizes.sql", cwd=os.path.dirname(__file__))
+
+
 def create_helper_tables():
     create_country_name_table()
     create_osm_grid_table()
@@ -70,13 +75,10 @@ def create_osm_grid_table():
     psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
-def create_functions():
-    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
-
-
 def prepare_imported_data():
     delete_unusable_entries()
-    ranking_partitioning()
+    set_place_ranks()
+    set_country_codes()
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_streets()
@@ -87,8 +89,12 @@ def delete_unusable_entries():
     exec_sql_from_file("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
 
 
-def ranking_partitioning():
-    exec_sql_from_file("02_ranking_partitioning.sql", cwd=os.path.dirname(__file__))
+def set_place_ranks():
+    exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__))
+
+
+def set_country_codes():
+    exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
 
 
 def determine_linked_places():

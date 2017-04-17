@@ -9,7 +9,7 @@ from helpers.database import Tables
 @pytest.fixture(scope="function")
 def schema(engine):
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('../fixtures/test_prepare_housenumbers.sql.dump', cwd=current_directory)
+    exec_sql_from_file('../fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
 
 
 @pytest.fixture(scope="function")

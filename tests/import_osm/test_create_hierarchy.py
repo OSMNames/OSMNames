@@ -3,14 +3,13 @@ import os
 
 from geoalchemy2.elements import WKTElement
 from osmnames.helpers.database import exec_sql_from_file
-from osmnames.import_osm.import_osm import create_hierarchy, create_functions
+from osmnames.import_osm.import_osm import create_hierarchy
 
 
 @pytest.fixture(scope="function")
 def schema(engine):
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_create_hierarchy_schema.sql.dump', cwd=current_directory)
-    create_functions()
+    exec_sql_from_file('fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
 
 
 def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):

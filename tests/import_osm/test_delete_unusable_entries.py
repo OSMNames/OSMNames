@@ -9,7 +9,7 @@ from osmnames.import_osm import import_osm
 @pytest.fixture(scope="module")
 def schema():
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_delete_unusable_entries_schema.sql.dump', cwd=current_directory)
+    exec_sql_from_file('fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
 
 
 def test_osm_polygon_with_blank_names_get_deleted(session, schema, tables):
