@@ -40,4 +40,6 @@ def exists(query, user=settings.get('DB_USER'), database=settings.get('DB_NAME')
 
 
 def vacuum_database():
+    log.info("start vacuum database")
     exec_sql('VACUUM ANALYZE')
+    log.info("finished vacuum database")

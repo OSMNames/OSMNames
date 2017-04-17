@@ -76,7 +76,6 @@ def create_osm_grid_table():
 
 
 def prepare_imported_data():
-    vacuum_database()
     delete_unusable_entries()
     set_country_codes()
     set_place_ranks()
@@ -104,7 +103,7 @@ def determine_linked_places():
 
 
 def create_hierarchy():
-    psql_exec("create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():
