@@ -28,5 +28,5 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 UPDATE osm_polygon SET place_rank = get_place_rank(type, admin_level);
-UPDATE osm_linestring SET place_rank = get_place_rank(type);
-UPDATE osm_point SET place_rank = get_place_rank(type);
+UPDATE osm_linestring SET place_rank = get_place_rank(type, admin_level);
+UPDATE osm_point SET place_rank = get_place_rank(type, admin_level);
