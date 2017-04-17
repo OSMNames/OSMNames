@@ -1,7 +1,7 @@
 import os
 
 from subprocess import check_call
-from osmnames.helpers.database import exec_sql, psql_exec, exec_sql_from_file
+from osmnames.helpers.database import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 
@@ -76,17 +76,19 @@ def create_osm_grid_table():
 
 
 def prepare_imported_data():
+    vacuum_database()
     delete_unusable_entries()
-    set_place_ranks()
     set_country_codes()
+    set_place_ranks()
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_streets()
     prepare_housenumbers()
+    vacuum_database()
 
 
 def delete_unusable_entries():
-    exec_sql_from_file("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
 
 
 def set_place_ranks():
@@ -98,12 +100,12 @@ def set_country_codes():
 
 
 def determine_linked_places():
-    exec_sql_from_file("03_determine_linked_places.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
 
 
 def create_hierarchy():
-    psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    psql_exec("create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():
-    exec_sql_from_file("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))

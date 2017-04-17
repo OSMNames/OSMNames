@@ -12,7 +12,7 @@ HOUSENUMBERS_EXPORT_FILE_PATH = "{}/housenumbers.tsv".format(settings.get("EXPOR
 
 def export_osmnames():
     create_functions()
-    prepare_data()
+    create_views()
     export_tsv()
     export_housenumbers()
     gzip_tsv()
@@ -22,32 +22,32 @@ def create_functions():
     exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
 
 
-def prepare_data():
-    collect_polygons()
-    collect_points()
-    collect_linestrings()
-    collect_merged_linestrings()
-    create_housenumbes_view()
+def create_views():
+    create_polygons_view()
+    create_points_view()
+    create_linestrings_view()
+    create_merged_linestrings_view()
+    create_housenumbers_view()
 
 
-def collect_polygons():
-    exec_sql_from_file("01_polygons.sql", cwd=os.path.dirname(__file__))
+def create_polygons_view():
+    exec_sql_from_file("create_polygons_view.sql", cwd=os.path.dirname(__file__))
 
 
-def collect_points():
-    exec_sql_from_file("02_points.sql", cwd=os.path.dirname(__file__))
+def create_points_view():
+    exec_sql_from_file("create_points_view.sql", cwd=os.path.dirname(__file__))
 
 
-def collect_linestrings():
-    exec_sql_from_file("03_linestrings.sql", cwd=os.path.dirname(__file__))
+def create_linestrings_view():
+    exec_sql_from_file("create_linestrings_view.sql", cwd=os.path.dirname(__file__))
 
 
-def collect_merged_linestrings():
-    exec_sql_from_file("04_merged_linestrings.sql", cwd=os.path.dirname(__file__))
+def create_merged_linestrings_view():
+    exec_sql_from_file("create_merged_linestrings_view.sql", cwd=os.path.dirname(__file__))
 
 
-def create_housenumbes_view():
-    exec_sql_from_file("05_housenumbers.sql", cwd=os.path.dirname(__file__))
+def create_housenumbers_view():
+    exec_sql_from_file("create_housenumbers_view.sql", cwd=os.path.dirname(__file__))
 
 
 def export_tsv():

@@ -37,3 +37,7 @@ def exists(query, user=settings.get('DB_USER'), database=settings.get('DB_NAME')
     cursor = connection.cursor()
     cursor.execute("SELECT EXISTS({});".format(query))
     return cursor.fetchone()[0]
+
+
+def vacuum_database():
+    exec_sql('VACUUM ANALYZE')
