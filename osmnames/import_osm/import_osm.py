@@ -11,7 +11,6 @@ def import_osm():
     sanatize_for_import()
     import_pbf_file()
     create_custom_columns()
-    create_indizes()
     create_helper_tables()
     prepare_imported_data()
 
@@ -54,10 +53,6 @@ def import_pbf_file():
 
 def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
-
-
-def create_indizes():
-    exec_sql_from_file("create_indizes.sql", cwd=os.path.dirname(__file__))
 
 
 def create_helper_tables():
