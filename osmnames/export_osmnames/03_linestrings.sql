@@ -30,3 +30,4 @@ FROM
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
   getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, languageName,',') AS alternative_names,
   get_parent_info(languageName, parent_id, place_rank) AS parentInfo
+WHERE merged IS NOT TRUE;
