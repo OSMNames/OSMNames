@@ -14,14 +14,12 @@ def schema(engine):
 
 
 def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
-    """ test if parent_id of polygon is set if there is a different polygon, which covers it """
-
     session.add(
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                rank_search=30,
-                partition=10,
+                admin_level=16,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -30,8 +28,9 @@ def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the other polygon",
-                rank_search=25,
-                partition=10,
+                place_rank=22,
+                admin_level=12,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -48,8 +47,9 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                rank_search=30,
-                partition=10,
+                place_rank=22,
+                admin_level=16,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -58,8 +58,9 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon with lower rank covering the other polygon",
-                rank_search=26,
-                partition=10,
+                place_rank=24,
+                admin_level=12,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -68,8 +69,9 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
             tables.osm_polygon(
                 id=3,
                 name="Some Polygon with same rank covering the other polygon",
-                rank_search=30,
-                partition=10,
+                place_rank=22,
+                admin_level=12,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -81,15 +83,13 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
     assert session.query(tables.osm_polygon).get(1).parent_id == 3
 
 
-def test_osm_polygon_parent_id_get_NOT_set_if_rank_is_higher(session, schema, tables):
-    """ do not set the parent_id if the covering polygon has a higher rank """
-
+def test_osm_polygon_parent_id_get_NOT_set_if_admin_level_is_lower(session, schema, tables):
     session.add(
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                rank_search=30,
-                partition=10,
+                admin_level=12,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -98,8 +98,9 @@ def test_osm_polygon_parent_id_get_NOT_set_if_rank_is_higher(session, schema, ta
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the other polygon",
-                rank_search=40,
-                partition=10,
+                place_rank=22,
+                admin_level=16,
+                country_code='ch',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )

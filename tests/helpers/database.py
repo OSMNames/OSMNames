@@ -9,6 +9,10 @@ class Tables:
         self.base.prepare(engine, reflect=True)
 
     @lazy_property.LazyProperty
+    def osm_point(self):
+        return getattr(self.base.classes, 'osm_point')
+
+    @lazy_property.LazyProperty
     def osm_housenumber(self):
         return getattr(self.base.classes, 'osm_housenumber')
 

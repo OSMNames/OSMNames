@@ -102,7 +102,7 @@ CREATE TABLE osm_linestring (
     wikidata character varying,
     admin_level integer,
     geometry geometry(LineString,3857),
-    rank_search integer,
+    place_rank integer,
     country_code character varying,
     parent_id bigint,
     merged boolean

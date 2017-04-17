@@ -16,15 +16,39 @@ SET row_security = off;
 
 SET search_path = public, pg_catalog;
 
+DROP INDEX IF EXISTS public.osm_polygon_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_polygon_geom;
+DROP INDEX IF EXISTS public.osm_point_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_point_geom;
+DROP INDEX IF EXISTS public.osm_linestring_osm_id_idx;
+DROP INDEX IF EXISTS public.osm_linestring_geom;
+DROP INDEX IF EXISTS public.idx_osm_polgyon_geom;
+DROP INDEX IF EXISTS public.idx_osm_point_geom;
+DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
+DROP INDEX IF EXISTS public.idx_osm_linestring_geom;
+ALTER TABLE IF EXISTS ONLY public.osm_polygon DROP CONSTRAINT IF EXISTS osm_polygon_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_point DROP CONSTRAINT IF EXISTS osm_point_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_linestring DROP CONSTRAINT IF EXISTS osm_linestring_pkey;
+ALTER TABLE IF EXISTS public.osm_polygon ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.osm_point ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.osm_linestring ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.osm_polygon_id_seq;
+DROP SEQUENCE IF EXISTS public.osm_point_id_seq;
+DROP SEQUENCE IF EXISTS public.osm_linestring_id_seq;
+DROP TABLE IF EXISTS public.osm_polygon;
+DROP TABLE IF EXISTS public.osm_point;
+DROP TABLE IF EXISTS public.osm_linestring;
+SET search_path = public, pg_catalog;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: osm_linestring_tmp; Type: TABLE; Schema: public; Owner: -
+-- Name: osm_linestring; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE osm_linestring_tmp (
+CREATE TABLE osm_linestring (
     id integer NOT NULL,
     osm_id bigint,
     type character varying,
@@ -38,34 +62,19 @@ CREATE TABLE osm_linestring_tmp (
     wikipedia character varying,
     wikidata character varying,
     admin_level integer,
-    geometry geometry(LineString,3857)
+    geometry geometry(LineString,3857),
+    parent_id bigint,
+    place_rank integer,
+    country_code character varying(2),
+    merged boolean
 );
 
 
 --
--- Name: osm_linestring_tmp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: osm_point; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE osm_linestring_tmp_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: osm_linestring_tmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE osm_linestring_tmp_id_seq OWNED BY osm_linestring_tmp.id;
-
-
---
--- Name: osm_point_tmp; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_point_tmp (
+CREATE TABLE osm_point (
     id integer NOT NULL,
     osm_id bigint,
     type character varying,
@@ -79,38 +88,23 @@ CREATE TABLE osm_point_tmp (
     wikipedia character varying,
     wikidata character varying,
     admin_level integer,
-    geometry geometry(Point,3857)
+    geometry geometry(Point,3857),
+    parent_id bigint,
+    place_rank integer,
+    country_code character varying(2),
+    linked boolean
 );
 
 
 --
--- Name: osm_point_tmp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: osm_polygon; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE osm_point_tmp_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: osm_point_tmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE osm_point_tmp_id_seq OWNED BY osm_point_tmp.id;
-
-
---
--- Name: osm_polygon_tmp; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_polygon_tmp (
+CREATE TABLE osm_polygon (
     id integer NOT NULL,
     osm_id bigint,
     type character varying,
-    country_code character varying,
+    imported_country_code character varying,
     name character varying,
     name_fr character varying,
     name_en character varying,
@@ -121,15 +115,19 @@ CREATE TABLE osm_polygon_tmp (
     wikipedia character varying,
     wikidata character varying,
     admin_level integer,
-    geometry geometry(Geometry,3857)
+    geometry geometry(Geometry,3857),
+    parent_id bigint,
+    place_rank integer,
+    linked_osm_id bigint,
+    country_code character varying(2)
 );
 
 
 --
--- Name: osm_polygon_tmp_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: osm_linestring_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE osm_polygon_tmp_id_seq
+CREATE SEQUENCE osm_linestring_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -138,97 +136,169 @@ CREATE SEQUENCE osm_polygon_tmp_id_seq
 
 
 --
--- Name: osm_polygon_tmp_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: osm_linestring_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE osm_polygon_tmp_id_seq OWNED BY osm_polygon_tmp.id;
-
-
---
--- Name: osm_linestring_tmp id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY osm_linestring_tmp ALTER COLUMN id SET DEFAULT nextval('osm_linestring_tmp_id_seq'::regclass);
+ALTER SEQUENCE osm_linestring_id_seq OWNED BY osm_linestring.id;
 
 
 --
--- Name: osm_point_tmp id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: osm_point_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_point_tmp ALTER COLUMN id SET DEFAULT nextval('osm_point_tmp_id_seq'::regclass);
-
-
---
--- Name: osm_polygon_tmp id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY osm_polygon_tmp ALTER COLUMN id SET DEFAULT nextval('osm_polygon_tmp_id_seq'::regclass);
+CREATE SEQUENCE osm_point_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
--- Name: osm_linestring_tmp osm_linestring_tmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: osm_point_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_linestring_tmp
-    ADD CONSTRAINT osm_linestring_tmp_pkey PRIMARY KEY (id);
-
-
---
--- Name: osm_point_tmp osm_point_tmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY osm_point_tmp
-    ADD CONSTRAINT osm_point_tmp_pkey PRIMARY KEY (id);
+ALTER SEQUENCE osm_point_id_seq OWNED BY osm_point.id;
 
 
 --
--- Name: osm_polygon_tmp osm_polygon_tmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: osm_polygon_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_polygon_tmp
-    ADD CONSTRAINT osm_polygon_tmp_pkey PRIMARY KEY (id);
-
-
---
--- Name: osm_linestring_tmp_geom; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX osm_linestring_tmp_geom ON osm_linestring_tmp USING gist (geometry);
+CREATE SEQUENCE osm_polygon_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
--- Name: osm_linestring_tmp_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: osm_polygon_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-CREATE INDEX osm_linestring_tmp_osm_id_idx ON osm_linestring_tmp USING btree (osm_id);
-
-
---
--- Name: osm_point_tmp_geom; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX osm_point_tmp_geom ON osm_point_tmp USING gist (geometry);
+ALTER SEQUENCE osm_polygon_id_seq OWNED BY osm_polygon.id;
 
 
 --
--- Name: osm_point_tmp_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: osm_linestring id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-CREATE INDEX osm_point_tmp_osm_id_idx ON osm_point_tmp USING btree (osm_id);
-
-
---
--- Name: osm_polygon_tmp_geom; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX osm_polygon_tmp_geom ON osm_polygon_tmp USING gist (geometry);
+ALTER TABLE ONLY osm_linestring ALTER COLUMN id SET DEFAULT nextval('osm_linestring_id_seq'::regclass);
 
 
 --
--- Name: osm_polygon_tmp_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: osm_point id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-CREATE INDEX osm_polygon_tmp_osm_id_idx ON osm_polygon_tmp USING btree (osm_id);
+ALTER TABLE ONLY osm_point ALTER COLUMN id SET DEFAULT nextval('osm_point_id_seq'::regclass);
+
+
+--
+-- Name: osm_polygon id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_polygon ALTER COLUMN id SET DEFAULT nextval('osm_polygon_id_seq'::regclass);
+
+
+--
+-- Name: osm_linestring osm_linestring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_linestring
+    ADD CONSTRAINT osm_linestring_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_point osm_point_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_point
+    ADD CONSTRAINT osm_point_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_polygon osm_polygon_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_polygon
+    ADD CONSTRAINT osm_polygon_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_osm_linestring_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_geom ON osm_linestring USING gist (geometry);
+
+ALTER TABLE osm_linestring CLUSTER ON idx_osm_linestring_geom;
+
+
+--
+-- Name: idx_osm_linestring_merged_false; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring USING btree (merged) WHERE (merged IS NOT TRUE);
+
+
+--
+-- Name: idx_osm_point_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_point_geom ON osm_point USING gist (geometry);
+
+ALTER TABLE osm_point CLUSTER ON idx_osm_point_geom;
+
+
+--
+-- Name: idx_osm_polgyon_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_polgyon_geom ON osm_polygon USING gist (geometry);
+
+ALTER TABLE osm_polygon CLUSTER ON idx_osm_polgyon_geom;
+
+
+--
+-- Name: osm_linestring_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_linestring_geom ON osm_linestring USING gist (geometry);
+
+
+--
+-- Name: osm_linestring_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_linestring_osm_id_idx ON osm_linestring USING btree (osm_id);
+
+
+--
+-- Name: osm_point_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_point_geom ON osm_point USING gist (geometry);
+
+
+--
+-- Name: osm_point_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_point_osm_id_idx ON osm_point USING btree (osm_id);
+
+
+--
+-- Name: osm_polygon_geom; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_polygon_geom ON osm_polygon USING gist (geometry);
+
+
+--
+-- Name: osm_polygon_osm_id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX osm_polygon_osm_id_idx ON osm_polygon USING btree (osm_id);
 
 
 --
