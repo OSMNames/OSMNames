@@ -119,7 +119,7 @@ $$ LANGUAGE 'sql' IMMUTABLE;
 
 
 DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
-CREATE OR REPLACE FUNCTION get_importance(place_rank int, wikipedia VARCHAR, country_code VARCHAR(2)) returns double precision as $$
+CREATE FUNCTION get_importance(place_rank INT, wikipedia VARCHAR, country_code VARCHAR(2)) RETURNS DOUBLE PRECISION as $$
 DECLARE
   wiki_article_title TEXT;
   wiki_article_language VARCHAR(2);
@@ -141,12 +141,10 @@ BEGIN
   INTO result;
 
   IF result IS NOT NULL THEN
-    return result;
+    RETURN result;
   ELSE
-    return 0.75-(place_rank::double precision/40);
+    RETURN 0.75-(place_rank::double precision/40);
   END IF;
-
-  RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;

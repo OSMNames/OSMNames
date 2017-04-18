@@ -6,8 +6,8 @@ SELECT
   alternative_names,
   CASE WHEN osm_id > 0 THEN 'way' ELSE 'relation' END AS osm_type,
   abs(osm_id)::VARCHAR as osm_id,
-  determine_class(getTypeForRelations(linked_osm_id, type, place_rank)) AS class,
-  getTypeForRelations(linked_osm_id, type, place_rank) AS type,
+  determine_class(relation_type) AS class,
+  relation_type,
   ST_X(ST_PointOnSurface(ST_Buffer(ST_Transform(geometry, 4326), 0.0))) AS lon,
   ST_Y(ST_PointOnSurface(ST_Buffer(ST_Transform(geometry, 4326), 0.0))) AS lat,
   place_rank AS place_rank,
@@ -29,6 +29,7 @@ FROM
   osm_polygon,
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
   get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
-  COALESCE(NULLIF(getNameForRelations(linked_osm_id, getTypeForRelations(linked_osm_id, type, place_rank)), ''), languageName) AS relationName,
+  getTypeForRelations(linked_osm_id, type, place_rank) AS relation_type,
+  COALESCE(NULLIF(getNameForRelations(linked_osm_id, relation_type), ''), languageName) AS relationName,
   getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, relationName, ',') AS alternative_names
 ;

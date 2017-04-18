@@ -72,8 +72,8 @@ def create_osm_grid_table():
 
 def prepare_imported_data():
     delete_unusable_entries()
-    set_country_codes()
     set_place_ranks()
+    set_country_codes()
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_streets()
