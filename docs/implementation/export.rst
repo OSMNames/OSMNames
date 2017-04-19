@@ -42,7 +42,7 @@ The data for the TSV is extracted with the help of the pgclimb tool which takes 
 	  --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
 
 	  WHILE current_rank >= 8 LOOP
-	    SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
+	    SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), place_rank, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
 	    IF currentName IS NOT NULL THEN
 	      retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
 	    END IF;
@@ -153,11 +153,11 @@ In order to tackle the problem of relations often being administrative although 
 
 .. code-block:: sql
 
-	CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, rank_search INTEGER) returns TEXT as $$
+	CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, place_rank INTEGER) returns TEXT as $$
 	DECLARE
 	  retVal TEXT;
 	BEGIN
-	IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (rank_search = 16 OR rank_search = 12) THEN
+	IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (place_rank = 16 OR place_rank = 12) THEN
 	  SELECT type FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
 	  IF retVal = 'city' THEN
 	  RETURN retVal;

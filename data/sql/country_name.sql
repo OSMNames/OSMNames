@@ -19,7 +19,7 @@ SET default_with_oids = false;
 --
 DROP TABLE IF EXISTS country_name;
 CREATE TABLE country_name (
-    country_code character varying(2),
+    country_code character varying(2) PRIMARY KEY,
     name hstore,
     country_default_language_code character varying(2),
     partition integer

@@ -4,7 +4,7 @@
 --                               --
 -----------------------------------
 
-DROP FUNCTION IF EXISTS getLanguageName(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
+DROP FUNCTION IF EXISTS getLanguageName(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT) CASCADE;
 CREATE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
 RETURNS TEXT AS $$
 BEGIN
@@ -23,11 +23,11 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 DROP FUNCTION IF EXISTS getTypeForRelations(BIGINT, TEXT, INTEGER);
-CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, rank_search INTEGER) returns TEXT as $$
+CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, place_rank INTEGER) returns TEXT as $$
 DECLARE
   retVal TEXT;
 BEGIN
-IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (rank_search = 16 OR rank_search = 12) THEN
+IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (place_rank = 16 OR place_rank = 12) THEN
   SELECT type FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
   IF retVal = 'city' THEN
   RETURN retVal;
@@ -59,55 +59,50 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-
-DROP FUNCTION IF EXISTS getParentInfo(TEXT, BIGINT, INTEGER, VARCHAR);
-CREATE FUNCTION getParentInfo(name_value TEXT, id_value BIGINT, from_rank INTEGER, delimiter character varying(2)) RETURNS parentInfo AS $$
+DROP FUNCTION IF EXISTS get_parent_info(TEXT, BIGINT, INTEGER);
+CREATE FUNCTION get_parent_info(display_name TEXT, polygon_id BIGINT, current_rank INTEGER) RETURNS parentInfo AS $$
 DECLARE
   retVal parentInfo;
-  current_rank INTEGER;
-  current_id BIGINT;
-  currentName TEXT;
+  current_name TEXT;
+  current_parent_id BIGINT;
 BEGIN
-  current_rank := from_rank;
-  retVal.displayName := name_value;
-  current_id := id_value;
+  current_name := display_name;
+  retVal.displayName := current_name;
 
   IF current_rank BETWEEN 16 AND 20 THEN
     retVal.city := retVal.displayName;
-  ELSE
-    retVal.city := '';
-  END IF;
-  IF current_rank BETWEEN 12 AND 15 THEN
+  ELSIF current_rank BETWEEN 12 AND 15 THEN
     retVal.county := retVal.displayName;
-  ELSE
-    retVal.county := '';
-  END IF;
-  IF current_rank BETWEEN 8 AND 11 THEN
+  ELSIF current_rank BETWEEN 8 AND 11 THEN
     retVal.state := retVal.displayName;
-  ELSE
-    retVal.state := '';
   END IF;
-  --RAISE NOTICE 'finding parent for % with rank %', name_value, from_rank;
 
-  WHILE current_rank >= 8 LOOP
-    SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh), rank_search, parent_id FROM osm_polygon  WHERE id = current_id INTO currentName, current_rank, current_id;
-    IF currentName IS NOT NULL THEN
-      retVal.displayName := retVal.displayName || delimiter || ' ' || currentName;
+  current_parent_id := polygon_id;
+  WHILE current_rank >= 8 AND current_parent_id IS NOT NULL LOOP
+    SELECT
+      getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh),
+      place_rank,
+      parent_id
+    FROM osm_polygon
+    WHERE id = current_parent_id
+    INTO current_name, current_rank, current_parent_id;
+
+    IF current_name IS NOT NULL THEN
+      retVal.displayName := retVal.displayName || ', ' || current_name;
     END IF;
 
-    IF current_rank = 16 THEN
-      retVal.city := currentName;
-    END IF;
-    IF current_rank = 12 THEN
-      retVal.county := currentName;
-    END IF;
-    IF current_rank = 8 THEN
-      retVal.state := currentName;
+    IF current_rank BETWEEN 16 AND 20 THEN
+      retVal.city := current_name;
+    ELSIF current_rank BETWEEN 12 AND 15 THEN
+      retVal.county := current_name;
+    ELSIF current_rank BETWEEN 8 AND 11 THEN
+      retVal.state := current_name;
     END IF;
   END LOOP;
 RETURN retVal;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
 
 
 DROP FUNCTION IF EXISTS country_name(VARCHAR);
@@ -124,46 +119,32 @@ $$ LANGUAGE 'sql' IMMUTABLE;
 
 
 DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
-CREATE OR REPLACE FUNCTION get_importance(rank_search int, wikipedia VARCHAR, country_code VARCHAR(2)) returns double precision as $$
+CREATE FUNCTION get_importance(place_rank INT, wikipedia VARCHAR, country_code VARCHAR(2)) RETURNS DOUBLE PRECISION as $$
 DECLARE
-  langs TEXT[];
-  i INT;
   wiki_article_title TEXT;
-  wiki_article_language TEXT;
+  wiki_article_language VARCHAR(2);
+  country_language_code VARCHAR(2);
   result double precision;
 BEGIN
-
   wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');
   wiki_article_language := split_part(wikipedia, ':', 1);
+  country_language_code = get_country_language_code(country_code);
 
-  SELECT importance FROM wikipedia_article WHERE language = wiki_article_language AND title = wiki_article_title ORDER BY importance DESC LIMIT 1 INTO result;
+  SELECT importance
+  FROM wikipedia_article
+  WHERE title = wiki_article_title
+  ORDER BY (language = wiki_article_language) DESC,
+           (language = country_language_code) DESC,
+           (language = 'en') DESC,
+           importance DESC
+  LIMIT 1
+  INTO result;
+
   IF result IS NOT NULL THEN
-    return result;
+    RETURN result;
+  ELSE
+    RETURN 0.75-(place_rank::double precision/40);
   END IF;
-
-  langs := ARRAY['english','country','ar','bg','ca','cs','da','de','en','es','eo','eu','fa','fr','ko','hi','hr','id','it','he','lt','hu','ms','nl','ja','no','pl','pt','kk','ro','ru','sk','sl','sr','fi','sv','tr','uk','vi','vo','war','zh'];
-  i := 1;
-
-  WHILE langs[i] IS NOT NULL LOOP
-
-  -- try default language for this country, English and then every other language for possible match
-    wiki_article_language := CASE WHEN langs[i] = 'english' THEN 'en' WHEN langs[i] = 'country' THEN get_country_language_code(country_code) ELSE langs[i] END;
-
-  SELECT importance FROM wikipedia_article WHERE language = wiki_article_language AND title = wiki_article_title ORDER BY importance DESC LIMIT 1 INTO result;
-    IF result IS NOT NULL THEN
-      return result;
-    END IF;
-
-      IF result IS NOT NULL THEN
-        return result;
-      END IF;
-    i := i + 1;
-  END LOOP;
-  -- return default calculated value if no match found
-    IF rank_search IS NOT NULL THEN
-      return 0.75-(rank_search::double precision/40);
-    END IF;
-  RETURN NULL;
 END;
 $$
 LANGUAGE plpgsql IMMUTABLE;

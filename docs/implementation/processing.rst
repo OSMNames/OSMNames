@@ -57,7 +57,7 @@ For every geometry type a new table is created since this is far more effective 
       wikidata,
       admin_level,
       geometry,
-      rpc.rank_search AS rank_search,
+      rpc.place_rank AS place_rank,
       rpc.partition AS partition,
       rpc.calculated_country_code AS calculated_country_code,
       NULL::bigint AS parent_id,
@@ -141,7 +141,7 @@ The pre-initialized table country_osm_grid is used to determine the partition of
 	DECLARE
 	  result INTEGER;
 	BEGIN
-	  SELECT partition, calculated_country_code from osm_polygon where ST_Within(ST_PointOnSurface(geom), geometry) AND rank_search = 4 AND NOT partition = 0 INTO result;
+	  SELECT partition, calculated_country_code from osm_polygon where ST_Within(ST_PointOnSurface(geom), geometry) AND place_rank = 4 AND NOT partition = 0 INTO result;
 	    RETURN result;
 	END;
 	$$ LANGUAGE plpgsql;
@@ -175,12 +175,12 @@ In order to create the *display_name*, the parent feature of every feature is de
 
 .. code-block:: sql
 
-	CREATE OR REPLACE FUNCTION determineParentPlace(id_value BIGINT, partition_value INT, rank_search_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
+	CREATE OR REPLACE FUNCTION determineParentPlace(id_value BIGINT, partition_value INT, place_rank_value INT, geometry_value GEOMETRY) RETURNS BIGINT AS $$
 	DECLARE
 	  retVal BIGINT;
 	BEGIN
-	  FOR current_rank  IN REVERSE rank_search_value..1 LOOP
-	     SELECT id FROM osm_polygon WHERE partition=partition_value AND rank_search = current_rank AND NOT id=id_value AND ST_Contains(geometry, geometry_value) AND NOT ST_Equals(geometry, geometry_value) INTO retVal;
+	  FOR current_rank  IN REVERSE place_rank_value..1 LOOP
+	     SELECT id FROM osm_polygon WHERE partition=partition_value AND place_rank = current_rank AND NOT id=id_value AND ST_Contains(geometry, geometry_value) AND NOT ST_Equals(geometry, geometry_value) INTO retVal;
 	     IF retVal IS NOT NULL THEN
 	      return retVal;
 	    END IF;
@@ -210,7 +210,7 @@ For every partition (country), all street segments that are contained in feature
 	BEGIN
 	  FOR current_partition  IN 1..255 LOOP
 	    FOR current_rank  IN REVERSE 22..4 LOOP
-	       PERFORM findRoadsWithinGeometry(id, current_partition, geometry) FROM osm_polygon WHERE partition = current_partition AND rank_search = current_rank;
+	       PERFORM findRoadsWithinGeometry(id, current_partition, geometry) FROM osm_polygon WHERE partition = current_partition AND place_rank = current_rank;
 	    END LOOP;
 	  END LOOP;
 	END;
@@ -239,7 +239,7 @@ In order to merge streets segments that belong together, a new table osm_merged_
 	 	ST_UNION(array_agg(ST_MakeValid(a.geometry))) AS geometry,
 	 	bit_and(a.partition) AS partition,
 	 	max(a.calculated_country_code) AS calculated_country_code,
-	 	min(a.rank_search) AS rank_search,
+	 	min(a.place_rank) AS place_rank,
 	 	a.parent_id 
 		FROM
 			osm_linestring AS a,

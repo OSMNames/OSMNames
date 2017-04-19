@@ -9,6 +9,10 @@ class Tables:
         self.base.prepare(engine, reflect=True)
 
     @lazy_property.LazyProperty
+    def osm_point(self):
+        return getattr(self.base.classes, 'osm_point')
+
+    @lazy_property.LazyProperty
     def osm_housenumber(self):
         return getattr(self.base.classes, 'osm_housenumber')
 
@@ -39,3 +43,11 @@ class Tables:
     @lazy_property.LazyProperty
     def osm_point_tmp(self):
         return getattr(self.base.classes, 'osm_point_tmp')
+
+    @lazy_property.LazyProperty
+    def wikipedia_article(self):
+        return getattr(self.base.classes, 'wikipedia_article')
+
+    @lazy_property.LazyProperty
+    def country_name(self):
+        return getattr(self.base.classes, 'country_name')

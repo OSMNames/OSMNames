@@ -1,15 +1,17 @@
 import os
+
 from subprocess import check_call
-from osmnames.helpers.database import psql_exec, exec_sql_from_file
+from osmnames.helpers.database import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 
 
 def import_osm():
     download_pbf()
+    sanatize_for_import()
     import_pbf_file()
+    create_custom_columns()
     create_helper_tables()
-    create_functions()
     prepare_imported_data()
 
 
@@ -21,6 +23,10 @@ def download_pbf():
     url = settings.get("PBF_FILE_URL")
     destination_dir = settings.get("IMPORT_DIR")
     check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
+
+
+def sanatize_for_import():
+    exec_sql('DROP TABLE IF EXISTS osm_linestring, osm_point, osm_polygon, osm_housenumber CASCADE')
 
 
 def import_pbf_file():
@@ -45,6 +51,10 @@ def import_pbf_file():
     ])
 
 
+def create_custom_columns():
+    exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
+
+
 def create_helper_tables():
     create_country_name_table()
     create_osm_grid_table()
@@ -60,35 +70,36 @@ def create_osm_grid_table():
     psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
-def create_functions():
-    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
-
-
 def prepare_imported_data():
     delete_unusable_entries()
-    ranking_partitioning()
+    set_place_ranks()
+    set_country_codes()
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_streets()
     prepare_housenumbers()
+    vacuum_database()
 
 
 def delete_unusable_entries():
-    exec_sql_from_file("01_delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
 
 
-def ranking_partitioning():
-    exec_sql_from_file("02_ranking_partitioning.sql", cwd=os.path.dirname(__file__))
+def set_place_ranks():
+    exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__))
+
+
+def set_country_codes():
+    exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
 
 
 def determine_linked_places():
-    exec_sql_from_file("03_determine_linked_places.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
 
 
 def create_hierarchy():
-    # does not work with exec_sql_from_file
-    psql_exec("04_create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
 
 
 def merge_corresponding_streets():
-    exec_sql_from_file("05_merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("merge_corresponding_streets.sql", cwd=os.path.dirname(__file__))

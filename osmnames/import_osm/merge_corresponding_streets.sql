@@ -17,7 +17,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     max(a.wikidata) AS wikidata,
     ST_UNION(array_agg(a.geometry)) AS geometry,
     max(a.country_code) AS country_code,
-    min(a.rank_search) AS rank_search,
+    min(a.place_rank) AS place_rank,
     a.parent_id
   FROM
     osm_linestring AS a,
@@ -39,7 +39,4 @@ UPDATE osm_linestring SET merged = TRUE WHERE id IN
   (SELECT  unnest(member_ids) FROM osm_merged_multi_linestring);
 
 --create index
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_merged_false ON osm_linestring (merged) WHERE merged IS FALSE;
-
-
-
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_merged_false ON osm_linestring (merged) WHERE merged IS NOT TRUE;
