@@ -358,14 +358,6 @@ ALTER TABLE ONLY osm_relation_member ALTER COLUMN id SET DEFAULT nextval('osm_re
 
 
 --
--- Name: country_osm_grid country_osm_grid_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY country_osm_grid
-    ADD CONSTRAINT country_osm_grid_pkey PRIMARY KEY (country_code);
-
-
---
 -- Name: osm_housenumber osm_housenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 

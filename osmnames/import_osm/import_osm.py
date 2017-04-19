@@ -4,12 +4,14 @@ from subprocess import check_call
 from osmnames.database.functions import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
+from osmnames import consistency_check
 
 
 def import_osm():
     download_pbf()
     sanatize_for_import()
     import_pbf_file()
+    create_osm_elements_view()
     create_custom_columns()
     create_helper_tables()
     prepare_imported_data()
@@ -49,6 +51,10 @@ def import_pbf_file():
         "-write",
         "-overwritecache",
     ])
+
+
+def create_osm_elements_view():
+    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
 
 def create_custom_columns():
@@ -91,6 +97,7 @@ def set_place_ranks():
 
 def set_country_codes():
     exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
+    consistency_check.missing_country_codes()
 
 
 def determine_linked_places():
@@ -99,6 +106,7 @@ def determine_linked_places():
 
 def create_hierarchy():
     exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
+    consistency_check.missing_parent_ids()
 
 
 def merge_corresponding_streets():

@@ -15,3 +15,5 @@ PBF_FILE = os.getenv('PBF_FILE', '')
 PBF_FILE_URL = os.getenv('PBF_FILE_URL', '')
 # credits to nominatim for providing the precalculated data
 WIKIPEDIA_DUMP_URL = 'http://www.nominatim.org/data/wikipedia_article.sql.bin'
+
+CONSISTENCY_CHECK = os.getenv('CONSISTENCY_CHECK', True)
