@@ -1,3 +1,5 @@
+import os
+import time
 import psycopg2
 
 from subprocess import check_call
@@ -46,3 +48,9 @@ def vacuum_database():
     log.info("start vacuum database")
     exec_sql('VACUUM ANALYZE')
     log.info("finished vacuum database")
+
+
+def wait_for_database():
+    while os.system("psql --username=postgres postgres -c 'select 1' > /dev/null 2>&1"):
+        print("waiting for postgresql")
+        time.sleep(2)

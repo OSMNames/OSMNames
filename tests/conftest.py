@@ -6,12 +6,13 @@ from geoalchemy2 import Geometry # NOQA
 
 from osmnames import settings
 from osmnames.init_database.init_database import init_database
-from osmnames.database.functions import exec_sql
+from osmnames.database.functions import exec_sql, wait_for_database
 from osmnames.database.tables import Tables
 
 
 @pytest.fixture(scope="module")
 def engine():
+    wait_for_database()
     _recreate_database()
 
     engine = create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
