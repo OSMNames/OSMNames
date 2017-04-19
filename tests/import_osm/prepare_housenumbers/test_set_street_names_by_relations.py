@@ -1,9 +1,9 @@
 import os
 import pytest
 
-from osmnames.helpers.database import exec_sql_from_file
+from osmnames.database.functions import exec_sql_from_file
 from osmnames.import_osm.prepare_housenumbers import set_street_names_by_relations
-from helpers.database import Tables
+from osmnames.database.tables import Tables
 
 
 @pytest.fixture(scope="function")

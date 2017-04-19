@@ -1,7 +1,7 @@
 import os
 
 from subprocess import check_call
-from osmnames.helpers.database import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
+from osmnames.database.functions import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 

@@ -1,5 +1,5 @@
 from subprocess import check_call
-from osmnames.helpers.database import exec_sql, exists
+from osmnames.database.functions import exec_sql, exists
 from osmnames import settings
 
 

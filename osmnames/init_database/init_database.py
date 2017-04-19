@@ -1,5 +1,5 @@
 import os
-from osmnames.helpers.database import exec_sql, exec_sql_from_file, exists
+from osmnames.database.functions import exec_sql, exec_sql_from_file, exists
 from osmnames import settings
 
 

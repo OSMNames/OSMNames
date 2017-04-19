@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from osmnames.helpers.database import exec_sql_from_file
+from osmnames.database.functions import exec_sql_from_file
 from osmnames.import_osm.import_osm import set_place_ranks
 
 

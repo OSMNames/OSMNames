@@ -1,6 +1,6 @@
 import os
 
-from osmnames.helpers.database import exec_sql_from_file
+from osmnames.database.functions import exec_sql_from_file
 
 
 def prepare_housenumbers():

@@ -51,3 +51,7 @@ class Tables:
     @lazy_property.LazyProperty
     def country_name(self):
         return getattr(self.base.classes, 'country_name')
+
+    @lazy_property.LazyProperty
+    def country_osm_grid(self):
+        return getattr(self.base.classes, 'country_osm_grid')

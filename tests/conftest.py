@@ -6,8 +6,8 @@ from geoalchemy2 import Geometry # NOQA
 
 from osmnames import settings
 from osmnames.init_database.init_database import init_database
-from osmnames.helpers.database import exec_sql
-from helpers.database import Tables
+from osmnames.database.functions import exec_sql
+from osmnames.database.tables import Tables
 
 
 @pytest.fixture(scope="module")
