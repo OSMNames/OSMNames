@@ -1,0 +1,6 @@
+psycopg2
+simple-settings
+sqlalchemy
+geoalchemy2
+pytest
+lazy-property

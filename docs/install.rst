@@ -24,37 +24,26 @@ Installations assume you use UTF8. You can set the locale by doing this:
 
 	  	git clone https://github.com/geometalab/OSMNames.git
 
-2.	Either download specific PBF manually or the planet dump with the following Docker task
-	
-	  .. code-block:: bash
-		
-		docker-compose run download-pbf
-		wget --directory-prefix=./data http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+2.	Specify the PBF file in the `.env` file
 
-3.	Setup the database
 	  .. code-block:: bash
-	
-		docker-compose up -d postgres
 
-4.	Import wikipedia data
-	  .. code-block:: bash
-	
-		docker-compose run import-wikipedia
+		PBF_FILE_URL=http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
 
-5.	Create the schema
-	  .. code-block:: bash
-	
-		docker-compose run schema
 
-6.	Import the OSM data from the PBF file
-	  .. code-block:: bash
-	
-		docker-compose run import-osm
+	Alternatively place a custom PBF file in the `data/import` directory and define it in the `.env` file
 
-7.	Export the data to a TSV file
 	  .. code-block:: bash
-	
-		docker-compose run export-osmnames
+
+		PBF_FILE=Zuerich.osm.pbf
+
+	If a `PBF_FILE` is defined, the download will be skipped.
+
+3.	Now run OSMNames
+	  .. code-block:: bash
+
+		docker-compose run --rm osmnames
+
 
 That’s it. The export file can be found in the data folder.
 

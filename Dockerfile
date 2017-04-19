@@ -9,8 +9,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libleveldb-dev \
       libgeos-dev \
       postgresql-client-9.6 \
+      python-pip \
+      python-psycopg2 \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
  && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip
+RUN pip install -U setuptools
 
 RUN go get github.com/lukasmartinelli/pgclimb \
  && go install github.com/lukasmartinelli/pgclimb
@@ -25,6 +30,8 @@ RUN apt-get purge -y --auto-remove \
       && rm -rf /var/lib/apt/lists/*
 
 ADD . /osmnames
-WORKDIR /osmnames/src
+WORKDIR /osmnames
 
-CMD ["./run.sh"]
+RUN pip install -r requirements.txt.lock
+
+CMD ["./run.py"]

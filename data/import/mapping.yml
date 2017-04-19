@@ -1,0 +1,274 @@
+tables:
+  linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - name: name_fr
+      key: name:fr
+      type: string
+    - name: name_en
+      key: name:en
+      type: string
+    - name: name_de
+      key: name:de
+      type: string
+    - name: name_es
+      key: name:es
+      type: string
+    - name: name_ru
+      key: name:ru
+      type: string
+    - name: name_zh
+      key: name:zh
+      type: string
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      highway:
+      - motorway
+      - motorway_link
+      - trunk
+      - trunk_link
+      - primary
+      - primary_link
+      - secondary
+      - secondary_link
+      - tertiary
+      - tertiary_link
+      - unclassified
+      - residential
+      - road
+      - living_street
+      - raceway
+      - construction
+      - track
+      - service
+      - path
+      - cycleway
+      - steps
+      - bridleway
+      - footway
+      - corridor
+      - crossing
+      waterway:
+      - river # 1
+      - riverbank # 2
+      - stream  # 3
+      - canal # 4
+      - drain # 5
+      - ditch # 6
+      natural:
+      - mountain_range  # 7
+  polygon:
+    type: polygon
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: country_code
+      name: imported_country_code
+      type: string
+      key: ISO3166-1:alpha2
+    - key: name
+      name: name
+      type: string
+    - name: name_fr
+      key: name:fr
+      type: string
+    - name: name_en
+      key: name:en
+      type: string
+    - name: name_de
+      key: name:de
+      type: string
+    - name: name_es
+      key: name:es
+      type: string
+    - name: name_ru
+      key: name:ru
+      type: string
+    - name: name_zh
+      key: name:zh
+      type: string
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      place:
+      - city
+      - borough
+      - suburb
+      - quarter
+      - neighbourhood
+      - town
+      - village
+      - hamlet
+      - island  # 8
+      landuse:
+      - residential
+      - reservoir # 9
+      boundary:
+      - administrative
+      natural:
+      - water  # 10
+      - bay # 11
+      - desert  #12
+  point:
+    type: point
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - name: name_fr
+      key: name:fr
+      type: string
+    - name: name_en
+      key: name:en
+      type: string
+    - name: name_de
+      key: name:de
+      type: string
+    - name: name_es
+      key: name:es
+      type: string
+    - name: name_ru
+      key: name:ru
+      type: string
+    - name: name_zh
+      key: name:zh
+      type: string
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      place:
+      - city
+      - borough
+      - suburb
+      - quarter
+      - neighbourhood
+      - town
+      - village
+      - hamlet
+      - island
+      - ocean # 13
+      - sea # 14
+      - continent # 15
+      - country # 16
+      - state # 17
+      natural:
+      - peak  # 18
+      - volcano # 19
+      - hill  # 20
+      - mountain_range
+  housenumber:
+    type: point
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - name: type
+      type: mapping_value
+    - key: addr:country
+      name: country
+      type: string
+    - key: addr:street
+      name: street
+      type: string
+    - key: addr:postcode
+      name: postcode
+      type: string
+    - key: addr:city
+      name: city
+      type: string
+    - key: addr:housenumber
+      name: housenumber
+      type: string
+    mapping:
+      addr:housenumber:
+      - __any__
+  relation:
+    type: relation
+    columns:
+    - name: osm_id
+      type: id
+    - key: name
+      name: name
+      type: string
+    - key: type
+      name: type
+      type: string
+    mapping:
+      type:
+      - associatedStreet
+      - street
+  relation_member:
+    type: relation_member
+    columns:
+    - name: osm_id
+      type: id
+    - name: member_id
+      type: member_id
+    - name: role
+      type: member_role
+    - name: member_type
+      type: member_type
+    - name: geometry
+      type: geometry
+    - key: type
+      name: relation_type
+      type: string
+    - name: name
+      key: name
+      type: string
+      from_member: true
+    mapping:
+      landuse:
+      - residential
+      boundary:
+      - administrative
+      type:
+      - associatedStreet
+      - street
+tags:
+  load_all: true
