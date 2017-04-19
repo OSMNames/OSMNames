@@ -2,7 +2,7 @@ import os
 import gzip
 import shutil
 from subprocess import check_call
-from osmnames.helpers.database import exec_sql_from_file
+from osmnames.database.functions import exec_sql_from_file
 from osmnames import settings
 
 

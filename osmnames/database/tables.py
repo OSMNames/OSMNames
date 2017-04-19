@@ -1,11 +1,22 @@
 import lazy_property
 
 from sqlalchemy.ext.automap import automap_base
+from sqlalchemy import MetaData, Table, Column, Integer
+
+from osmnames.database.connection import engine
+
+
+def tables():
+    return Tables(engine)
 
 
 class Tables:
     def __init__(self, engine):
-        self.base = automap_base()
+        metadata = MetaData(engine)
+
+        self._define_tables_without_primary_keys(metadata)
+
+        self.base = automap_base(metadata=metadata)
         self.base.prepare(engine, reflect=True)
 
     @lazy_property.LazyProperty
@@ -51,3 +62,11 @@ class Tables:
     @lazy_property.LazyProperty
     def country_name(self):
         return getattr(self.base.classes, 'country_name')
+
+    @lazy_property.LazyProperty
+    def country_osm_grid(self):
+        return getattr(self.base.classes, 'country_osm_grid')
+
+    def _define_tables_without_primary_keys(self, metadata):
+        # sqlalchemys automap only works with primary keys, even though country_code is not unique in production
+        Table('country_osm_grid', metadata, Column('country_code', Integer, primary_key=True))

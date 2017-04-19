@@ -1,29 +1,23 @@
 import pytest
 
-from sqlalchemy.engine import create_engine
-from sqlalchemy.orm.session import Session
 from geoalchemy2 import Geometry # NOQA
+from sqlalchemy.orm.session import Session
 
 from osmnames import settings
 from osmnames.init_database.init_database import init_database
-from osmnames.helpers.database import exec_sql
-from helpers.database import Tables
+from osmnames.database import connection
+from osmnames.database.tables import Tables
+from osmnames.database.functions import exec_sql, wait_for_database
 
 
 @pytest.fixture(scope="module")
 def engine():
+    wait_for_database()
     _recreate_database()
 
-    engine = create_engine("postgresql+psycopg2://{user}:{password}@{host}/{db_name}".format(
-        user=settings.get("DB_USER"),
-        password=settings.get("DB_PASSWORD"),
-        host=settings.get("DB_HOST"),
-        db_name=settings.get("DB_NAME"),
-        ))
+    yield connection.engine
 
-    yield engine
-
-    engine.dispose()
+    connection.engine.dispose()
 
 
 @pytest.fixture(scope="function")
@@ -35,7 +29,7 @@ def session(engine):
     session.close()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def tables(engine):
     return Tables(engine)
 
