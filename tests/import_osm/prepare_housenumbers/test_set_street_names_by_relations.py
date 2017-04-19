@@ -3,18 +3,12 @@ import pytest
 
 from osmnames.database.functions import exec_sql_from_file
 from osmnames.import_osm.prepare_housenumbers import set_street_names_by_relations
-from osmnames.database.tables import Tables
 
 
 @pytest.fixture(scope="function")
 def schema(engine):
     current_directory = os.path.dirname(os.path.realpath(__file__))
     exec_sql_from_file('../fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
-
-
-@pytest.fixture(scope="function")
-def tables(engine):
-    return Tables(engine)
 
 
 def test_when_street_relation_exists(session, schema, tables):

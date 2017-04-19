@@ -3,6 +3,12 @@ import lazy_property
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy import MetaData, Table, Column, Integer
 
+from osmnames.database.connection import engine
+
+
+def tables():
+    return Tables(engine)
+
 
 class Tables:
     def __init__(self, engine):
