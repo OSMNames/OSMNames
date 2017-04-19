@@ -18,9 +18,8 @@ $$ LANGUAGE plpgsql;
 
 DO $$
 BEGIN
-  PERFORM set_country_code_for_containing_entities(lower(imported_country_code), geometry)
-          FROM osm_polygon
-          WHERE place_rank = 4
-                AND imported_country_code <> '';
+  PERFORM set_country_code_for_containing_entities(lower(country_code), geometry)
+          FROM country_osm_grid
+          ORDER BY area ASC;
 END
 $$ LANGUAGE plpgsql;
