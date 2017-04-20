@@ -53,12 +53,12 @@ def import_pbf_file():
     ])
 
 
-def create_osm_elements_view():
-    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
-
-
 def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
+
+
+def create_osm_elements_view():
+    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
 
 def create_helper_tables():

@@ -6,13 +6,13 @@ SELECT
   alternative_names,
   'way'::TEXT as osm_type,
   osm_id::VARCHAR AS osm_id,
-  determine_class(type) AS class,
+  class,
   type,
   ST_X(ST_LineInterpolatePoint(ST_Transform(geometry, 4326), 0.5)) AS lon,
   ST_Y(ST_LineInterpolatePoint(ST_Transform(geometry, 4326), 0.5)) AS lat,
   place_rank AS place_rank,
   get_importance(place_rank, wikipedia, country_code) AS importance,
-  COALESCE(name, '') AS street,
+  CASE WHEN class = 'highway' THEN COALESCE(name, '') ELSE '' END AS street,
   COALESCE(parentInfo.city, '') AS city,
   COALESCE(parentInfo.county, '') AS county,
   COALESCE(parentInfo.state, '') AS state,
@@ -29,5 +29,6 @@ FROM
   osm_linestring,
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
   getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, languageName,',') AS alternative_names,
+  determine_class(type) AS class,
   get_parent_info(languageName, parent_id, place_rank) AS parentInfo
 WHERE merged IS NOT TRUE;
