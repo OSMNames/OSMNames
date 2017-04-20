@@ -11,8 +11,8 @@ def import_osm():
     download_pbf()
     sanatize_for_import()
     import_pbf_file()
-    create_osm_elements_view()
     create_custom_columns()
+    create_osm_elements_view() 
     create_helper_tables()
     prepare_imported_data()
 
