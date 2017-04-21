@@ -7,6 +7,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     min(a.osm_id) AS osm_id,
     string_agg(DISTINCT a.type,',') AS type,
     a.name,
+    a.all_tags,
     max(a.name_fr) AS name_fr,
     max(a.name_en) AS name_en,
     max(a.name_de) AS name_de,
@@ -30,7 +31,8 @@ CREATE TABLE osm_merged_multi_linestring AS
     a.id!=b.id
   GROUP BY
     a.parent_id,
-    a.name;
+    a.name,
+    a.all_tags;
 
 ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (id);
 

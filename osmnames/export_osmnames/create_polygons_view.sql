@@ -31,5 +31,5 @@ FROM
   get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
   getTypeForRelations(linked_osm_id, type, place_rank) AS relation_type,
   COALESCE(NULLIF(getNameForRelations(linked_osm_id, relation_type), ''), languageName) AS relationName,
-  getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, relationName, ',') AS alternative_names
+  get_alternative_names(all_tags, name, ',') AS alternative_names
 ;

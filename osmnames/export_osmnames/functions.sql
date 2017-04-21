@@ -187,15 +187,22 @@ RETURNS anyarray AS $$
 $$ LANGUAGE sql;
 
 
-DROP FUNCTION IF EXISTS getAlternativesNames(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, VARCHAR);
-CREATE FUNCTION getAlternativesNames(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT, name TEXT, delimiter character varying)
+-- Gets values for all 'name' tags as defined in http://wiki.openstreetmap.org/wiki/Key:name
+DROP FUNCTION IF EXISTS get_alternative_names(HSTORE, TEXT, VARCHAR);
+CREATE FUNCTION get_alternative_names(all_tags HSTORE, name TEXT, delimiter character varying)
 RETURNS TEXT AS $$
 DECLARE
-  alternativeNames TEXT[];
+  alternative_names TEXT[];
+  key TEXT;
 BEGIN
-  alternativeNames := array_distinct(ARRAY[default_lang, en, fr, de, es, ru, zh]);
-  alternativeNames := array_remove(alternativeNames, '');
-  alternativeNames := array_remove(alternativeNames, name);
-RETURN array_to_string(alternativeNames,delimiter);
+  FOREACH key in ARRAY akeys(all_tags)
+  LOOP
+    IF (key LIKE 'name:%' OR key LIKE '%[_]name') AND (all_tags->key NOT ILIKE name) 
+      THEN
+      alternative_names := array_append(alternative_names, all_tags->key);
+    END IF;
+  END LOOP;
+  alternative_names := array_distinct(alternative_names);
+RETURN array_to_string(alternative_names, delimiter);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;

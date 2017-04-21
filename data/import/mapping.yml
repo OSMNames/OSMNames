@@ -29,6 +29,9 @@ tables:
     - name: name_zh
       key: name:zh
       type: string
+    - name: all_tags
+      key: null
+      type: hstore_tags
     - key: wikipedia
       name: wikipedia
       type: string
@@ -108,6 +111,9 @@ tables:
     - name: name_zh
       key: name:zh
       type: string
+    - name: all_tags
+      key: null
+      type: hstore_tags
     - key: wikipedia
       name: wikipedia
       type: string
@@ -167,6 +173,9 @@ tables:
     - name: name_zh
       key: name:zh
       type: string
+    - name: all_tags
+      key: null
+      type: hstore_tags  
     - key: wikipedia
       name: wikipedia
       type: string

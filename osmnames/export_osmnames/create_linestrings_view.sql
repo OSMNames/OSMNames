@@ -28,7 +28,7 @@ SELECT
 FROM
   osm_linestring,
   getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
-  getAlternativesNames(name, name_fr, name_en, name_de, name_es, name_ru, name_zh, languageName,',') AS alternative_names,
   determine_class(type) AS class,
-  get_parent_info(languageName, parent_id, place_rank) AS parentInfo
+  get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
+  get_alternative_names(all_tags, name, ',') AS alternative_names
 WHERE merged IS NOT TRUE;
