@@ -1,3 +1,4 @@
+-- If the 'name' is empty or null, get name in another available language
 -- Order of priority for 'name' is: default name, en, fr, de, es, ru, zh
 DROP FUNCTION IF EXISTS get_name(HSTORE);
 CREATE FUNCTION get_name(all_tags HSTORE) RETURNS TEXT AS $$
