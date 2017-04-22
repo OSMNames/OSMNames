@@ -4,26 +4,9 @@
 --                               --
 -----------------------------------
 
-DROP FUNCTION IF EXISTS getLanguageName(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT) CASCADE;
-CREATE FUNCTION getLanguageName(default_lang TEXT, fr TEXT, en TEXT, de TEXT, es TEXT, ru TEXT, zh TEXT)
-RETURNS TEXT AS $$
-BEGIN
-  RETURN CASE
-    WHEN en NOT IN ('') THEN en
-    WHEN default_lang NOT IN ('') THEN default_lang
-    WHEN fr NOT IN ('') THEN fr
-    WHEN de NOT IN ('') THEN de
-    WHEN es NOT IN ('') THEN es
-    WHEN ru NOT IN ('') THEN ru
-    WHEN zh NOT IN ('') THEN zh
-    ELSE ''
-  END;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
 
-
-DROP FUNCTION IF EXISTS getTypeForRelations(BIGINT, TEXT, INTEGER);
-CREATE OR REPLACE FUNCTION getTypeForRelations(linked_osm_id BIGINT, type_value TEXT, place_rank INTEGER) returns TEXT as $$
+DROP FUNCTION IF EXISTS get_type_for_relations(BIGINT, TEXT, INTEGER);
+CREATE OR REPLACE FUNCTION get_type_for_relations(linked_osm_id BIGINT, type_value TEXT, place_rank INTEGER) returns TEXT as $$
 DECLARE
   retVal TEXT;
 BEGIN
@@ -39,6 +22,7 @@ ELSE
  END IF;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
 
 CREATE OR REPLACE FUNCTION determine_class(type TEXT)
 RETURNS TEXT AS $$
@@ -80,7 +64,7 @@ BEGIN
   current_parent_id := polygon_id;
   WHILE current_rank >= 8 AND current_parent_id IS NOT NULL LOOP
     SELECT
-      getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh),
+      name,
       place_rank,
       parent_id
     FROM osm_polygon
@@ -104,9 +88,8 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-
-DROP FUNCTION IF EXISTS country_name(VARCHAR);
-CREATE FUNCTION country_name(country_code_in VARCHAR(2)) returns TEXT as $$
+DROP FUNCTION IF EXISTS get_country_name(VARCHAR);
+CREATE FUNCTION get_country_name(country_code_in VARCHAR(2)) returns TEXT as $$
   SELECT COALESCE(name -> 'name:en',
                   name -> 'name',
                   name -> 'name:fr',
@@ -166,43 +149,16 @@ $$
 LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS getNameForRelations(BIGINT, TEXT);
-CREATE FUNCTION getNameForRelations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
+DROP FUNCTION IF EXISTS get_name_for_relations(BIGINT, TEXT);
+CREATE FUNCTION get_name_for_relations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
 DECLARE
   retVal TEXT;
 BEGIN
 IF type = 'city' THEN
-  SELECT getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
+  SELECT name FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
   ELSE
   retVal = '';
   END IF;
   return retVal;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
-
-CREATE OR REPLACE FUNCTION array_distinct(anyarray)
-RETURNS anyarray AS $$
-  SELECT ARRAY(SELECT DISTINCT unnest($1))
-$$ LANGUAGE sql;
-
-
--- Gets values for all 'name' tags as defined in http://wiki.openstreetmap.org/wiki/Key:name
-DROP FUNCTION IF EXISTS get_alternative_names(HSTORE, TEXT, VARCHAR);
-CREATE FUNCTION get_alternative_names(all_tags HSTORE, name TEXT, delimiter character varying)
-RETURNS TEXT AS $$
-DECLARE
-  alternative_names TEXT[];
-  key TEXT;
-BEGIN
-  FOREACH key in ARRAY akeys(all_tags)
-  LOOP
-    IF (key LIKE 'name:%' OR key LIKE '%[_]name') AND (all_tags->key NOT ILIKE name) 
-      THEN
-      alternative_names := array_append(alternative_names, all_tags->key);
-    END IF;
-  END LOOP;
-  alternative_names := array_distinct(alternative_names);
-RETURN array_to_string(alternative_names, delimiter);
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;

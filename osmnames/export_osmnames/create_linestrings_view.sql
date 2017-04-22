@@ -2,7 +2,7 @@ DROP MATERIALIZED VIEW IF EXISTS mv_linestrings;
 CREATE MATERIALIZED VIEW mv_linestrings AS
 SELECT
   id,
-  languageName AS name,
+  name,
   alternative_names,
   'way'::TEXT as osm_type,
   osm_id::VARCHAR AS osm_id,
@@ -10,13 +10,13 @@ SELECT
   type,
   ST_X(ST_LineInterpolatePoint(ST_Transform(geometry, 4326), 0.5)) AS lon,
   ST_Y(ST_LineInterpolatePoint(ST_Transform(geometry, 4326), 0.5)) AS lat,
-  place_rank AS place_rank,
+  place_rank,
   get_importance(place_rank, wikipedia, country_code) AS importance,
   CASE WHEN class = 'highway' THEN COALESCE(name, '') ELSE '' END AS street,
   COALESCE(parentInfo.city, '') AS city,
   COALESCE(parentInfo.county, '') AS county,
   COALESCE(parentInfo.state, '') AS state,
-  COALESCE(country_name(country_code), '') AS country,
+  COALESCE(get_country_name(country_code), '') AS country,
   COALESCE(country_code, '') AS country_code,
   parentInfo.displayName  AS display_name,
   ST_XMIN(ST_Transform(geometry, 4326)) AS west,
@@ -27,8 +27,6 @@ SELECT
   wikipedia AS wikipedia
 FROM
   osm_linestring,
-  getLanguageName(name, name_fr, name_en, name_de, name_es, name_ru, name_zh) AS languageName,
   determine_class(type) AS class,
-  get_parent_info(languageName, parent_id, place_rank) AS parentInfo,
-  get_alternative_names(all_tags, name, ',') AS alternative_names
+  get_parent_info(osm_linestring.name, parent_id, place_rank) AS parentInfo
 WHERE merged IS NOT TRUE;

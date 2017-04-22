@@ -11,26 +11,8 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
-    - name: all_tags
-      key: null
+    - key: null
+      name: all_tags
       type: hstore_tags
     - key: wikipedia
       name: wikipedia
@@ -93,26 +75,8 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
-    - name: all_tags
-      key: null
+    - key: null
+      name: all_tags
       type: hstore_tags
     - key: wikipedia
       name: wikipedia
@@ -155,26 +119,8 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
-    - name: all_tags
-      key: null
+    - key: null
+      name: all_tags
       type: hstore_tags  
     - key: wikipedia
       name: wikipedia
