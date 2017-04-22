@@ -13,7 +13,7 @@ def import_osm():
     import_pbf_file()
     create_custom_columns()
     set_names()
-    create_osm_elements_view() 
+    create_osm_elements_view()
     create_helper_tables()
     prepare_imported_data()
 
