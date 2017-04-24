@@ -48,3 +48,29 @@ def test_osm_polygon_country_code_get_set_bases_on_imported_country_code(session
     set_country_codes()
 
     assert session.query(tables.osm_polygon).get(1).country_code == 'ch'
+
+
+def test_osm_polygon_country_code_get_set_based_on_covering_polygon(session, schema, tables):
+    session.add(
+            tables.osm_polygon(
+                id=1,
+                name="Some Polygon with missing country_code",
+                geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
+            )
+        )
+
+    session.add(
+            tables.osm_polygon(
+                id=2,
+                name="Polygon with country_code covering the other polygon",
+                admin_level=4,
+                country_code='ch',
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
+            )
+        )
+
+    session.commit()
+
+    set_country_codes()
+
+    assert session.query(tables.osm_polygon).get(1).country_code == 'ch'
