@@ -22,9 +22,8 @@ BEGIN
                                                AND country_code = country_code_in
                                                AND st_contains(geometry_in, geometry);
 END;
-
-
 $$ LANGUAGE plpgsql;
+
 DO $$
 BEGIN
   PERFORM set_parent_id_for_containing_entities(id, admin_level, country_code, geometry)
