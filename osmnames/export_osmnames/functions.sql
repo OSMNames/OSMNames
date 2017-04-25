@@ -105,7 +105,7 @@ DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
 CREATE FUNCTION get_importance(place_rank INT, wikipedia VARCHAR, country_code VARCHAR(2)) RETURNS DOUBLE PRECISION as $$
 DECLARE
   wiki_article_title TEXT;
-  wiki_article_language VARCHAR(2);
+  wiki_article_language VARCHAR;
   country_language_code VARCHAR(2);
   result double precision;
 BEGIN
