@@ -6,7 +6,7 @@ DECLARE
 BEGIN
   SELECT array_agg(DISTINCT(all_tags -> key))
   FROM unnest(akeys(all_tags)) AS key
-  WHERE (key LIKE 'name:%' OR key LIKE '%[_]name') AND (key NOT ILIKE name)
+  WHERE (key LIKE 'name:%' OR key LIKE '%[_]name') AND (all_tags->key NOT ILIKE name)
   INTO alternative_names;
   RETURN COALESCE(array_to_string(alternative_names, ','), '');
 END;

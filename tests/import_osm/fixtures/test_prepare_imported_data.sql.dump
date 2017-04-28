@@ -29,6 +29,7 @@ DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
 DROP INDEX IF EXISTS public.idx_country_osm_grid_geometry;
+DROP INDEX IF EXISTS public.idx_country_name_country_code;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_polygon DROP CONSTRAINT IF EXISTS osm_polygon_pkey;
@@ -36,6 +37,7 @@ ALTER TABLE IF EXISTS ONLY public.osm_point DROP CONSTRAINT IF EXISTS osm_point_
 ALTER TABLE IF EXISTS ONLY public.osm_merged_multi_linestring DROP CONSTRAINT IF EXISTS osm_merged_multi_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_linestring DROP CONSTRAINT IF EXISTS osm_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_housenumber DROP CONSTRAINT IF EXISTS osm_housenumber_pkey;
+ALTER TABLE IF EXISTS ONLY public.country_name DROP CONSTRAINT IF EXISTS country_name_pkey;
 ALTER TABLE IF EXISTS public.osm_relation_member ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_relation ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_polygon ALTER COLUMN id DROP DEFAULT;
@@ -57,11 +59,24 @@ DROP TABLE IF EXISTS public.osm_merged_multi_linestring;
 DROP TABLE IF EXISTS public.osm_linestring;
 DROP TABLE IF EXISTS public.osm_housenumber;
 DROP TABLE IF EXISTS public.country_osm_grid;
+DROP TABLE IF EXISTS public.country_name;
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
+
+--
+-- Name: country_name; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE country_name (
+    country_code character varying(2) NOT NULL,
+    name hstore,
+    country_default_language_code character varying(2),
+    partition integer
+);
+
 
 --
 -- Name: country_osm_grid; Type: TABLE; Schema: public; Owner: -
@@ -406,6 +421,14 @@ ALTER TABLE ONLY osm_relation_member ALTER COLUMN id SET DEFAULT nextval('osm_re
 
 
 --
+-- Name: country_name country_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY country_name
+    ADD CONSTRAINT country_name_pkey PRIMARY KEY (country_code);
+
+
+--
 -- Name: osm_housenumber osm_housenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -459,6 +482,13 @@ ALTER TABLE ONLY osm_relation_member
 
 ALTER TABLE ONLY osm_relation
     ADD CONSTRAINT osm_relation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_country_name_country_code ON country_name USING btree (country_code);
 
 
 --
