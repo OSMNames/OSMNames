@@ -28,8 +28,7 @@ DO $$
 BEGIN
   PERFORM set_parent_id_for_containing_entities(id, admin_level, country_code, geometry)
           FROM osm_polygon
-          WHERE place_rank <= 22 AND
-                type not in ('water', 'desert', 'bay', 'reservoir')
+          WHERE place_rank <= 22
           ORDER BY place_rank DESC;
 END
 $$ LANGUAGE plpgsql;
