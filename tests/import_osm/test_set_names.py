@@ -84,7 +84,6 @@ def test_alternative_names_do_not_contain_duplicates(session, schema, tables):
             all_tags={"name:fr":"Cervin","name:it":"Cervino","alt_name":"Cervino"}
         )
     )
-    
     session.commit()
     import_osm.set_names()
 
