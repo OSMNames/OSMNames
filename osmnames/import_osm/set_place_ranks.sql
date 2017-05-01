@@ -18,7 +18,8 @@ BEGIN
     WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass','hill') THEN 20
     WHEN type IN ('neighbourhood', 'residential','reservoir','stream') THEN 22
     WHEN type IN ('motorway','trunk','primary','secondary','tertiary','unclassified','residential','road','living_street','raceway','construction','track','crossing',
-                  'riverbank','canal') THEN 26 WHEN type IN ('motorway_link','trunk_link','primary_link','secondary_link','tertiary_link','service','path','cycleway','steps','bridleway','footway','corridor') THEN 27
+                  'riverbank','canal') THEN 26
+    WHEN type IN ('motorway_link','trunk_link','primary_link','secondary_link','tertiary_link','service','path','cycleway','steps','bridleway','footway','corridor') THEN 27
     WHEN type IN ('houses') THEN 28
     WHEN type IN ('house','building','drain','ditch') THEN 30
     WHEN type IN ('quarter') THEN 30

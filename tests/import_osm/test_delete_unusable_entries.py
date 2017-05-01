@@ -14,7 +14,7 @@ def schema():
 
 def test_osm_polygon_with_blank_names_get_deleted(session, schema, tables):
     session.add(tables.osm_polygon(name="gugus"))
-    session.add(tables.osm_polygon(name_en=""))
+    session.add(tables.osm_polygon(name=""))
     session.commit()
 
     import_osm.delete_unusable_entries()
@@ -33,8 +33,8 @@ def test_osm_polygon_with_null_names_get_deleted(session, schema, tables):
 
 
 def test_osm_point_with_blank_names_get_deleted(session, schema, tables):
-    session.add(tables.osm_point(name_de="gugus"))
-    session.add(tables.osm_point(name_en=""))
+    session.add(tables.osm_point(name="gugus"))
+    session.add(tables.osm_point(name=""))
     session.commit()
 
     import_osm.delete_unusable_entries()
@@ -43,8 +43,8 @@ def test_osm_point_with_blank_names_get_deleted(session, schema, tables):
 
 
 def test_osm_linestring_with_blank_names_get_deleted(session, schema, tables):
-    session.add(tables.osm_linestring(name_zh="gugus"))
-    session.add(tables.osm_linestring(name_en=""))
+    session.add(tables.osm_linestring(name="gugus"))
+    session.add(tables.osm_linestring(name=""))
     session.commit()
 
     import_osm.delete_unusable_entries()

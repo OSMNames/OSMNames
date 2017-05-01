@@ -29,13 +29,15 @@ DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
 DROP INDEX IF EXISTS public.idx_country_osm_grid_geometry;
+DROP INDEX IF EXISTS public.idx_country_name_country_code;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_polygon DROP CONSTRAINT IF EXISTS osm_polygon_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_point DROP CONSTRAINT IF EXISTS osm_point_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_merged_multi_linestring DROP CONSTRAINT IF EXISTS osm_merged_multi_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_linestring DROP CONSTRAINT IF EXISTS osm_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_housenumber DROP CONSTRAINT IF EXISTS osm_housenumber_pkey;
-ALTER TABLE IF EXISTS ONLY public.country_osm_grid DROP CONSTRAINT IF EXISTS country_osm_grid_pkey;
+ALTER TABLE IF EXISTS ONLY public.country_name DROP CONSTRAINT IF EXISTS country_name_pkey;
 ALTER TABLE IF EXISTS public.osm_relation_member ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_relation ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_polygon ALTER COLUMN id DROP DEFAULT;
@@ -47,14 +49,17 @@ DROP TABLE IF EXISTS public.osm_relation_member;
 DROP SEQUENCE IF EXISTS public.osm_relation_id_seq;
 DROP TABLE IF EXISTS public.osm_relation;
 DROP SEQUENCE IF EXISTS public.osm_polygon_id_seq;
-DROP TABLE IF EXISTS public.osm_polygon;
 DROP SEQUENCE IF EXISTS public.osm_point_id_seq;
-DROP TABLE IF EXISTS public.osm_point;
 DROP SEQUENCE IF EXISTS public.osm_linestring_id_seq;
-DROP TABLE IF EXISTS public.osm_linestring;
 DROP SEQUENCE IF EXISTS public.osm_housenumber_id_seq;
+DROP VIEW IF EXISTS public.osm_elements_view;
+DROP TABLE IF EXISTS public.osm_polygon;
+DROP TABLE IF EXISTS public.osm_point;
+DROP TABLE IF EXISTS public.osm_merged_multi_linestring;
+DROP TABLE IF EXISTS public.osm_linestring;
 DROP TABLE IF EXISTS public.osm_housenumber;
 DROP TABLE IF EXISTS public.country_osm_grid;
+DROP TABLE IF EXISTS public.country_name;
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -62,11 +67,23 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: country_name; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE country_name (
+    country_code character varying(2) NOT NULL,
+    name hstore,
+    country_default_language_code character varying(2),
+    partition integer
+);
+
+
+--
 -- Name: country_osm_grid; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE country_osm_grid (
-    country_code character varying(2) NOT NULL,
+    country_code character varying(2),
     area double precision,
     geometry geometry
 );
@@ -95,6 +112,131 @@ CREATE TABLE osm_housenumber (
 
 
 --
+-- Name: osm_linestring; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_linestring (
+    id integer NOT NULL,
+    osm_id bigint,
+    type character varying,
+    name character varying,
+    all_tags hstore,
+    wikipedia character varying,
+    wikidata character varying,
+    admin_level integer,
+    geometry geometry(LineString,3857),
+    parent_id bigint,
+    place_rank integer,
+    country_code character varying(2),
+    alternative_names text,
+    merged boolean
+);
+
+
+--
+-- Name: osm_merged_multi_linestring; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_merged_multi_linestring (
+    id integer NOT NULL,
+    member_ids integer[],
+    osm_id bigint,
+    type text,
+    name character varying,
+    alternative_names text,
+    wikipedia text,
+    wikidata text,
+    geometry geometry,
+    country_code text,
+    place_rank integer,
+    parent_id bigint
+);
+
+
+--
+-- Name: osm_point; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_point (
+    id integer NOT NULL,
+    osm_id bigint,
+    type character varying,
+    name character varying,
+    all_tags hstore,
+    wikipedia character varying,
+    wikidata character varying,
+    admin_level integer,
+    geometry geometry(Point,3857),
+    parent_id bigint,
+    place_rank integer,
+    country_code character varying(2),
+    alternative_names text,
+    linked boolean
+);
+
+
+--
+-- Name: osm_polygon; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_polygon (
+    id integer NOT NULL,
+    osm_id bigint,
+    type character varying,
+    imported_country_code character varying,
+    name character varying,
+    all_tags hstore,
+    wikipedia character varying,
+    wikidata character varying,
+    admin_level integer,
+    geometry geometry(Geometry,3857),
+    parent_id bigint,
+    place_rank integer,
+    linked_osm_id bigint,
+    alternative_names text,
+    country_code character varying(2)
+);
+
+
+--
+-- Name: osm_elements_view; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW osm_elements_view AS
+ SELECT osm_linestring.id,
+    'osm_linestring'::text AS "table",
+    osm_linestring.osm_id,
+    osm_linestring.name,
+    osm_linestring.country_code,
+    osm_linestring.parent_id
+   FROM osm_linestring
+UNION ALL
+ SELECT osm_polygon.id,
+    'osm_polygon'::text AS "table",
+    osm_polygon.osm_id,
+    osm_polygon.name,
+    osm_polygon.country_code,
+    osm_polygon.parent_id
+   FROM osm_polygon
+UNION ALL
+ SELECT osm_point.id,
+    'osm_point'::text AS "table",
+    osm_point.osm_id,
+    osm_point.name,
+    osm_point.country_code,
+    osm_point.parent_id
+   FROM osm_point
+UNION ALL
+ SELECT osm_housenumber.id,
+    'osm_housenumber'::text AS "table",
+    osm_housenumber.osm_id,
+    osm_housenumber.name,
+    osm_housenumber.country_code,
+    osm_housenumber.parent_id
+   FROM osm_housenumber;
+
+
+--
 -- Name: osm_housenumber_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -111,32 +253,6 @@ CREATE SEQUENCE osm_housenumber_id_seq
 --
 
 ALTER SEQUENCE osm_housenumber_id_seq OWNED BY osm_housenumber.id;
-
-
---
--- Name: osm_linestring; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_linestring (
-    id integer NOT NULL,
-    osm_id bigint,
-    type character varying,
-    name character varying,
-    name_fr character varying,
-    name_en character varying,
-    name_de character varying,
-    name_es character varying,
-    name_ru character varying,
-    name_zh character varying,
-    wikipedia character varying,
-    wikidata character varying,
-    admin_level integer,
-    geometry geometry(LineString,3857),
-    parent_id bigint,
-    place_rank integer,
-    country_code character varying(2),
-    merged boolean
-);
 
 
 --
@@ -159,32 +275,6 @@ ALTER SEQUENCE osm_linestring_id_seq OWNED BY osm_linestring.id;
 
 
 --
--- Name: osm_point; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_point (
-    id integer NOT NULL,
-    osm_id bigint,
-    type character varying,
-    name character varying,
-    name_fr character varying,
-    name_en character varying,
-    name_de character varying,
-    name_es character varying,
-    name_ru character varying,
-    name_zh character varying,
-    wikipedia character varying,
-    wikidata character varying,
-    admin_level integer,
-    geometry geometry(Point,3857),
-    parent_id bigint,
-    place_rank integer,
-    country_code character varying(2),
-    linked boolean
-);
-
-
---
 -- Name: osm_point_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -201,33 +291,6 @@ CREATE SEQUENCE osm_point_id_seq
 --
 
 ALTER SEQUENCE osm_point_id_seq OWNED BY osm_point.id;
-
-
---
--- Name: osm_polygon; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_polygon (
-    id integer NOT NULL,
-    osm_id bigint,
-    type character varying,
-    imported_country_code character varying,
-    name character varying,
-    name_fr character varying,
-    name_en character varying,
-    name_de character varying,
-    name_es character varying,
-    name_ru character varying,
-    name_zh character varying,
-    wikipedia character varying,
-    wikidata character varying,
-    admin_level integer,
-    geometry geometry(Geometry,3857),
-    parent_id bigint,
-    place_rank integer,
-    linked_osm_id bigint,
-    country_code character varying(2)
-);
 
 
 --
@@ -358,6 +421,14 @@ ALTER TABLE ONLY osm_relation_member ALTER COLUMN id SET DEFAULT nextval('osm_re
 
 
 --
+-- Name: country_name country_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY country_name
+    ADD CONSTRAINT country_name_pkey PRIMARY KEY (country_code);
+
+
+--
 -- Name: osm_housenumber osm_housenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -371,6 +442,14 @@ ALTER TABLE ONLY osm_housenumber
 
 ALTER TABLE ONLY osm_linestring
     ADD CONSTRAINT osm_linestring_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: osm_merged_multi_linestring osm_merged_multi_linestring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osm_merged_multi_linestring
+    ADD CONSTRAINT osm_merged_multi_linestring_pkey PRIMARY KEY (id);
 
 
 --
@@ -403,6 +482,13 @@ ALTER TABLE ONLY osm_relation_member
 
 ALTER TABLE ONLY osm_relation
     ADD CONSTRAINT osm_relation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_country_name_country_code ON country_name USING btree (country_code);
 
 
 --

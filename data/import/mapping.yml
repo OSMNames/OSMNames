@@ -11,24 +11,9 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags
     - key: wikipedia
       name: wikipedia
       type: string
@@ -66,14 +51,14 @@ tables:
       - corridor
       - crossing
       waterway:
-      - river # 1
-      - riverbank # 2
-      - stream  # 3
-      - canal # 4
-      - drain # 5
-      - ditch # 6
+      - river
+      - riverbank
+      - stream
+      - canal
+      - drain
+      - ditch
       natural:
-      - mountain_range  # 7
+      - mountain_range
   polygon:
     type: polygon
     fields:
@@ -90,83 +75,9 @@ tables:
     - key: name
       name: name
       type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
-    - key: wikipedia
-      name: wikipedia
-      type: string
-    - key: wikidata
-      name: wikidata
-      type: string
-    - key: admin_level
-      name: admin_level
-      type: integer
-    mapping:
-      place:
-      - city
-      - borough
-      - suburb
-      - quarter
-      - neighbourhood
-      - town
-      - village
-      - hamlet
-      - island  # 8
-      landuse:
-      - residential
-      - reservoir # 9
-      boundary:
-      - administrative
-      natural:
-      - water  # 10
-      - bay # 11
-      - desert  #12
-  point:
-    type: point
-    fields:
-    - name: osm_id
-      type: id
-    - name: geometry
-      type: geometry
-    - name: type
-      type: mapping_value
-    - key: name
-      name: name
-      type: string
-    - name: name_fr
-      key: name:fr
-      type: string
-    - name: name_en
-      key: name:en
-      type: string
-    - name: name_de
-      key: name:de
-      type: string
-    - name: name_es
-      key: name:es
-      type: string
-    - name: name_ru
-      key: name:ru
-      type: string
-    - name: name_zh
-      key: name:zh
-      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags
     - key: wikipedia
       name: wikipedia
       type: string
@@ -187,15 +98,59 @@ tables:
       - village
       - hamlet
       - island
-      - ocean # 13
-      - sea # 14
-      - continent # 15
-      - country # 16
-      - state # 17
+      landuse:
+      - residential
+      - reservoir
+      boundary:
+      - administrative
       natural:
-      - peak  # 18
-      - volcano # 19
-      - hill  # 20
+      - water
+      - bay
+      - desert
+  point:
+    type: point
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags  
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      place:
+      - city
+      - borough
+      - suburb
+      - quarter
+      - neighbourhood
+      - town
+      - village
+      - hamlet
+      - island
+      - ocean
+      - sea
+      - continent
+      - country
+      - state
+      natural:
+      - peak
+      - volcano
+      - hill
       - mountain_range
   housenumber:
     type: point
@@ -272,3 +227,4 @@ tables:
       - street
 tags:
   load_all: true
+  

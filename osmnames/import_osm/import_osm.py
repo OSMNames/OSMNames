@@ -12,6 +12,7 @@ def import_osm():
     sanatize_for_import()
     import_pbf_file()
     create_custom_columns()
+    set_names()
     create_osm_elements_view()
     create_helper_tables()
     prepare_imported_data()
@@ -53,12 +54,16 @@ def import_pbf_file():
     ])
 
 
-def create_osm_elements_view():
-    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
-
-
 def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
+
+
+def set_names():
+    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
+
+
+def create_osm_elements_view():
+    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
 
 def create_helper_tables():
