@@ -32,3 +32,6 @@ BEGIN
           ORDER BY place_rank DESC;
 END
 $$ LANGUAGE plpgsql;
+
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_housenumber ON osm_housenumber(parent_id);
