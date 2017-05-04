@@ -16,6 +16,25 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+DROP FUNCTION IF EXISTS get_most_intersecting_country_code(geometry);
+CREATE FUNCTION get_most_intersecting_country_code(geometry_in GEOMETRY) RETURNS VARCHAR(2) AS $$
+BEGIN
+  RETURN(
+    SELECT lower(country_code)
+    FROM country_osm_grid
+    WHERE st_intersects(geometry, geometry_in)
+    ORDER BY st_area(st_intersection(geometry, geometry_in)) DESC
+    LIMIT 1
+  );
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_country_code ON osm_polygon(country_code);
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_country_code ON osm_linestring(country_code);
+CREATE INDEX IF NOT EXISTS idx_osm_point_country_code ON osm_point(country_code);
+CREATE INDEX IF NOT EXISTS idx_osm_housenumber_country_code ON osm_housenumber(country_code);
+
 DO $$
 BEGIN
   -- use imported country code for polygons if present
@@ -26,9 +45,10 @@ BEGIN
           FROM country_osm_grid
           ORDER BY area ASC;
 
-  -- finally use polygons with highest admin_levels for remaining elements without country_code
-  PERFORM set_country_code_for_elements_within_geometry(lower(country_code), geometry)
-          FROM osm_polygon
-          WHERE admin_level <= 4;
+  -- finally use most intersecting country to set country_code
+  UPDATE osm_linestring SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+  UPDATE osm_point SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+  UPDATE osm_polygon SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+  UPDATE osm_housenumber SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 END
 $$ LANGUAGE plpgsql;
