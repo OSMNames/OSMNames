@@ -208,8 +208,6 @@ tables:
       type: member_role
     - name: member_type
       type: member_type
-    - name: geometry
-      type: geometry
     - key: type
       name: relation_type
       type: string
