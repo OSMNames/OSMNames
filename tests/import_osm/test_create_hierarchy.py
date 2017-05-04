@@ -19,6 +19,7 @@ def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
                 name="Some Polygon with missing parent",
                 admin_level=16,
                 country_code='ch',
+                type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -30,6 +31,7 @@ def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
                 place_rank=22,
                 admin_level=12,
                 country_code='ch',
+                type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -49,6 +51,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
                 place_rank=22,
                 admin_level=16,
                 country_code='ch',
+                type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -60,6 +63,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
                 place_rank=24,
                 admin_level=12,
                 country_code='ch',
+                type='continent',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -71,6 +75,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
                 place_rank=22,
                 admin_level=12,
                 country_code='ch',
+                type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
@@ -89,6 +94,7 @@ def test_osm_polygon_parent_id_get_NOT_set_if_admin_level_is_lower(session, sche
                 name="Some Polygon with missing parent",
                 admin_level=12,
                 country_code='ch',
+                type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
         )
@@ -100,6 +106,7 @@ def test_osm_polygon_parent_id_get_NOT_set_if_admin_level_is_lower(session, sche
                 place_rank=22,
                 admin_level=16,
                 country_code='ch',
+                type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
         )
