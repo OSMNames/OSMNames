@@ -1,5 +1,5 @@
-DROP FUNCTION IF EXISTS set_parent_id_for_containing_entities(BIGINT, INT, VARCHAR(2), geometry);
-CREATE FUNCTION set_parent_id_for_containing_entities(id_in BIGINT, admin_level_in INT, country_code_in VARCHAR(2), geometry_in GEOMETRY) RETURNS VOID AS $$
+DROP FUNCTION IF EXISTS set_parent_id_for_elements_within_geometry(BIGINT, INT, VARCHAR(2), geometry);
+CREATE FUNCTION set_parent_id_for_elements_within_geometry(id_in BIGINT, admin_level_in INT, country_code_in VARCHAR(2), geometry_in GEOMETRY) RETURNS VOID AS $$
 BEGIN
   UPDATE osm_linestring SET parent_id = id_in WHERE parent_id IS NULL
                                                     AND id_in != id
@@ -24,11 +24,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_parent_id ON osm_polygon(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_housenumber_parent_id ON osm_housenumber(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_point_parent_id ON osm_point(parent_id);
+
 DO $$
 BEGIN
-  PERFORM set_parent_id_for_containing_entities(id, admin_level, country_code, geometry)
+  PERFORM set_parent_id_for_elements_within_geometry(id, admin_level, country_code, geometry)
           FROM osm_polygon
           WHERE place_rank <= 22
+            AND type IN ('administrative', 'continent', 'country', 'state',
+              'county', 'city', 'island', 'region', 'town', 'village', 'hamlet',
+              'municipality', 'district', 'unincorporated_area', 'borough',
+              'suburb', 'croft', 'subdivision', 'isolated_dwelling', 'farm',
+              'locality', 'neighbourhood', 'residential')
           ORDER BY place_rank DESC;
 END
 $$ LANGUAGE plpgsql;
