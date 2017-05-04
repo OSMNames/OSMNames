@@ -31,9 +31,12 @@ CREATE TABLE osm_merged_multi_linestring AS
 
 ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (id);
 
+
+-- set merged to true for all merged linestrings
 DROP INDEX IF EXISTS idx_osm_linestring_merged_false;
 
-UPDATE osm_linestring SET merged = TRUE WHERE id IN
-  (SELECT unnest(member_ids) FROM osm_merged_multi_linestring);
+UPDATE osm_linestring SET merged_into = osm_merged_multi_linestring.id
+FROM osm_merged_multi_linestring
+WHERE osm_linestring.id = ANY(osm_merged_multi_linestring.member_ids);
 
-CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring (merged) WHERE merged IS NOT TRUE;
+CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring(merged_into) WHERE merged_into IS NULL;

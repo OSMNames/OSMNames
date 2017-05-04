@@ -29,4 +29,4 @@ FROM
   osm_linestring,
   determine_class(type) AS class,
   get_parent_info(osm_linestring.name, parent_id, place_rank) AS parentInfo
-WHERE merged IS NOT TRUE;
+WHERE merged_into IS NULL;
