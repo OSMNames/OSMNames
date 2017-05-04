@@ -24,6 +24,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_parent_id ON osm_polygon(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_housenumber_parent_id ON osm_housenumber(parent_id);
+CREATE INDEX IF NOT EXISTS idx_osm_point_parent_id ON osm_point(parent_id);
+
 DO $$
 BEGIN
   PERFORM set_parent_id_for_containing_entities(id, admin_level, country_code, geometry)
@@ -32,6 +37,3 @@ BEGIN
           ORDER BY place_rank DESC;
 END
 $$ LANGUAGE plpgsql;
-
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
-CREATE INDEX IF NOT EXISTS idx_osm_housenumber ON osm_housenumber(parent_id);
