@@ -75,6 +75,7 @@ def create_osm_grid_table():
 
 
 def prepare_imported_data():
+    vacuum_database()
     set_names()
     delete_unusable_entries()
     set_place_ranks()
@@ -92,25 +93,31 @@ def set_names():
 
 def delete_unusable_entries():
     exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def set_place_ranks():
     exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def set_country_codes():
     exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
     consistency_check.missing_country_codes()
 
 
 def determine_linked_places():
     exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def create_hierarchy():
     exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
     consistency_check.missing_parent_ids()
+    vacuum_database()
 
 
 def merge_corresponding_linestrings():
     exec_sql_from_file("merge_corresponding_linestrings.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
