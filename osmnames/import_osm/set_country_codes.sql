@@ -35,20 +35,20 @@ CREATE INDEX IF NOT EXISTS idx_osm_linestring_country_code ON osm_linestring(cou
 CREATE INDEX IF NOT EXISTS idx_osm_point_country_code ON osm_point(country_code);
 CREATE INDEX IF NOT EXISTS idx_osm_housenumber_country_code ON osm_housenumber(country_code);
 
+-- use imported country code for polygons if present
+UPDATE osm_polygon SET country_code = lower(imported_country_code) WHERE imported_country_code IS NOT NULL;
+
+-- use country grid to set country codes for containing elements
 DO $$
 BEGIN
-  -- use imported country code for polygons if present
-  UPDATE osm_polygon SET country_code = lower(imported_country_code) WHERE imported_country_code IS NOT NULL;
-
-  -- use country grid to set country codes for containing elements
   PERFORM set_country_code_for_elements_within_geometry(lower(country_code), geometry)
           FROM country_osm_grid
           ORDER BY area ASC;
-
-  -- finally use most intersecting country to set country_code
-  UPDATE osm_linestring SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
-  UPDATE osm_point SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
-  UPDATE osm_polygon SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
-  UPDATE osm_housenumber SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 END
 $$ LANGUAGE plpgsql;
+
+-- finally use most intersecting country to set country_code
+UPDATE osm_linestring SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+UPDATE osm_point SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+UPDATE osm_polygon SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+UPDATE osm_housenumber SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
