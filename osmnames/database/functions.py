@@ -16,7 +16,7 @@ def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings
             "--username={}".format(user),
             "--dbname={}".format(settings.get("DB_NAME")),
             "--file={}/{}".format(cwd, filename)
-        ]
+        ], stdout=open(os.devnull, 'w')
     )
     log.info("finished executing sql file {}".format(filename))
 
