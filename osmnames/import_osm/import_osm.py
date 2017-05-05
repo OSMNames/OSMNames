@@ -1,7 +1,7 @@
 import os
 
 from subprocess import check_call
-from osmnames.database.functions import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
+from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 from osmnames import consistency_check
@@ -72,13 +72,11 @@ def create_helper_tables():
 
 
 def create_country_name_table():
-    # does not work with exec_sql_from_file
-    psql_exec("country_name.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
+    exec_sql_from_file("country_name.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def create_osm_grid_table():
-    # does not work with exec_sql_from_file
-    psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
+    exec_sql_from_file("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def prepare_imported_data():
