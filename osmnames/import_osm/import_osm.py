@@ -12,7 +12,6 @@ def import_osm():
     sanatize_for_import()
     import_pbf_file()
     create_custom_columns()
-    set_names()
     create_osm_elements_view()
     create_helper_tables()
     prepare_imported_data()
@@ -58,10 +57,6 @@ def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
 
 
-def set_names():
-    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
-
-
 def create_osm_elements_view():
     exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
@@ -80,6 +75,7 @@ def create_osm_grid_table():
 
 
 def prepare_imported_data():
+    set_names()
     delete_unusable_entries()
     set_place_ranks()
     set_country_codes()
@@ -87,6 +83,10 @@ def prepare_imported_data():
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()
+
+
+def set_names():
+    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
 
 
