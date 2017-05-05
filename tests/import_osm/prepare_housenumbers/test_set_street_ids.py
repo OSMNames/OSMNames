@@ -42,3 +42,14 @@ def test_when_street_with_same_name_but_different_parent_id_exists(session, sche
     set_street_ids()
 
     assert session.query(tables.osm_housenumber).get(1).street_id is None
+
+
+def test_when_merged_street_with_same_parent_id_and_name_exists(session, schema, tables):
+    session.add(tables.osm_housenumber(id=1, parent_id=1337, street="Haldenweg"))
+    session.add(tables.osm_linestring(id=42, merged_into=77, parent_id=1337, name="Haldenweg"))
+
+    session.commit()
+
+    set_street_ids()
+
+    assert session.query(tables.osm_housenumber).get(1).street_id == 77

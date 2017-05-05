@@ -42,8 +42,8 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged, True
-    assert session.query(tables.osm_linestring).get(2).merged, True
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
 
 
 def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
@@ -101,10 +101,10 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2, 3, 4]
-    assert session.query(tables.osm_linestring).get(1).merged, True
-    assert session.query(tables.osm_linestring).get(2).merged, True
-    assert session.query(tables.osm_linestring).get(3).merged, True
-    assert session.query(tables.osm_linestring).get(4).merged, True
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
+    assert session.query(tables.osm_linestring).get(3).merged_into, 1
+    assert session.query(tables.osm_linestring).get(4).merged_into, 1
 
 
 def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
@@ -139,8 +139,8 @@ def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(ses
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged, True
-    assert session.query(tables.osm_linestring).get(2).merged, True
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
 
 
 def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_merged(session, schema, tables):
@@ -172,8 +172,8 @@ def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged), False
-    assert str(session.query(tables.osm_linestring).get(2).merged), False
+    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
+    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
 
 
 def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_merged(session, schema, tables):
@@ -205,5 +205,5 @@ def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged), False
-    assert str(session.query(tables.osm_linestring).get(2).merged), False
+    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
+    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
