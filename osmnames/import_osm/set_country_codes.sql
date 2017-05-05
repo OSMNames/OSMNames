@@ -30,10 +30,11 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-CREATE INDEX IF NOT EXISTS idx_osm_polygon_country_code ON osm_polygon(country_code);
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_country_code ON osm_linestring(country_code);
-CREATE INDEX IF NOT EXISTS idx_osm_point_country_code ON osm_point(country_code);
-CREATE INDEX IF NOT EXISTS idx_osm_housenumber_country_code ON osm_housenumber(country_code);
+DROP INDEX IF EXISTS idx_osm_polygon_country_code;
+DROP INDEX IF EXISTS idx_osm_linestring_country_code;
+DROP INDEX IF EXISTS idx_osm_point_country_code;
+DROP INDEX IF EXISTS idx_osm_housenumber_country_code;
+
 
 -- use imported country code for polygons if present
 UPDATE osm_polygon SET country_code = lower(imported_country_code) WHERE imported_country_code IS NOT NULL;
@@ -52,3 +53,9 @@ UPDATE osm_linestring SET country_code = get_most_intersecting_country_code(geom
 UPDATE osm_point SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 UPDATE osm_polygon SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 UPDATE osm_housenumber SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
+
+
+CREATE INDEX idx_osm_polygon_country_code ON osm_polygon(country_code);
+CREATE INDEX idx_osm_linestring_country_code ON osm_linestring(country_code);
+CREATE INDEX idx_osm_point_country_code ON osm_point(country_code);
+CREATE INDEX idx_osm_housenumber_country_code ON osm_housenumber(country_code);
