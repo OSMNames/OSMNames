@@ -29,6 +29,11 @@ CREATE INDEX IF NOT EXISTS idx_osm_point_parent_id ON osm_point(parent_id);
 
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
 
+CLUSTER osm_linestring_geom ON osm_linestring;
+CLUSTER osm_polygon_geom ON osm_polygon;
+CLUSTER osm_housenumber_geom ON osm_housenumber;
+CLUSTER osm_point_geom ON osm_point;
+
 DO $$
 BEGIN
   PERFORM set_parent_id_for_elements_within_geometry(id, admin_level, geometry)
