@@ -20,7 +20,8 @@ BEGIN
   UPDATE osm_point SET parent_id = id_in WHERE parent_id IS NULL
                                                AND id_in != id
                                                AND country_code = country_code_in
-                                               AND st_contains(geometry_in, geometry);
+                                               AND st_contains(geometry_in, geometry)
+                                               AND linked IS FALSE;
 END;
 $$ LANGUAGE plpgsql;
 
