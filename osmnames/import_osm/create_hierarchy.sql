@@ -30,6 +30,8 @@ CREATE INDEX IF NOT EXISTS idx_osm_polygon_parent_id ON osm_polygon(parent_id);
 CREATE INDEX IF NOT EXISTS idx_osm_housenumber_parent_id ON osm_housenumber(parent_id);
 CREATE INDEX IF NOT EXISTS idx_osm_point_parent_id ON osm_point(parent_id);
 
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
+
 DO $$
 BEGIN
   PERFORM set_parent_id_for_elements_within_geometry(id, admin_level, country_code, geometry)
