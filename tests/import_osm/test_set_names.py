@@ -101,3 +101,30 @@ def test_alternative_names_are_empty_if_only_name_is_present(session, schema, ta
     import_osm.set_names()
 
     assert session.query(tables.osm_point).get(4).alternative_names == ''
+
+
+def test_tabs_get_deleted_from_name(session, schema, tables):
+    session.add(
+        tables.osm_polygon(
+            id=3,
+            name="Lake\t\tZurich"
+            )
+        )
+    session.commit()
+    import_osm.set_names()
+
+    assert session.query(tables.osm_polygon).get(3).name == "Lake Zurich"
+
+
+def test_tabs_get_deleted_from_alternative_names(session, schema, tables):
+    session.add(
+        tables.osm_polygon(
+            id=4,
+            name = 'Bodensee',
+            all_tags={"name:en":"Lake         Constance","name:fr":"Lac\tde\tConstance" }            
+            )
+        )
+    session.commit()
+    import_osm.set_names()
+
+    assert session.query(tables.osm_polygon).get(4).alternative_names.count('\t') == 0
