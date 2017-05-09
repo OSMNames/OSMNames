@@ -40,6 +40,6 @@ UPDATE osm_linestring SET alternative_names = get_alternative_names(all_tags, na
 UPDATE osm_polygon SET alternative_names = get_alternative_names(all_tags, name);
 UPDATE osm_point SET alternative_names = get_alternative_names(all_tags, name);
 
-UPDATE osm_linestring SET name =  regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
-UPDATE osm_polygon SET name =  regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
-UPDATE osm_point SET name =  regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
+UPDATE osm_linestring SET name = regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
+UPDATE osm_polygon SET name = regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
+UPDATE osm_point SET name = regexp_replace(name, E'\\s+', ' ', 'g') WHERE name LIKE '%'||chr(9)||'%';
