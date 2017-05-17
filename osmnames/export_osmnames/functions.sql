@@ -43,47 +43,52 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_parent_info(TEXT, BIGINT, INTEGER);
-CREATE FUNCTION get_parent_info(display_name TEXT, polygon_id BIGINT, current_rank INTEGER) RETURNS parentInfo AS $$
+DROP FUNCTION IF EXISTS get_parent_info(TEXT, BIGINT, BIGINT, BOOLEAN, TEXT);
+CREATE FUNCTION get_parent_info(name TEXT, id BIGINT, parent_id BIGINT, is_polygon BOOLEAN, type TEXT) RETURNS parentInfo AS $$
 DECLARE
-  retVal parentInfo;
+  retval parentInfo;
   current_name TEXT;
-  current_parent_id BIGINT;
+  current_rank INTEGER;
+  current_id BIGINT;
+  city_rank INTEGER := 16;
+  county_rank INTEGER := 10;
 BEGIN
-  current_name := display_name;
-  retVal.displayName := current_name;
 
-  IF current_rank BETWEEN 16 AND 20 THEN
-    retVal.city := retVal.displayName;
-  ELSIF current_rank BETWEEN 12 AND 15 THEN
-    retVal.county := retVal.displayName;
-  ELSIF current_rank BETWEEN 8 AND 11 THEN
-    retVal.state := retVal.displayName;
+  IF is_polygon AND type NOT IN ('water', 'bay', 'desert', 'reservoir') THEN
+    current_id := id;
+    retval.displayName := '';
+  ELSE 
+    current_id := parent_id;
+    retval.displayName := name;
   END IF;
+    
+  WHILE current_id IS NOT NULL LOOP
+    SELECT p.name, p.place_rank, p.parent_id
+    FROM osm_polygon AS p
+    WHERE p.id = current_id
+    INTO current_name, current_rank, current_id;
 
-  current_parent_id := polygon_id;
-  WHILE current_rank >= 8 AND current_parent_id IS NOT NULL LOOP
-    SELECT
-      name,
-      place_rank,
-      parent_id
-    FROM osm_polygon
-    WHERE id = current_parent_id
-    INTO current_name, current_rank, current_parent_id;
-
-    IF current_name IS NOT NULL THEN
-      retVal.displayName := retVal.displayName || ', ' || current_name;
+    IF retval.displayName = '' THEN
+      retval.displayName := current_name;
+    ELSE
+      retval.displayName := retval.displayName || ', ' || current_name;
     END IF;
 
-    IF current_rank BETWEEN 16 AND 20 THEN
-      retVal.city := current_name;
-    ELSIF current_rank BETWEEN 12 AND 15 THEN
-      retVal.county := current_name;
-    ELSIF current_rank BETWEEN 8 AND 11 THEN
-      retVal.state := current_name;
+    EXIT WHEN current_rank = 4;
+
+    IF current_rank BETWEEN 16 AND 22 THEN
+      retval.city := current_name;
+      city_rank := current_rank;
+    ELSIF (current_rank BETWEEN 10 AND city_rank) AND (retval.county IS NULL) THEN
+      retval.county := current_name;
+      county_rank := current_rank;
+    ELSIF (current_rank BETWEEN 6 AND county_rank) THEN
+      retval.state := current_name;
     END IF;
+  
   END LOOP;
-RETURN retVal;
+
+RETURN retval;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -109,7 +114,7 @@ DECLARE
   country_language_code VARCHAR(2);
   result double precision;
 BEGIN
-  wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');
+  wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_'); 
   wiki_article_language := split_part(wikipedia, ':', 1);
   country_language_code = get_country_language_code(country_code);
 

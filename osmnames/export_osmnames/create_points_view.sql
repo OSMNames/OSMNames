@@ -27,6 +27,6 @@ SELECT
   wikipedia
 FROM
   osm_point,
-  get_parent_info(osm_point.name, parent_id, place_rank) AS parentInfo
+  get_parent_info(name, id, parent_id, False, type) as parentInfo
 WHERE
   linked IS FALSE;

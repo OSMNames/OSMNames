@@ -27,6 +27,6 @@ SELECT
   wikipedia AS wikipedia
 FROM
   osm_polygon,
-  get_parent_info(osm_polygon.name, parent_id, place_rank) AS parentInfo,
+  get_parent_info(name, id, parent_id, True, type) as parentInfo,
   get_type_for_relations(linked_osm_id, type, place_rank) AS relation_type,
   COALESCE(NULLIF(get_name_for_relations(linked_osm_id, relation_type), ''), osm_polygon.name) AS relation_name;
