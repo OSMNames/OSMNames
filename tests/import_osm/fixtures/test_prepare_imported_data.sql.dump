@@ -18,7 +18,6 @@ SET search_path = public, pg_catalog;
 
 DROP INDEX IF EXISTS public.osm_relation_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_relation_member_osm_id_idx;
-DROP INDEX IF EXISTS public.osm_relation_member_geom;
 DROP INDEX IF EXISTS public.osm_polygon_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_polygon_geom;
 DROP INDEX IF EXISTS public.osm_point_osm_id_idx;
@@ -27,7 +26,16 @@ DROP INDEX IF EXISTS public.osm_linestring_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_linestring_geom;
 DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
+DROP INDEX IF EXISTS public.idx_osm_polygon_parent_id;
+DROP INDEX IF EXISTS public.idx_osm_polygon_country_code;
+DROP INDEX IF EXISTS public.idx_osm_point_parent_id;
+DROP INDEX IF EXISTS public.idx_osm_point_country_code;
+DROP INDEX IF EXISTS public.idx_osm_linestring_parent_id;
+DROP INDEX IF EXISTS public.idx_osm_linestring_name;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
+DROP INDEX IF EXISTS public.idx_osm_linestring_country_code;
+DROP INDEX IF EXISTS public.idx_osm_housenumber_parent_id;
+DROP INDEX IF EXISTS public.idx_osm_housenumber_country_code;
 DROP INDEX IF EXISTS public.idx_country_osm_grid_geometry;
 DROP INDEX IF EXISTS public.idx_country_name_country_code;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
@@ -129,7 +137,7 @@ CREATE TABLE osm_linestring (
     place_rank integer,
     country_code character varying(2),
     alternative_names text,
-    merged boolean
+    merged_into bigint
 );
 
 
@@ -354,8 +362,7 @@ CREATE TABLE osm_relation_member (
     role character varying,
     member_type smallint,
     relation_type character varying,
-    name character varying,
-    geometry geometry(Geometry,3857)
+    name character varying
 );
 
 
@@ -499,10 +506,73 @@ CREATE INDEX idx_country_osm_grid_geometry ON country_osm_grid USING gist (geome
 
 
 --
+-- Name: idx_osm_housenumber_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_housenumber_country_code ON osm_housenumber USING btree (country_code);
+
+
+--
+-- Name: idx_osm_housenumber_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_housenumber_parent_id ON osm_housenumber USING btree (parent_id);
+
+
+--
+-- Name: idx_osm_linestring_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_country_code ON osm_linestring USING btree (country_code);
+
+
+--
 -- Name: idx_osm_linestring_merged_false; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring USING btree (merged) WHERE (merged IS NOT TRUE);
+CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring USING btree (merged_into) WHERE (merged_into IS NULL);
+
+
+--
+-- Name: idx_osm_linestring_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_name ON osm_linestring USING btree (name);
+
+
+--
+-- Name: idx_osm_linestring_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_linestring_parent_id ON osm_linestring USING btree (parent_id);
+
+
+--
+-- Name: idx_osm_point_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_point_country_code ON osm_point USING btree (country_code);
+
+
+--
+-- Name: idx_osm_point_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_point_parent_id ON osm_point USING btree (parent_id);
+
+
+--
+-- Name: idx_osm_polygon_country_code; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_polygon_country_code ON osm_polygon USING btree (country_code);
+
+
+--
+-- Name: idx_osm_polygon_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_polygon_parent_id ON osm_polygon USING btree (parent_id);
 
 
 --
@@ -559,13 +629,6 @@ CREATE INDEX osm_polygon_geom ON osm_polygon USING gist (geometry);
 --
 
 CREATE INDEX osm_polygon_osm_id_idx ON osm_polygon USING btree (osm_id);
-
-
---
--- Name: osm_relation_member_geom; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX osm_relation_member_geom ON osm_relation_member USING gist (geometry);
 
 
 --

@@ -42,8 +42,8 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged, True
-    assert session.query(tables.osm_linestring).get(2).merged, True
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
 
 
 def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
@@ -101,10 +101,46 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2, 3, 4]
-    assert session.query(tables.osm_linestring).get(1).merged, True
-    assert session.query(tables.osm_linestring).get(2).merged, True
-    assert session.query(tables.osm_linestring).get(3).merged, True
-    assert session.query(tables.osm_linestring).get(4).merged, True
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
+    assert session.query(tables.osm_linestring).get(3).merged_into, 1
+    assert session.query(tables.osm_linestring).get(4).merged_into, 1
+
+
+def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
+    # the following geometries do not touch directly but has to be merged
+    session.add(
+            tables.osm_linestring(
+                id=1,
+                name="Oberseestrasse",
+                parent_id=1337,
+                country_code="ch",
+                osm_id=24055427,
+                geometry=WKTElement("""LINESTRING(981453.976751762
+                    5978726.11248254,981467.114366002 5978716.22031828,981491.02892942
+                    5978722.30674579,981536.264123906 5978726.22239555)""", srid=3857)
+            )
+        )
+
+    session.add(
+            tables.osm_linestring(
+                id=2,
+                name="Oberseestrasse",
+                parent_id=1337,
+                country_code="ch",
+                osm_id=308577271,
+                geometry=WKTElement("""LINESTRING(981558.359202398
+                    5978726.38726504,981674.610293174 5978708.37529047)""", srid=3857)
+            )
+        )
+
+    session.commit()
+
+    merge_corresponding_linestrings()
+
+    assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2]
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1
 
 
 def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_merged(session, schema, tables):
@@ -136,8 +172,8 @@ def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged), False
-    assert str(session.query(tables.osm_linestring).get(2).merged), False
+    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
+    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
 
 
 def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_merged(session, schema, tables):
@@ -169,5 +205,5 @@ def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged), False
-    assert str(session.query(tables.osm_linestring).get(2).merged), False
+    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
+    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
