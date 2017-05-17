@@ -8,8 +8,7 @@ BEGIN
   UPDATE osm_polygon SET parent_id = id_in WHERE parent_id IS NULL
                                                  AND id_in != id
                                                  AND st_contains(geometry_in, geometry)
-                                                 AND CASE WHEN admin_level IS NULL OR admin_level_in IS NULL THEN True
-                                                     ELSE admin_level > admin_level_in END;
+                                                 AND COALESCE(admin_level, 100) > COALESCE(admin_level_in, -1);
 
   UPDATE osm_housenumber SET parent_id = id_in WHERE parent_id IS NULL
                                                      AND id_in != id
