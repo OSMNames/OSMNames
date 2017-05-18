@@ -55,7 +55,7 @@ DECLARE
   city_rank INTEGER := 16;
   county_rank INTEGER := 10;
 BEGIN
-  current_id := id;  
+  current_id := id;
   retval.displayName := name;
 
   WHILE current_id IS NOT NULL LOOP
@@ -68,7 +68,7 @@ BEGIN
       retval.displayName := current_name;
     ELSE
       retval.displayName := retval.displayName || ', ' || current_name;
-    END IF; 
+    END IF;
 
     EXIT WHEN current_rank = 4;
     CONTINUE WHEN current_type IN ('water', 'bay', 'desert', 'reservoir', 'pedestrian');
@@ -81,7 +81,7 @@ BEGIN
       county_rank := current_rank;
     ELSIF (current_rank BETWEEN 6 AND county_rank) THEN
       retval.state := current_name;
-    END IF;  
+    END IF;
   END LOOP;
 
 RETURN retval;
@@ -110,7 +110,7 @@ DECLARE
   country_language_code VARCHAR(2);
   result double precision;
 BEGIN
-  wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_'); 
+  wiki_article_title := replace(split_part(wikipedia, ':', 2),' ','_');
   wiki_article_language := split_part(wikipedia, ':', 1);
   country_language_code = get_country_language_code(country_code);
 
