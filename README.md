@@ -1,4 +1,6 @@
-# OSM Names Database of geographic place names from OpenStreetMap for full text search downloadable for free. Website: http://osmnames.org
+# OSM Names [![Build Status](https://travis-ci.org/OSMNames/OSMNames.svg?branch=master)](https://travis-ci.org/OSMNames/OSMNames)
+Database of geographic place names from OpenStreetMap for full text search downloadable for free: http://osmnames.org
+
 Does include hierarchy information without house numbers or zip codes.
 
 ## Target of OSM Names
