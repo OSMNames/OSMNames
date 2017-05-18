@@ -1,7 +1,7 @@
 import os
 
 from subprocess import check_call
-from osmnames.database.functions import exec_sql, psql_exec, exec_sql_from_file, vacuum_database
+from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 from osmnames import consistency_check
@@ -12,7 +12,6 @@ def import_osm():
     sanatize_for_import()
     import_pbf_file()
     create_custom_columns()
-    set_names()
     create_osm_elements_view()
     create_helper_tables()
     prepare_imported_data()
@@ -58,10 +57,6 @@ def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
 
 
-def set_names():
-    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
-
-
 def create_osm_elements_view():
     exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
@@ -72,16 +67,16 @@ def create_helper_tables():
 
 
 def create_country_name_table():
-    # does not work with exec_sql_from_file
-    psql_exec("country_name.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
+    exec_sql_from_file("country_name.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def create_osm_grid_table():
-    # does not work with exec_sql_from_file
-    psql_exec("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
+    exec_sql_from_file("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
 
 
 def prepare_imported_data():
+    vacuum_database()
+    set_names()
     delete_unusable_entries()
     set_place_ranks()
     set_country_codes()
@@ -89,30 +84,40 @@ def prepare_imported_data():
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()
+
+
+def set_names():
+    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
 
 
 def delete_unusable_entries():
     exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def set_place_ranks():
     exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def set_country_codes():
     exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
     consistency_check.missing_country_codes()
 
 
 def determine_linked_places():
     exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def create_hierarchy():
     exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
     consistency_check.missing_parent_ids()
+    vacuum_database()
 
 
 def merge_corresponding_linestrings():
     exec_sql_from_file("merge_corresponding_linestrings.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
