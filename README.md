@@ -99,6 +99,16 @@ docker-compose kill postgres
 docker-compose rm postgres
 ```
 
+The process will create a file `export.tsv` with all the geonames. To use the export with osmnames-sphinxsearch, have a look at the corresponding [section in the readme](https://github.com/klokantech/osmnames-sphinxsearch#usage-of-docker-image). A simple command to get started is:
+```bash
+mv export.tsv data.tsv
+docker run --rm --name klokantech-osmnames-sphinxsearch -v `pwd`:/data/input/ -p 80:80 klokantech/osmnames-sphinxsearch
+```
+:warning: The current version of the osmnames-sphinxsearch cannot handle the newest export of osmnames yet. To make it work, the first column in the export must be removed. This can be done like this:
+``` bash
+cut -f  1 --complement export.tsv > data.tsv
+```
+
 ## Development
 
 ### Tests
