@@ -12,7 +12,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     max(a.alternative_names) AS alternative_names,
     max(a.wikipedia) AS wikipedia,
     max(a.wikidata) AS wikidata,
-    ST_UNION(array_agg(a.geometry)) AS geometry,
+    st_simplify(st_collect(a.geometry), 10) AS geometry,
     max(a.country_code) AS country_code,
     min(a.place_rank) AS place_rank,
     a.parent_id
