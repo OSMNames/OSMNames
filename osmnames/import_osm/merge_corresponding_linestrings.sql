@@ -20,7 +20,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     osm_linestring AS a,
     osm_linestring AS b
   WHERE
-    st_dwithin(a.geometry, b.geometry, 100) AND
+    st_dwithin(a.geometry, b.geometry, 1000) AND
     a.parent_id = b.parent_id AND
     a.parent_id IS  NOT NULL AND
     a.name = b.name AND
