@@ -699,4 +699,3 @@ CREATE INDEX osm_relation_osm_id_idx ON osm_relation USING btree (osm_id);
 --
 -- PostgreSQL database dump complete
 --
-

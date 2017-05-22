@@ -2,12 +2,14 @@ DROP FUNCTION IF EXISTS get_alternative_names(HSTORE, TEXT);
 CREATE FUNCTION get_alternative_names(all_tags HSTORE, name TEXT)
 RETURNS TEXT AS $$
 DECLARE
+  accepted_name_tags TEXT[] := ARRAY['name:left','name:right','int_name','loc_name','nat_name',
+                                     'official_name','old_name','reg_name','short_name','alt_name'];
   alternative_names TEXT[];
   alternative_names_string TEXT;
 BEGIN
   SELECT array_agg(DISTINCT(all_tags -> key))
   FROM unnest(akeys(all_tags)) AS key
-  WHERE (key LIKE 'name:%' OR key LIKE '%[_]name')
+  WHERE key LIKE 'name:__' OR key = ANY(accepted_name_tags)
   INTO alternative_names;
   alternative_names := array_remove(alternative_names, name);
   alternative_names_string := array_to_string(alternative_names, ',');

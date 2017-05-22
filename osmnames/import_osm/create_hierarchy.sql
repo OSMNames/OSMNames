@@ -8,8 +8,8 @@ BEGIN
 
   UPDATE osm_polygon SET parent_id = id_in WHERE parent_id IS NULL
                                                  AND id_in != id
-                                                 AND admin_level > admin_level_in
-                                                 AND st_contains(geometry_in, geometry);
+                                                 AND st_contains(geometry_in, geometry)
+                                                 AND COALESCE(admin_level, 100) > COALESCE(admin_level_in, -1);
 
   UPDATE osm_housenumber SET parent_id = id_in WHERE parent_id IS NULL
                                                      AND id_in != id
@@ -38,12 +38,7 @@ DO $$
 BEGIN
   PERFORM set_parent_id_for_elements_within_geometry(id, admin_level, geometry)
           FROM osm_polygon
-          WHERE place_rank <= 22
-            AND type IN ('administrative', 'continent', 'country', 'state',
-              'county', 'city', 'island', 'region', 'town', 'village', 'hamlet',
-              'municipality', 'district', 'unincorporated_area', 'borough',
-              'suburb', 'croft', 'subdivision', 'isolated_dwelling', 'farm',
-              'locality', 'neighbourhood', 'residential')
+          WHERE place_rank <= 22 AND type NOT IN ('water', 'desert', 'bay', 'reservoir')
           ORDER BY place_rank DESC;
 END
 $$ LANGUAGE plpgsql;
