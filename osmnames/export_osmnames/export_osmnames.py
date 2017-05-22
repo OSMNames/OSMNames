@@ -52,11 +52,11 @@ def create_geonames_view():
 
 
 def export_geonames():
-    export_to_tsv("SELECT * FROM geonames_view;", geonames_export_path)
+    export_to_tsv("SELECT * FROM geonames_view;", geonames_export_path())
 
 
 def export_housenumbers():
-    export_to_tsv("SELECT * FROM mv_housenumbers;", housenumbers_export_path)
+    export_to_tsv("SELECT * FROM mv_housenumbers;", housenumbers_export_path())
 
 
 def export_to_tsv(query, path):
@@ -70,7 +70,7 @@ def export_to_tsv(query, path):
 
 
 def gzip_tsv_files():
-    for tsv_file_path in [geonames_export_path, housenumbers_export_path]:
+    for tsv_file_path in [geonames_export_path(), housenumbers_export_path()]:
         with open(tsv_file_path, 'rb') as f_in, gzip.open("{}.gz".format(tsv_file_path), 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
 
