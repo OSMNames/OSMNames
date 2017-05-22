@@ -9,7 +9,6 @@ DB_SCHEMA = 'public'
 DATA_DIR = '/osmnames/data/'
 IMPORT_DIR = '/osmnames/data/import/'
 EXPORT_DIR = '/osmnames/data/export/'
-CACHE_DIR = '/osmnames/data/cache/'
 
 PBF_FILE = os.getenv('PBF_FILE', '')
 PBF_FILE_URL = os.getenv('PBF_FILE_URL', '')
