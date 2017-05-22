@@ -26,6 +26,7 @@ DROP INDEX IF EXISTS public.osm_linestring_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_linestring_geom;
 DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
+DROP INDEX IF EXISTS public.idx_wikipedia_article_title;
 DROP INDEX IF EXISTS public.idx_osm_polygon_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_polygon_country_code;
 DROP INDEX IF EXISTS public.idx_osm_polygon_admin_level;
@@ -36,10 +37,11 @@ DROP INDEX IF EXISTS public.idx_osm_linestring_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_linestring_name;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
 DROP INDEX IF EXISTS public.idx_osm_linestring_country_code;
+DROP INDEX IF EXISTS public.idx_osm_id;
 DROP INDEX IF EXISTS public.idx_osm_housenumber_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_housenumber_country_code;
-DROP INDEX IF EXISTS public.idx_country_osm_grid_geometry;
 DROP INDEX IF EXISTS public.idx_country_name_country_code;
+ALTER TABLE IF EXISTS ONLY public.wikipedia_article DROP CONSTRAINT IF EXISTS pagelinks_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_polygon DROP CONSTRAINT IF EXISTS osm_polygon_pkey;
@@ -54,6 +56,7 @@ ALTER TABLE IF EXISTS public.osm_polygon ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_point ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_linestring ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_housenumber ALTER COLUMN id DROP DEFAULT;
+DROP TABLE IF EXISTS public.wikipedia_article;
 DROP SEQUENCE IF EXISTS public.osm_relation_member_id_seq;
 DROP TABLE IF EXISTS public.osm_relation_member;
 DROP SEQUENCE IF EXISTS public.osm_relation_id_seq;
@@ -63,12 +66,11 @@ DROP SEQUENCE IF EXISTS public.osm_point_id_seq;
 DROP SEQUENCE IF EXISTS public.osm_linestring_id_seq;
 DROP SEQUENCE IF EXISTS public.osm_housenumber_id_seq;
 DROP VIEW IF EXISTS public.osm_elements_view;
+DROP TABLE IF EXISTS public.osm_housenumber;
 DROP TABLE IF EXISTS public.osm_polygon;
 DROP TABLE IF EXISTS public.osm_point;
 DROP TABLE IF EXISTS public.osm_merged_multi_linestring;
 DROP TABLE IF EXISTS public.osm_linestring;
-DROP TABLE IF EXISTS public.osm_housenumber;
-DROP TABLE IF EXISTS public.country_osm_grid;
 DROP TABLE IF EXISTS public.country_name;
 SET search_path = public, pg_catalog;
 
@@ -85,39 +87,6 @@ CREATE TABLE country_name (
     name hstore,
     country_default_language_code character varying(2),
     partition integer
-);
-
-
---
--- Name: country_osm_grid; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE country_osm_grid (
-    country_code character varying(2),
-    area double precision,
-    geometry geometry
-);
-
-
---
--- Name: osm_housenumber; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE osm_housenumber (
-    id integer NOT NULL,
-    osm_id bigint,
-    name character varying,
-    type character varying,
-    country character varying,
-    street character varying,
-    postcode character varying,
-    city character varying,
-    housenumber character varying,
-    geometry geometry(Point,3857),
-    parent_id bigint,
-    place_rank integer,
-    street_id bigint,
-    country_code character varying(2)
 );
 
 
@@ -181,7 +150,7 @@ CREATE TABLE osm_point (
     place_rank integer,
     country_code character varying(2),
     alternative_names text,
-    linked boolean DEFAULT false
+    linked boolean
 );
 
 
@@ -204,6 +173,28 @@ CREATE TABLE osm_polygon (
     place_rank integer,
     linked_osm_id bigint,
     alternative_names text,
+    country_code character varying(2)
+);
+
+
+--
+-- Name: osm_housenumber; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osm_housenumber (
+    id integer NOT NULL,
+    osm_id bigint,
+    name character varying,
+    type character varying,
+    country character varying,
+    street character varying,
+    postcode character varying,
+    city character varying,
+    housenumber character varying,
+    geometry geometry(Point,3857),
+    parent_id bigint,
+    place_rank integer,
+    street_id bigint,
     country_code character varying(2)
 );
 
@@ -388,6 +379,27 @@ ALTER SEQUENCE osm_relation_member_id_seq OWNED BY osm_relation_member.id;
 
 
 --
+-- Name: wikipedia_article; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE wikipedia_article (
+    language text NOT NULL,
+    title text NOT NULL,
+    langcount integer,
+    othercount integer,
+    totalcount integer,
+    lat double precision,
+    lon double precision,
+    importance double precision,
+    osm_type character(1),
+    osm_id bigint,
+    infobox_type text,
+    population bigint,
+    website text
+);
+
+
+--
 -- Name: osm_housenumber id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -494,17 +506,18 @@ ALTER TABLE ONLY osm_relation
 
 
 --
+-- Name: wikipedia_article pagelinks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY wikipedia_article
+    ADD CONSTRAINT pagelinks_pkey PRIMARY KEY (language, title);
+
+
+--
 -- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_country_name_country_code ON country_name USING btree (country_code);
-
-
---
--- Name: idx_country_osm_grid_geometry; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_country_osm_grid_geometry ON country_osm_grid USING gist (geometry);
 
 
 --
@@ -519,6 +532,13 @@ CREATE INDEX idx_osm_housenumber_country_code ON osm_housenumber USING btree (co
 --
 
 CREATE INDEX idx_osm_housenumber_parent_id ON osm_housenumber USING btree (parent_id);
+
+
+--
+-- Name: idx_osm_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_id ON wikipedia_article USING btree (osm_type, osm_id);
 
 
 --
@@ -589,6 +609,13 @@ CREATE INDEX idx_osm_polygon_country_code ON osm_polygon USING btree (country_co
 --
 
 CREATE INDEX idx_osm_polygon_parent_id ON osm_polygon USING btree (parent_id);
+
+
+--
+-- Name: idx_wikipedia_article_title; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_wikipedia_article_title ON wikipedia_article USING btree (title);
 
 
 --
@@ -670,13 +697,5 @@ CREATE INDEX osm_relation_osm_id_idx ON osm_relation USING btree (osm_id);
 
 
 --
--- Name: country_osm_grid; Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON TABLE country_osm_grid TO postgres;
-
-
---
 -- PostgreSQL database dump complete
 --
-
