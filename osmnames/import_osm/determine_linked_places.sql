@@ -23,3 +23,5 @@ UPDATE osm_point p
 FROM osm_point po
 WHERE po.osm_id IN (SELECT linked_osm_id FROM osm_polygon WHERE linked_osm_id IS NOT NULL)
       AND po.osm_id = p.osm_id;
+
+CREATE INDEX IF NOT EXISTS idx_osm_point_linked_false ON osm_point(linked) WHERE linked IS FALSE;
