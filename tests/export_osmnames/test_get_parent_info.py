@@ -7,7 +7,7 @@ from osmnames.export_osmnames.export_osmnames import create_functions
 @pytest.fixture(scope="function")
 def schema(engine):
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_data_to_export.sql.dump', cwd=current_directory)
+    exec_sql_from_file('fixtures/test_export_osmnames.sql.dump', cwd=current_directory)
     create_functions()
 
 

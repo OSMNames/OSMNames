@@ -28,7 +28,9 @@ DROP INDEX IF EXISTS public.osm_housenumber_osm_id_idx;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
 DROP INDEX IF EXISTS public.idx_osm_polygon_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_polygon_country_code;
+DROP INDEX IF EXISTS public.idx_osm_polygon_admin_level;
 DROP INDEX IF EXISTS public.idx_osm_point_parent_id;
+DROP INDEX IF EXISTS public.idx_osm_point_linked_false;
 DROP INDEX IF EXISTS public.idx_osm_point_country_code;
 DROP INDEX IF EXISTS public.idx_osm_linestring_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_linestring_name;
@@ -212,7 +214,7 @@ CREATE TABLE osm_polygon (
 
 CREATE VIEW osm_elements_view AS
  SELECT osm_linestring.id,
-    'osm_linestring'::text AS "table",
+    'osm_linestring'::text AS osm_table,
     osm_linestring.osm_id,
     osm_linestring.name,
     osm_linestring.country_code,
@@ -220,7 +222,7 @@ CREATE VIEW osm_elements_view AS
    FROM osm_linestring
 UNION ALL
  SELECT osm_polygon.id,
-    'osm_polygon'::text AS "table",
+    'osm_polygon'::text AS osm_table,
     osm_polygon.osm_id,
     osm_polygon.name,
     osm_polygon.country_code,
@@ -228,7 +230,7 @@ UNION ALL
    FROM osm_polygon
 UNION ALL
  SELECT osm_point.id,
-    'osm_point'::text AS "table",
+    'osm_point'::text AS osm_table,
     osm_point.osm_id,
     osm_point.name,
     osm_point.country_code,
@@ -236,7 +238,7 @@ UNION ALL
    FROM osm_point
 UNION ALL
  SELECT osm_housenumber.id,
-    'osm_housenumber'::text AS "table",
+    'osm_housenumber'::text AS osm_table,
     osm_housenumber.osm_id,
     osm_housenumber.name,
     osm_housenumber.country_code,
@@ -555,10 +557,24 @@ CREATE INDEX idx_osm_point_country_code ON osm_point USING btree (country_code);
 
 
 --
+-- Name: idx_osm_point_linked_false; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_point_linked_false ON osm_point USING btree (linked) WHERE (linked IS FALSE);
+
+
+--
 -- Name: idx_osm_point_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_osm_point_parent_id ON osm_point USING btree (parent_id);
+
+
+--
+-- Name: idx_osm_polygon_admin_level; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_osm_polygon_admin_level ON osm_polygon USING btree (admin_level);
 
 
 --
@@ -581,6 +597,8 @@ CREATE INDEX idx_osm_polygon_parent_id ON osm_polygon USING btree (parent_id);
 
 CREATE INDEX osm_housenumber_geom ON osm_housenumber USING gist (geometry);
 
+ALTER TABLE osm_housenumber CLUSTER ON osm_housenumber_geom;
+
 
 --
 -- Name: osm_housenumber_osm_id_idx; Type: INDEX; Schema: public; Owner: -
@@ -594,6 +612,8 @@ CREATE INDEX osm_housenumber_osm_id_idx ON osm_housenumber USING btree (osm_id);
 --
 
 CREATE INDEX osm_linestring_geom ON osm_linestring USING gist (geometry);
+
+ALTER TABLE osm_linestring CLUSTER ON osm_linestring_geom;
 
 
 --
@@ -609,6 +629,8 @@ CREATE INDEX osm_linestring_osm_id_idx ON osm_linestring USING btree (osm_id);
 
 CREATE INDEX osm_point_geom ON osm_point USING gist (geometry);
 
+ALTER TABLE osm_point CLUSTER ON osm_point_geom;
+
 
 --
 -- Name: osm_point_osm_id_idx; Type: INDEX; Schema: public; Owner: -
@@ -622,6 +644,8 @@ CREATE INDEX osm_point_osm_id_idx ON osm_point USING btree (osm_id);
 --
 
 CREATE INDEX osm_polygon_geom ON osm_polygon USING gist (geometry);
+
+ALTER TABLE osm_polygon CLUSTER ON osm_polygon_geom;
 
 
 --
