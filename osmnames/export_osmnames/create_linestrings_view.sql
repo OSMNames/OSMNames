@@ -28,5 +28,5 @@ SELECT
 FROM
   osm_linestring,
   determine_class(type) AS class,
-  get_parent_info(name, id, parent_id, False, type) as parentInfo
+  get_parent_info(parent_id, name) as parentInfo
 WHERE merged_into IS NULL;

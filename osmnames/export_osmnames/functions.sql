@@ -43,38 +43,38 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_parent_info(TEXT, BIGINT, BIGINT, BOOLEAN, TEXT);
-CREATE FUNCTION get_parent_info(name TEXT, id BIGINT, parent_id BIGINT, is_polygon BOOLEAN, type TEXT) RETURNS parentInfo AS $$
+DROP FUNCTION IF EXISTS get_parent_info(BIGINT, TEXT);
+CREATE FUNCTION get_parent_info(id BIGINT, name TEXT)
+RETURNS parentInfo AS $$
 DECLARE
   retval parentInfo;
   current_name TEXT;
   current_rank INTEGER;
   current_id BIGINT;
+  current_type TEXT;
   city_rank INTEGER := 16;
   county_rank INTEGER := 10;
 BEGIN
+  
+  current_id := id;  
+  retval.displayName := name;
 
-  IF is_polygon AND type NOT IN ('water', 'bay', 'desert', 'reservoir') THEN
-    current_id := id;
-    retval.displayName := '';
-  ELSE 
-    current_id := parent_id;
-    retval.displayName := name;
-  END IF;
-    
   WHILE current_id IS NOT NULL LOOP
-    SELECT p.name, p.place_rank, p.parent_id
+
+    SELECT p.name, p.place_rank, p.parent_id, p.type
     FROM osm_polygon AS p
     WHERE p.id = current_id
-    INTO current_name, current_rank, current_id;
+    INTO current_name, current_rank, current_id, current_type;
 
     IF retval.displayName = '' THEN
       retval.displayName := current_name;
     ELSE
       retval.displayName := retval.displayName || ', ' || current_name;
-    END IF;
+    END IF; 
 
     EXIT WHEN current_rank = 4;
+    CONTINUE WHEN current_type IN ('water', 'bay', 'desert', 'reservoir');
+
 
     IF current_rank BETWEEN 16 AND 22 THEN
       retval.city := current_name;
