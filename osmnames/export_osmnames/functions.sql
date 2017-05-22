@@ -55,12 +55,10 @@ DECLARE
   city_rank INTEGER := 16;
   county_rank INTEGER := 10;
 BEGIN
-  
   current_id := id;  
   retval.displayName := name;
 
   WHILE current_id IS NOT NULL LOOP
-
     SELECT p.name, p.place_rank, p.parent_id, p.type
     FROM osm_polygon AS p
     WHERE p.id = current_id
@@ -75,7 +73,6 @@ BEGIN
     EXIT WHEN current_rank = 4;
     CONTINUE WHEN current_type IN ('water', 'bay', 'desert', 'reservoir');
 
-
     IF current_rank BETWEEN 16 AND 22 THEN
       retval.city := current_name;
       city_rank := current_rank;
@@ -84,8 +81,7 @@ BEGIN
       county_rank := current_rank;
     ELSIF (current_rank BETWEEN 6 AND county_rank) THEN
       retval.state := current_name;
-    END IF;
-  
+    END IF;  
   END LOOP;
 
 RETURN retval;

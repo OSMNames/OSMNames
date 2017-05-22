@@ -233,3 +233,4 @@ def get_parent_info(session, id, name):
     parent_info = [x.strip('"') for x in parent_info]
     parent_info[3] = ",".join(parent_info[3:])
     return parent_info
+    
