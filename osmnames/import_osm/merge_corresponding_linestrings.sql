@@ -12,7 +12,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     max(a.alternative_names) AS alternative_names,
     max(a.wikipedia) AS wikipedia,
     max(a.wikidata) AS wikidata,
-    ST_UNION(array_agg(a.geometry)) AS geometry,
+    st_simplify(st_collect(a.geometry), 10) AS geometry,
     max(a.country_code) AS country_code,
     min(a.place_rank) AS place_rank,
     a.parent_id
@@ -20,7 +20,7 @@ CREATE TABLE osm_merged_multi_linestring AS
     osm_linestring AS a,
     osm_linestring AS b
   WHERE
-    st_dwithin(a.geometry, b.geometry, 100) AND
+    st_dwithin(a.geometry, b.geometry, 1000) AND
     a.parent_id = b.parent_id AND
     a.parent_id IS  NOT NULL AND
     a.name = b.name AND
