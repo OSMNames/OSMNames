@@ -72,7 +72,7 @@ def export_to_tsv(query, path):
 def gzip_tsv_files():
     for tsv_file_path in [geonames_export_path(), housenumbers_export_path()]:
         with open(tsv_file_path, 'rb') as f_in, gzip.open("{}.gz".format(tsv_file_path), 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
+            shutil.copyfileobj(f_in, f_out)
 
 
 def geonames_export_path():
