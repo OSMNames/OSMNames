@@ -11,6 +11,7 @@ def import_osm():
     download_pbf()
     sanatize_for_import()
     import_pbf_file()
+    drop_unused_indexes()
     create_custom_columns()
     create_osm_elements_view()
     create_helper_tables()
@@ -51,6 +52,11 @@ def import_pbf_file():
         "-write",
         "-overwritecache",
     ])
+
+
+def drop_unused_indexes():
+    for index in ["osm_linestring_osm_id_idx", "osm_housenumber_osm_id_idx"]:
+        exec_sql("DROP INDEX IF EXISTS {}".format(index))
 
 
 def create_custom_columns():
