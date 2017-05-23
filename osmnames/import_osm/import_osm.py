@@ -82,6 +82,7 @@ def create_osm_grid_table():
 
 def prepare_imported_data():
     vacuum_database()
+    set_tables_unlogged()
     set_names()
     delete_unusable_entries()
     set_place_ranks()
@@ -90,6 +91,11 @@ def prepare_imported_data():
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()
+
+
+def set_tables_unlogged():
+    for table in ["osm_linestring", "osm_point", "osm_polygon", "osm_housenumber"]:
+        exec_sql("ALTER TABLE {} SET UNLOGGED;".format(table))
 
 
 def set_names():
