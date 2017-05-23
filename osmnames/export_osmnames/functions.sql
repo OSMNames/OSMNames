@@ -30,7 +30,7 @@ BEGIN
   RETURN CASE
     WHEN type IN ('motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','tertiary_link',
                   'unclassified','residential','road','living_street','raceway','construction','track','service','path','cycleway',
-                  'steps','bridleway','footway','corridor','crossing') THEN 'highway'
+                  'steps','bridleway','footway','corridor','crossing','pedestrian') THEN 'highway'
     WHEN type IN ('river','riverbank','stream','canal','drain','ditch') THEN 'waterway'
     WHEN type IN ('mountain_range','water','bay','desert','peak','volcano','hill') THEN 'natural'
     WHEN type IN ('administrative', 'postal_code') THEN 'boundary'
@@ -71,7 +71,7 @@ BEGIN
     END IF; 
 
     EXIT WHEN current_rank = 4;
-    CONTINUE WHEN current_type IN ('water', 'bay', 'desert', 'reservoir');
+    CONTINUE WHEN current_type IN ('water', 'bay', 'desert', 'reservoir', 'pedestrian');
 
     IF current_rank BETWEEN 16 AND 22 THEN
       retval.city := current_name;

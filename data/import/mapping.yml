@@ -25,6 +25,7 @@ tables:
       type: integer
     mapping:
       highway:
+      - pedestrian
       - motorway
       - motorway_link
       - trunk
@@ -107,6 +108,8 @@ tables:
       - water
       - bay
       - desert
+      highway:
+      - pedestrian
   point:
     type: point
     fields:
