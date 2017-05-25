@@ -11,9 +11,21 @@ def missing_country_codes():
 
 
 def missing_parent_ids():
-    missing = count("SELECT COUNT(id) FROM osm_elements_view WHERE parent_id IS NULL")
-    if missing > 0:
-        log.warning('{} elements with missing parent_id'.format(missing))
+    missing_linestrings = count("SELECT COUNT(id) FROM osm_linestring WHERE parent_id IS NULL")
+    if missing_linestrings > 0:
+        log.warning('{} linestrings with missing parent_id'.format(missing_linestrings))
+
+    missing_polygons = count("SELECT COUNT(id) FROM osm_polygon WHERE place_rank > 4 AND parent_id IS NULL")
+    if missing_polygons > 0:
+        log.warning('{} polygons (place_rank > 4) with missing parent_id'.format(missing_polygons))
+
+    missing_points = count("SELECT COUNT(id) FROM osm_point WHERE linked IS FALSE AND parent_id IS NULL")
+    if missing_points > 0:
+        log.warning('{} points (not linked) with missing parent_id'.format(missing_points))
+
+    missing_housenumbers = count("SELECT COUNT(id) FROM osm_housenumber WHERE parent_id IS NULL")
+    if missing_housenumbers > 0:
+        log.warning('{} housenumbers with missing parent_id'.format(missing_housenumbers))
 
 
 def missing_street_ids():
