@@ -127,3 +127,39 @@ CREATE FUNCTION get_housenumbers(osm_id_in BIGINT) RETURNS TEXT AS $$
     FROM osm_housenumber
     WHERE street_id = osm_id_in;
 $$ LANGUAGE 'sql' IMMUTABLE;
+
+
+DROP FUNCTION IF EXISTS get_bounding_box(GEOMETRY,TEXT, INTEGER);
+CREATE FUNCTION get_bounding_box(geom GEOMETRY, country_code TEXT, admin_level INTEGER)
+RETURNS DECIMAL[] AS $$
+DECLARE
+  bounding_box DECIMAL[];
+  shifted_geom GEOMETRY;
+  original_geom_length DECIMAL;
+  shifted_geom_length DECIMAL;
+BEGIN
+  -- manually set bounding box for country fr and nl
+  IF admin_level = 2 AND lower(country_code) = 'fr' THEN
+    bounding_box := ARRAY[-5.225,41.333,9.55,51.2];
+  ELSIF admin_level = 2 AND lower(country_code) = 'nl' THEN
+    bounding_box := ARRAY[3.133,50.75,7.217,53.683];
+  ELSE
+    shifted_geom := ST_Shift_Longitude(geom);
+    original_geom_length := ST_XMAX(ST_Transform(geom, 4326)) - ST_XMIN(ST_Transform(geom, 4326));
+    shifted_geom_length := ST_XMAX(ST_Transform(shifted_geom, 4326)) - ST_XMIN(ST_Transform(shifted_geom, 4326));
+
+    IF original_geom_length > shifted_geom_length THEN
+      geom := shifted_geom;
+    END IF;
+
+    bounding_box := ARRAY[
+                          ST_XMIN(ST_Transform(geom, 4326)),
+                          ST_YMIN(ST_Transform(geom, 4326)),
+                          ST_XMAX(ST_Transform(geom, 4326)),
+                          ST_YMAX(ST_Transform(geom, 4326))
+                          ];
+  END IF;
+  return bounding_box;
+END;
+$$
+LANGUAGE plpgsql IMMUTABLE;

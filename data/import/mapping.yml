@@ -58,8 +58,6 @@ tables:
       - canal
       - drain
       - ditch
-      natural:
-      - mountain_range
   polygon:
     type: polygon
     fields:
@@ -167,7 +165,6 @@ tables:
       - peak
       - volcano
       - hill
-      - mountain_range
   housenumber:
     type: geometry
     fields:
