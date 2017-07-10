@@ -11,6 +11,7 @@ def import_osm():
     download_pbf()
     sanatize_for_import()
     import_pbf_file()
+    drop_unused_indexes()
     create_custom_columns()
     create_osm_elements_view()
     create_helper_tables()
@@ -53,6 +54,11 @@ def import_pbf_file():
     ])
 
 
+def drop_unused_indexes():
+    for index in ["osm_linestring_osm_id_idx", "osm_housenumber_osm_id_idx"]:
+        exec_sql("DROP INDEX IF EXISTS {}".format(index))
+
+
 def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
 
@@ -76,6 +82,7 @@ def create_osm_grid_table():
 
 def prepare_imported_data():
     vacuum_database()
+    set_tables_unlogged()
     set_names()
     delete_unusable_entries()
     set_place_ranks()
@@ -84,6 +91,11 @@ def prepare_imported_data():
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()
+
+
+def set_tables_unlogged():
+    for table in ["osm_linestring", "osm_point", "osm_polygon", "osm_housenumber"]:
+        exec_sql("ALTER TABLE {} SET UNLOGGED;".format(table))
 
 
 def set_names():
