@@ -124,7 +124,7 @@ tables:
       type: string
     - key: null
       name: all_tags
-      type: hstore_tags  
+      type: hstore_tags
     - key: wikipedia
       name: wikipedia
       type: string
@@ -156,7 +156,7 @@ tables:
       - hill
       - mountain_range
   housenumber:
-    type: point
+    type: geometry
     fields:
     - name: osm_id
       type: id
@@ -165,26 +165,19 @@ tables:
     - key: name
       name: name
       type: string
-    - name: type
-      type: mapping_value
-    - key: addr:country
-      name: country
-      type: string
     - key: addr:street
       name: street
-      type: string
-    - key: addr:postcode
-      name: postcode
-      type: string
-    - key: addr:city
-      name: city
       type: string
     - key: addr:housenumber
       name: housenumber
       type: string
-    mapping:
-      addr:housenumber:
-      - __any__
+    type_mappings:
+      points:
+        addr:housenumber:
+        - __any__
+      polygons:
+        addr:housenumber:
+        - __any__
   relation:
     type: relation
     columns:
@@ -228,4 +221,4 @@ tables:
       - street
 tags:
   load_all: true
-  
+

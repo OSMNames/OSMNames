@@ -29,7 +29,10 @@ def download_pbf():
 
 
 def sanatize_for_import():
-    exec_sql('DROP TABLE IF EXISTS osm_linestring, osm_point, osm_polygon, osm_housenumber CASCADE')
+    exec_sql("""DROP TABLE IF EXISTS osm_linestring,
+                                     osm_point,
+                                     osm_polygon,
+                                     osm_housenumber CASCADE""")
 
 
 def import_pbf_file():

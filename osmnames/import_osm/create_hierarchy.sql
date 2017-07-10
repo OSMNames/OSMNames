@@ -7,9 +7,13 @@ BEGIN
                                                  AND st_contains(geometry_in, geometry)
                                                  AND COALESCE(admin_level, 100) > COALESCE(admin_level_in, -1);
 
-  UPDATE osm_housenumber SET parent_id = id_in WHERE parent_id IS NULL
-                                                     AND id_in != id
-                                                     AND st_contains(geometry_in, geometry);
+  UPDATE osm_housenumber_point SET parent_id = id_in WHERE parent_id IS NULL
+                                                           AND id_in != id
+                                                           AND st_contains(geometry_in, geometry);
+
+  UPDATE osm_housenumber_linestring SET parent_id = id_in WHERE parent_id IS NULL
+                                                                AND id_in != id
+                                                                AND st_contains(geometry_in, geometry);
 
   UPDATE osm_point SET parent_id = id_in WHERE parent_id IS NULL
                                                AND id_in != id
@@ -46,7 +50,8 @@ $$ LANGUAGE plpgsql;
 
 CLUSTER osm_linestring_geom ON osm_linestring;
 CLUSTER osm_polygon_geom ON osm_polygon;
-CLUSTER osm_housenumber_geom ON osm_housenumber;
+CLUSTER osm_housenumber_point_geom ON osm_housenumber_point;
+CLUSTER osm_housenumber_linestring_geom ON osm_housenumber_linestring;
 CLUSTER osm_point_geom ON osm_point;
 
 CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
