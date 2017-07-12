@@ -12,10 +12,10 @@ def prepare_housenumbers():
 
 
 def set_street_names_by_relations():
-    exec_sql_from_file("set_housenumber_street_names_by_relations.sql", cwd=SQL_DIR)
+    exec_sql_from_file("set_street_names_by_relations.sql", cwd=SQL_DIR)
     consistency_check.missing_street_names()
 
 
 def set_street_ids():
-    exec_sql_from_file("set_housenumber_street_ids.sql", cwd=SQL_DIR)
+    exec_sql_from_file("set_street_ids.sql", cwd=SQL_DIR)
     consistency_check.missing_street_ids()

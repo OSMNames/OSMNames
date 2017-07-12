@@ -5,4 +5,5 @@ FROM osm_relation_member AS relation_member
     ON relation.type = 'associatedStreet'
        OR relation.type = 'street'
 WHERE relation_member.member_id = housenumber.osm_id
-      AND relation_member.osm_id = relation.osm_id;
+      AND relation_member.osm_id = relation.osm_id
+      AND (housenumber.street = '') IS NOT FALSE;
