@@ -4,6 +4,7 @@ from subprocess import check_call
 from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import settings
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
+from osmnames.import_osm.create_hierarchy import create_hierarchy
 from osmnames import consistency_check
 
 
@@ -124,12 +125,6 @@ def set_country_codes():
 
 def determine_linked_places():
     exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
-    vacuum_database()
-
-
-def create_hierarchy():
-    exec_sql_from_file("create_hierarchy.sql", cwd=os.path.dirname(__file__))
-    consistency_check.missing_parent_ids()
     vacuum_database()
 
 
