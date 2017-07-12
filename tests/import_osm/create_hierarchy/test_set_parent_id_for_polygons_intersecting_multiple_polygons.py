@@ -17,7 +17,7 @@ def test_most_overlapping_polygon_ignored_if_admin_level_lower(session, schema, 
             tables.osm_polygon(
                 id=1,
                 name="Polygon with low admin_level",
-                place_rank=10,
+                admin_level=10,
                 geometry=WKTElement("""POLYGON((950780.204111859 6063212.30455326,969117.169147176
                     6060704.86141201,964374.807650203 6054659.28237665,950780.204111859
                     6063212.30455326))""", srid=3857)
@@ -28,7 +28,7 @@ def test_most_overlapping_polygon_ignored_if_admin_level_lower(session, schema, 
             tables.osm_polygon(
                 id=2,
                 name="Overlapping Polygon with high admin_level",
-                place_rank=22,
+                admin_level=22,
                 geometry=WKTElement("""POLYGON((950780.204111859 6063212.30455326,969117.169147176
                     6060704.86141201,964374.807650203 6054659.28237665,950780.204111859
                     6063212.30455326))""", srid=3857)

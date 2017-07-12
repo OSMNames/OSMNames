@@ -27,6 +27,7 @@ def cluster_geoms():
 def create_indexes():
     exec_sql("""
         CREATE INDEX IF NOT EXISTS idx_osm_polygon_place_rank ON osm_polygon(place_rank);
+        CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
         CREATE INDEX IF NOT EXISTS idx_osm_polygon_type
             ON osm_polygon(type)
             WHERE type NOT IN ('water', 'desert', 'bay', 'reservoir');

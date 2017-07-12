@@ -29,7 +29,7 @@ def missing_parent_ids():
 
 
 def missing_street_names():
-    missing = count("SELECT COUNT(id) FROM osm_housenumber WHERE street != ''")
+    missing = count("SELECT COUNT(id) FROM osm_housenumber WHERE street = ''")
     if missing > 0:
         log.warning('{} housenumbers without a street name'.format(missing))
 
