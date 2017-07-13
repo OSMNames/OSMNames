@@ -9,9 +9,6 @@ BEGIN
 
   UPDATE osm_polygon SET country_code = country_code_in WHERE country_code = '' IS NOT FALSE
                                                               AND st_contains(geometry_value, geometry);
-
-  UPDATE osm_housenumber SET country_code = country_code_in WHERE country_code = '' IS NOT FALSE
-                                                                  AND st_contains(geometry_value, geometry);
 END;
 $$ LANGUAGE plpgsql;
 
@@ -45,4 +42,3 @@ $$ LANGUAGE plpgsql;
 UPDATE osm_linestring SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 UPDATE osm_point SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
 UPDATE osm_polygon SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;
-UPDATE osm_housenumber SET country_code = get_most_intersecting_country_code(geometry) WHERE country_code = '' IS NOT FALSE;

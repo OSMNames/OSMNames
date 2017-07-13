@@ -5,6 +5,7 @@ DB_NAME = 'osm'
 DB_USER = 'osm'
 DB_PASSWORD = 'osm'
 DB_SCHEMA = 'public'
+SKIP_VACUUM = os.getenv('SKIP_VACUUM', False)
 
 DATA_DIR = '/osmnames/data/'
 IMPORT_DIR = '/osmnames/data/import/'

@@ -38,6 +38,9 @@ def count(query, user=settings.get('DB_USER'), database=settings.get('DB_NAME'))
 
 
 def vacuum_database():
+    if settings.get('SKIP_VACUUM'):
+        return
+
     log.info("start vacuum database")
     exec_sql('VACUUM ANALYZE')
     log.info("finished vacuum database")
