@@ -1,5 +1,5 @@
 UPDATE osm_housenumber AS housenumber
-  SET street = relation.name
+  SET street = COALESCE(NULLIF(relation.street, ''), relation.name)
 FROM osm_relation_member AS relation_member
   INNER JOIN osm_relation AS relation
     ON relation.type = 'associatedStreet'

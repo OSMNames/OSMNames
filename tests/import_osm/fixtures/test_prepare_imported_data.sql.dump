@@ -371,7 +371,8 @@ CREATE TABLE osm_relation (
     id integer NOT NULL,
     osm_id bigint,
     name character varying,
-    type character varying
+    type character varying,
+    street character varying
 );
 
 

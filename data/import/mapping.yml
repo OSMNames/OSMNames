@@ -189,6 +189,9 @@ tables:
     - key: type
       name: type
       type: string
+    - key: addr:street
+      name: street
+      type: string
     mapping:
       type:
       - associatedStreet
