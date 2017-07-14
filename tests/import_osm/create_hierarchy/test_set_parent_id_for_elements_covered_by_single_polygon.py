@@ -17,7 +17,7 @@ def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                admin_level=8,
+                place_rank=16,
                 type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
@@ -27,8 +27,7 @@ def test_osm_polygon_parent_id_get_set_if_covered(session, schema, tables):
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the other polygon",
-                admin_level=2,
-                place_rank=22,
+                place_rank=4,
                 type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
@@ -46,7 +45,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                place_rank=22,
+                place_rank=20,
                 type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
@@ -55,8 +54,8 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
     session.add(
             tables.osm_polygon(
                 id=2,
-                name="Some Polygon with lower rank covering the other polygon",
-                place_rank=24,
+                name="Some Polygon with higher rank, covering the other polygon",
+                place_rank=8,
                 type='continent',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
@@ -65,8 +64,8 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
     session.add(
             tables.osm_polygon(
                 id=3,
-                name="Some Polygon with same rank covering the other polygon",
-                place_rank=22,
+                name="Some Polygon with same rank, covering the other polygon",
+                place_rank=16,
                 type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
@@ -79,12 +78,12 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
     assert session.query(tables.osm_polygon).get(1).parent_id == 3
 
 
-def test_osm_polygon_parent_id_get_NOT_set_if_admin_level_is_lower(session, schema, tables):
+def test_osm_polygon_parent_id_get_NOT_set_if_place_rank_is_lower(session, schema, tables):
     session.add(
             tables.osm_polygon(
                 id=1,
                 name="Some Polygon with missing parent",
-                admin_level=6,
+                place_rank=12,
                 type='city',
                 geometry=WKTElement("POLYGON((1 1, 2 1, 2 2, 1 2,1 1))", srid=3857)
             )
@@ -94,8 +93,7 @@ def test_osm_polygon_parent_id_get_NOT_set_if_admin_level_is_lower(session, sche
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the other polygon",
-                admin_level=10,
-                place_rank=22,
+                place_rank=20,
                 type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
@@ -135,7 +133,7 @@ def test_osm_polygon_parent_id_get_set_if_place_rank_not_provided(session, schem
     assert session.query(tables.osm_polygon).get(1).parent_id == 2
 
 
-def test_linestring_parent_id_get_set_if_admin_level_larger_than_10(session, schema, tables):
+def test_linestring_parent_id_get_set_if_place_rank_larger_than_20(session, schema, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -149,8 +147,7 @@ def test_linestring_parent_id_get_set_if_admin_level_larger_than_10(session, sch
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the linestring",
-                admin_level=10,
-                place_rank=22,
+                place_rank=20,
                 type='city',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
@@ -163,7 +160,7 @@ def test_linestring_parent_id_get_set_if_admin_level_larger_than_10(session, sch
     assert session.query(tables.osm_linestring).get(1).parent_id == 2
 
 
-def test_linestring_parent_id_get_NOT_set_if_admin_level_lower_than_10(session, schema, tables):
+def test_linestring_parent_id_get_NOT_set_if_place_rank_lower_than_20(session, schema, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -177,8 +174,7 @@ def test_linestring_parent_id_get_NOT_set_if_admin_level_lower_than_10(session, 
             tables.osm_polygon(
                 id=2,
                 name="Some Polygon covering the linestring",
-                admin_level=9,
-                place_rank=22,
+                place_rank=18,
                 type='country',
                 geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
             )
