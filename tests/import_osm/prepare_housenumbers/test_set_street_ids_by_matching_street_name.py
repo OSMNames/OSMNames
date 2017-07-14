@@ -2,7 +2,7 @@ import os
 import pytest
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.prepare_housenumbers import set_street_ids
+from osmnames.import_osm.prepare_housenumbers import set_street_ids_by_matching_street_name
 
 
 @pytest.fixture(scope="function")
@@ -17,7 +17,7 @@ def test_when_street_with_same_parent_id_and_name_exists(session, schema, tables
 
     session.commit()
 
-    set_street_ids()
+    set_street_ids_by_matching_street_name()
 
     assert session.query(tables.osm_housenumber).get(1).street_id == 42
 
@@ -28,7 +28,7 @@ def test_when_street_with_same_parent_id_but_different_name_exists(session, sche
 
     session.commit()
 
-    set_street_ids()
+    set_street_ids_by_matching_street_name()
 
     assert session.query(tables.osm_housenumber).get(1).street_id is None
 
@@ -39,7 +39,7 @@ def test_when_street_with_same_name_but_different_parent_id_exists(session, sche
 
     session.commit()
 
-    set_street_ids()
+    set_street_ids_by_matching_street_name()
 
     assert session.query(tables.osm_housenumber).get(1).street_id is None
 
@@ -50,6 +50,6 @@ def test_when_merged_street_with_same_parent_id_and_name_exists(session, schema,
 
     session.commit()
 
-    set_street_ids()
+    set_street_ids_by_matching_street_name()
 
     assert session.query(tables.osm_housenumber).get(1).street_id == 77
