@@ -30,6 +30,7 @@ def test_linestring_parent_id_get_set_with_most_overlapping_polygon(session, sch
                 osm_id=-1683703,
                 name="Schaffhausen",
                 place_rank=22,
+                parent_id=1,
                 type='city',
                 geometry=WKTElement("""POLYGON((950780.204111859 6063212.30455326,969117.169147176
                     6060704.86141201,964374.807650203 6054659.28237665,950780.204111859
@@ -43,6 +44,7 @@ def test_linestring_parent_id_get_set_with_most_overlapping_polygon(session, sch
                 osm_id=-2785126,
                 name="Buesingen am Hochrhein",
                 place_rank=22,
+                parent_id=1,
                 type='city',
                 geometry=WKTElement("""POLYGON((963869.951901861 6055659.0183817,964544.74754235
                 6059302.14781332,968620.916296797 6059604.16227536,970467.245624132

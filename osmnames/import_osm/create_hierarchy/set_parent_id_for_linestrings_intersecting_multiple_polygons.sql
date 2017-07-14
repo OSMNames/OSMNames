@@ -4,9 +4,11 @@ RETURNS BIGINT[] AS $$
 BEGIN
   RETURN array(
     SELECT id FROM osm_polygon WHERE st_intersects(geometry, geometry_in)
+                                     AND parent_id IS NOT NULL
                                      AND place_rank >= 16 AND place_rank <= 22
                                      AND type NOT IN ('water', 'desert', 'bay', 'reservoir')
                                      ORDER BY place_rank DESC,
+                                              admin_level DESC,
                                               st_length(st_intersection(geometry, geometry_in)) DESC
   );
 END;
