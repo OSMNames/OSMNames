@@ -31,6 +31,9 @@ def create_indexes():
         CREATE INDEX IF NOT EXISTS idx_osm_polygon_type
             ON osm_polygon(type)
             WHERE type NOT IN ('water', 'desert', 'bay', 'reservoir');
+        CREATE INDEX IF NOT EXISTS idx_osm_polygon_parent_id_not_null
+            ON osm_polygon(parent_id)
+            WHERE parent_id IS NOT NULL;
     """)
 
 

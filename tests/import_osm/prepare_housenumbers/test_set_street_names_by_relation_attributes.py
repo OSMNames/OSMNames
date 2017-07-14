@@ -2,7 +2,7 @@ import os
 import pytest
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.prepare_housenumbers import set_street_names_by_relations
+from osmnames.import_osm.prepare_housenumbers import set_street_names_by_relation_attributes
 
 
 @pytest.fixture(scope="function")
@@ -18,7 +18,7 @@ def test_name_is_set_when_street_relation_exists(session, schema, tables):
 
     session.commit()
 
-    set_street_names_by_relations()
+    set_street_names_by_relation_attributes()
 
     assert str(session.query(tables.osm_housenumber).get(1).street) == "Oberfeldring"
 
@@ -30,7 +30,7 @@ def test_name_is_set_when_associatedStreet_relation_exists(session, schema, tabl
 
     session.commit()
 
-    set_street_names_by_relations()
+    set_street_names_by_relation_attributes()
 
     assert str(session.query(tables.osm_housenumber).get(1).street) == "Bahnhofstrasse"
 
@@ -42,7 +42,7 @@ def test_name_is_set_when_street_relation_with_name_instead_street_exists(sessio
 
     session.commit()
 
-    set_street_names_by_relations()
+    set_street_names_by_relation_attributes()
 
     assert str(session.query(tables.osm_housenumber).get(1).street) == "Oberfeldring"
 
@@ -54,6 +54,6 @@ def test_name_is_NOT_set_when_street_already_set(session, schema, tables):
 
     session.commit()
 
-    set_street_names_by_relations()
+    set_street_names_by_relation_attributes()
 
     assert str(session.query(tables.osm_housenumber).get(1).street) == "Oberfeldring"
