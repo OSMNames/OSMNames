@@ -171,6 +171,9 @@ tables:
     - key: addr:housenumber
       name: housenumber
       type: string
+    - key: addr:place
+      name: place
+      type: string
     type_mappings:
       points:
         addr:housenumber:
