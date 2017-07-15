@@ -16,6 +16,7 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
     session.add(
             tables.osm_linestring(
                 id=1,
+                osm_id=1111,
                 name="Rigiweg",
                 parent_id=1337,
                 country_code="ch",
@@ -28,6 +29,7 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
     session.add(
             tables.osm_linestring(
                 id=2,
+                osm_id=2222,
                 name="Rigiweg",
                 parent_id=1337,
                 country_code="ch",
@@ -42,15 +44,16 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged_into, 1
-    assert session.query(tables.osm_linestring).get(2).merged_into, 1
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1111
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1111
 
 
 def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
-    # following geometries are simplified from the osm linestring with the id 35901448
+    # following geometries are simplified from the osm linestring with the osm_id 35901448
     session.add(
             tables.osm_linestring(
                 id=1,
+                osm_id=1111,
                 name="Dorfstrasse",
                 parent_id=1337,
                 country_code="ch",
@@ -64,6 +67,7 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     session.add(
             tables.osm_linestring(
                 id=2,
+                osm_id=2222,
                 name="Dorfstrasse",
                 parent_id=1337,
                 country_code="ch",
@@ -75,6 +79,7 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     session.add(
             tables.osm_linestring(
                 id=3,
+                osm_id=3333,
                 name="Dorfstrasse",
                 parent_id=1337,
                 country_code="ch",
@@ -86,6 +91,7 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     session.add(
             tables.osm_linestring(
                 id=4,
+                osm_id=4444,
                 name="Dorfstrasse",
                 parent_id=1337,
                 country_code="ch",
@@ -101,10 +107,10 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
     merge_corresponding_linestrings()
 
     assert session.query(tables.osm_merged_multi_linestring).get(1).member_ids, [1, 2, 3, 4]
-    assert session.query(tables.osm_linestring).get(1).merged_into, 1
-    assert session.query(tables.osm_linestring).get(2).merged_into, 1
-    assert session.query(tables.osm_linestring).get(3).merged_into, 1
-    assert session.query(tables.osm_linestring).get(4).merged_into, 1
+    assert session.query(tables.osm_linestring).get(1).merged_into, 1111
+    assert session.query(tables.osm_linestring).get(2).merged_into, 1111
+    assert session.query(tables.osm_linestring).get(3).merged_into, 1111
+    assert session.query(tables.osm_linestring).get(4).merged_into, 1111
 
 
 def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):

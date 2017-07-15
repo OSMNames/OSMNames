@@ -1,7 +1,6 @@
 DROP MATERIALIZED VIEW IF EXISTS mv_merged_linestrings;
 CREATE MATERIALIZED VIEW mv_merged_linestrings AS
 SELECT
-  id,
   name,
   alternative_names,
   'way'::TEXT as osm_type,
