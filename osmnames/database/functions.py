@@ -42,7 +42,7 @@ def vacuum_database():
         return
 
     log.info("start vacuum database")
-    exec_sql('VACUUM ANALYZE')
+    exec_sql('VACUUM ANALYZE', user="postgres")
     log.info("finished vacuum database")
 
 
