@@ -5,9 +5,9 @@ log = logger.setup(__name__)
 
 
 def missing_country_codes():
-    missing = count("SELECT COUNT(id) FROM osm_elements_view WHERE country_code = '' IS NOT FALSE")
+    missing = count("SELECT COUNT(id) FROM osm_polygon WHERE place_rank >= 4 AND country_code = '' IS NOT FALSE")
     if missing > 0:
-        log.warning('{} elements with missing country_code'.format(missing))
+        log.warning('{} polygons (place_rank >= 4) with missing country_code'.format(missing))
 
 
 def missing_parent_ids():

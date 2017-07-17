@@ -109,7 +109,6 @@ CREATE TABLE osm_merged_multi_linestring (
     wikipedia text,
     wikidata text,
     geometry geometry,
-    country_code text,
     place_rank integer,
     parent_id bigint
 );
@@ -129,8 +128,7 @@ CREATE TABLE osm_housenumber (
     geometry geometry,
     parent_id bigint,
     place_rank integer,
-    street_id bigint,
-    country_code character varying(2)
+    street_id bigint
 );
 
 
@@ -151,7 +149,6 @@ CREATE TABLE osm_linestring (
     parent_id bigint,
     intersecting_polygon_ids bigint[],
     place_rank integer,
-    country_code character varying(2),
     alternative_names text,
     merged_into bigint
 );
@@ -173,7 +170,6 @@ CREATE TABLE osm_point (
     geometry geometry(Point,3857),
     parent_id bigint,
     place_rank integer,
-    country_code character varying(2),
     alternative_names text,
     linked boolean DEFAULT false
 );
@@ -201,43 +197,6 @@ CREATE TABLE osm_polygon (
     country_code character varying(2)
 );
 
-
---
--- Name: osm_elements_view; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW osm_elements_view AS
- SELECT osm_linestring.id,
-    'osm_linestring'::text AS osm_table,
-    osm_linestring.osm_id,
-    osm_linestring.name,
-    osm_linestring.country_code,
-    osm_linestring.parent_id
-   FROM osm_linestring
-UNION ALL
- SELECT osm_polygon.id,
-    'osm_polygon'::text AS osm_table,
-    osm_polygon.osm_id,
-    osm_polygon.name,
-    osm_polygon.country_code,
-    osm_polygon.parent_id
-   FROM osm_polygon
-UNION ALL
- SELECT osm_point.id,
-    'osm_point'::text AS osm_table,
-    osm_point.osm_id,
-    osm_point.name,
-    osm_point.country_code,
-    osm_point.parent_id
-   FROM osm_point
-UNION ALL
- SELECT osm_housenumber.id,
-    'osm_housenumber'::text AS osm_table,
-    osm_housenumber.osm_id,
-    osm_housenumber.name,
-    osm_housenumber.country_code,
-    osm_housenumber.parent_id
-   FROM osm_housenumber;
 
 
 --
