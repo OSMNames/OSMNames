@@ -32,14 +32,11 @@ DROP INDEX IF EXISTS public.idx_osm_polygon_country_code;
 DROP INDEX IF EXISTS public.idx_osm_polygon_admin_level;
 DROP INDEX IF EXISTS public.idx_osm_point_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_point_linked_false;
-DROP INDEX IF EXISTS public.idx_osm_point_country_code;
 DROP INDEX IF EXISTS public.idx_osm_linestring_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_linestring_name;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
-DROP INDEX IF EXISTS public.idx_osm_linestring_country_code;
 DROP INDEX IF EXISTS public.idx_osm_id;
 DROP INDEX IF EXISTS public.idx_osm_housenumber_parent_id;
-DROP INDEX IF EXISTS public.idx_osm_housenumber_country_code;
 DROP INDEX IF EXISTS public.idx_country_name_country_code;
 ALTER TABLE IF EXISTS ONLY public.wikipedia_article DROP CONSTRAINT IF EXISTS pagelinks_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_relation_pkey;
@@ -106,7 +103,6 @@ CREATE TABLE osm_linestring (
     geometry geometry(LineString,3857),
     parent_id bigint,
     place_rank integer,
-    country_code character varying(2),
     alternative_names text,
     merged_into bigint
 );
@@ -126,7 +122,6 @@ CREATE TABLE osm_merged_multi_linestring (
     wikipedia text,
     wikidata text,
     geometry geometry,
-    country_code text,
     place_rank integer,
     parent_id bigint
 );
@@ -148,7 +143,6 @@ CREATE TABLE osm_point (
     geometry geometry(Point,3857),
     parent_id bigint,
     place_rank integer,
-    country_code character varying(2),
     alternative_names text,
     linked boolean
 );
@@ -194,47 +188,9 @@ CREATE TABLE osm_housenumber (
     geometry geometry(Point,3857),
     parent_id bigint,
     place_rank integer,
-    street_id bigint,
-    country_code character varying(2)
+    street_id bigint
 );
 
-
---
--- Name: osm_elements_view; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW osm_elements_view AS
- SELECT osm_linestring.id,
-    'osm_linestring'::text AS osm_table,
-    osm_linestring.osm_id,
-    osm_linestring.name,
-    osm_linestring.country_code,
-    osm_linestring.parent_id
-   FROM osm_linestring
-UNION ALL
- SELECT osm_polygon.id,
-    'osm_polygon'::text AS osm_table,
-    osm_polygon.osm_id,
-    osm_polygon.name,
-    osm_polygon.country_code,
-    osm_polygon.parent_id
-   FROM osm_polygon
-UNION ALL
- SELECT osm_point.id,
-    'osm_point'::text AS osm_table,
-    osm_point.osm_id,
-    osm_point.name,
-    osm_point.country_code,
-    osm_point.parent_id
-   FROM osm_point
-UNION ALL
- SELECT osm_housenumber.id,
-    'osm_housenumber'::text AS osm_table,
-    osm_housenumber.osm_id,
-    osm_housenumber.name,
-    osm_housenumber.country_code,
-    osm_housenumber.parent_id
-   FROM osm_housenumber;
 
 
 --
@@ -521,13 +477,6 @@ CREATE INDEX idx_country_name_country_code ON country_name USING btree (country_
 
 
 --
--- Name: idx_osm_housenumber_country_code; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_osm_housenumber_country_code ON osm_housenumber USING btree (country_code);
-
-
---
 -- Name: idx_osm_housenumber_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -539,13 +488,6 @@ CREATE INDEX idx_osm_housenumber_parent_id ON osm_housenumber USING btree (paren
 --
 
 CREATE INDEX idx_osm_id ON wikipedia_article USING btree (osm_type, osm_id);
-
-
---
--- Name: idx_osm_linestring_country_code; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_osm_linestring_country_code ON osm_linestring USING btree (country_code);
 
 
 --
@@ -567,13 +509,6 @@ CREATE INDEX idx_osm_linestring_name ON osm_linestring USING btree (name);
 --
 
 CREATE INDEX idx_osm_linestring_parent_id ON osm_linestring USING btree (parent_id);
-
-
---
--- Name: idx_osm_point_country_code; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_osm_point_country_code ON osm_point USING btree (country_code);
 
 
 --

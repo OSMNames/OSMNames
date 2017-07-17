@@ -52,6 +52,7 @@ DECLARE
   current_rank INTEGER;
   current_id BIGINT;
   current_type TEXT;
+  current_country_code VARCHAR(2);
   city_rank INTEGER := 16;
   county_rank INTEGER := 10;
 BEGIN
@@ -59,15 +60,19 @@ BEGIN
   retval.displayName := name;
 
   WHILE current_id IS NOT NULL LOOP
-    SELECT p.name, p.place_rank, p.parent_id, p.type
+    SELECT p.name, p.place_rank, p.parent_id, p.type, p.country_code
     FROM osm_polygon AS p
     WHERE p.id = current_id
-    INTO current_name, current_rank, current_id, current_type;
+    INTO current_name, current_rank, current_id, current_type, current_country_code;
 
     IF retval.displayName = '' THEN
       retval.displayName := current_name;
     ELSE
       retval.displayName := retval.displayName || ', ' || current_name;
+    END IF;
+
+    IF current_country_code IS NOT NULL THEN
+      retval.country_code := current_country_code;
     END IF;
 
     EXIT WHEN current_rank = 4;

@@ -4,6 +4,7 @@ import os
 from osmnames.database.functions import exec_sql_from_file
 from osmnames.export_osmnames.export_osmnames import create_functions
 
+
 @pytest.fixture(scope="function")
 def schema(engine):
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -12,7 +13,6 @@ def schema(engine):
 
 
 def test_get_parent_info_1(session, schema, tables):
-
     session.add(
             tables.osm_polygon(
                 id=1,
@@ -41,7 +41,7 @@ def test_get_parent_info_1(session, schema, tables):
                 place_rank=18,
                 parent_id=4
             )
-        )    
+        )
 
     session.add(
         tables.osm_polygon(
@@ -63,7 +63,6 @@ def test_get_parent_info_1(session, schema, tables):
         )
     )
 
-
     session.add(
         tables.osm_polygon(
             id=6,
@@ -72,14 +71,14 @@ def test_get_parent_info_1(session, schema, tables):
             place_rank=8,
             parent_id=7
         )
-    )   
-
+    )
 
     session.add(
         tables.osm_polygon(
             id=7,
             name="a country",
             type="administrative",
+            country_code="ch",
             place_rank=4
         )
     )
@@ -87,10 +86,12 @@ def test_get_parent_info_1(session, schema, tables):
 
     parent_info = get_parent_info(session, 1, "")
 
-    assert parent_info[0] == "a state"              # state
-    assert parent_info[1] == "a county"             # county
-    assert parent_info[2] == "a city"               # city
-    assert parent_info[3] == "a small lake, a village, a town, a city, a county, a state, a country" # display_name
+    # state, county, city, country_code and display_name
+    assert parent_info[0] == "ch"
+    assert parent_info[1] == "a state"
+    assert parent_info[2] == "a county"
+    assert parent_info[3] == "a city"
+    assert parent_info[4] == "a small lake, a village, a town, a city, a county, a state, a country"
 
 
 def test_get_parent_info_2(session, schema, tables):
@@ -122,7 +123,7 @@ def test_get_parent_info_2(session, schema, tables):
                 place_rank=14,
                 parent_id=4
             )
-        )    
+        )
 
     session.add(
         tables.osm_polygon(
@@ -139,17 +140,20 @@ def test_get_parent_info_2(session, schema, tables):
             id=5,
             name="Czech Republic",
             type="administrative",
+            country_code="cz",
             place_rank=4
         )
-    )   
+    )
     session.commit()
 
     parent_info = get_parent_info(session, 2, "Halkova")
 
-    assert parent_info[0] == "Stredocesky kraj"    # state
-    assert parent_info[1] == "Okres Rakovnik"      # county
-    assert parent_info[2] == "Rakovnik"            # city
-    assert parent_info[3] == "Halkova, Rakovnik, Okres Rakovnik, Stredocesky kraj, Czech Republic"  # display_name
+    # state, county, city, country_code and display_name
+    assert parent_info[0] == "cz"
+    assert parent_info[1] == "Stredocesky kraj"
+    assert parent_info[2] == "Okres Rakovnik"
+    assert parent_info[3] == "Rakovnik"
+    assert parent_info[4] == "Halkova, Rakovnik, Okres Rakovnik, Stredocesky kraj, Czech Republic"
 
 
 def test_get_parent_info_3(session, schema, tables):
@@ -181,7 +185,7 @@ def test_get_parent_info_3(session, schema, tables):
                 place_rank=12,
                 parent_id=4
             )
-        )    
+        )
 
     session.add(
         tables.osm_polygon(
@@ -198,17 +202,20 @@ def test_get_parent_info_3(session, schema, tables):
             id=5,
             name="Switzerland",
             type="administrative",
+            country_code="ch",
             place_rank=4
         )
-    )   
+    )
     session.commit()
 
     parent_info = get_parent_info(session, 2, "Oberseestrasse")
 
-    assert parent_info[0] == "Sankt Gallen"             # state
-    assert parent_info[1] == "Wahlkreis See-Gaster"     # county
-    assert parent_info[2] == "Rapperswil-Jona"          # city
-    assert parent_info[3] == "Oberseestrasse, Rapperswil-Jona, Wahlkreis See-Gaster, Sankt Gallen, Switzerland" # display_name
+    # state, county, city, country_code and display_name
+    assert parent_info[0] == "ch"
+    assert parent_info[1] == "Sankt Gallen"
+    assert parent_info[2] == "Wahlkreis See-Gaster"
+    assert parent_info[3] == "Rapperswil-Jona"
+    assert parent_info[4] == "Oberseestrasse, Rapperswil-Jona, Wahlkreis See-Gaster, Sankt Gallen, Switzerland"
 
 
 def test_city_name_gets_set(session, schema, tables):
@@ -224,13 +231,12 @@ def test_city_name_gets_set(session, schema, tables):
     session.commit()
 
     parent_info = get_parent_info(session, 1, "")
-    assert parent_info[2] == "Jona"
+    assert parent_info[3] == "Jona"
 
 
 def get_parent_info(session, id, name):
     query = "SELECT get_parent_info({},'{}')".format(id, name)
     parent_info = session.execute(query).fetchone()[0].strip('(').strip(')').split(',')
     parent_info = [x.strip('"') for x in parent_info]
-    parent_info[3] = ",".join(parent_info[3:])
+    parent_info[4] = ",".join(parent_info[4:])
     return parent_info
-    

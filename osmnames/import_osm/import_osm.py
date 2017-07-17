@@ -14,7 +14,6 @@ def import_osm():
     import_pbf_file()
     drop_unused_indexes()
     create_custom_columns()
-    create_osm_elements_view()
     create_helper_tables()
     prepare_imported_data()
 
@@ -65,10 +64,6 @@ def drop_unused_indexes():
 
 def create_custom_columns():
     exec_sql_from_file("create_custom_columns.sql", cwd=os.path.dirname(__file__))
-
-
-def create_osm_elements_view():
-    exec_sql_from_file("create_osm_elements_view.sql", cwd=os.path.dirname(__file__))
 
 
 def create_helper_tables():
