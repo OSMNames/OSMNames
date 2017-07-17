@@ -97,6 +97,11 @@ def set_tables_unlogged():
         exec_sql("ALTER TABLE {} SET UNLOGGED;".format(table))
 
 
+def set_linestring_centers():
+    exec_sql_from_file("set_linestring_centers.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
+
+
 def set_names():
     exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
     vacuum_database()

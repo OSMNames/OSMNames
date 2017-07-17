@@ -3,6 +3,7 @@ ALTER TABLE osm_linestring ADD COLUMN intersecting_polygon_ids BIGINT[];
 ALTER TABLE osm_linestring ADD COLUMN place_rank INTEGER;
 ALTER TABLE osm_linestring ADD COLUMN alternative_names TEXT;
 ALTER TABLE osm_linestring ADD COLUMN merged_into BIGINT;
+ALTER TABLE osm_linestring ADD COLUMN geometry_center GEOMETRY;
 
 ALTER TABLE osm_polygon ADD COLUMN parent_id BIGINT;
 ALTER TABLE osm_polygon ADD COLUMN place_rank INTEGER;

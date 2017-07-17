@@ -14,6 +14,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
+
 UPDATE osm_polygon
   SET parent_id = get_most_intersecting_polygon_id_for_polygon(id, geometry, admin_level)
 WHERE parent_id IS NULL;
