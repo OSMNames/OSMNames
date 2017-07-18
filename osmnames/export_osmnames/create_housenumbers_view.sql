@@ -6,6 +6,6 @@ SELECT
   COALESCE(street_id::VARCHAR, '') AS street_id,
   COALESCE(street, '') AS street,
   housenumber,
-  ST_X(ST_Centroid(ST_Transform(geometry, 4326))) AS lon,
-  ST_Y(ST_Centroid(ST_Transform(geometry, 4326))) AS lat
+  round(ST_X(ST_Centroid(ST_Transform(geometry, 4326)))::numeric, 7) AS lon,
+  round(ST_Y(ST_Centroid(ST_Transform(geometry, 4326)))::numeric, 7) AS lat
 FROM osm_housenumber;
