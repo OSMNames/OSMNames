@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS osm_merged_multi_linestring CASCADE;
 CREATE TABLE osm_merged_multi_linestring AS
   SELECT
     min(a.id) AS id,
-    array_agg(DISTINCT a.id) AS member_ids,
+    array_agg(DISTINCT a.osm_id) AS member_ids,
     min(a.osm_id) AS osm_id,
     string_agg(DISTINCT a.type,',') AS type,
     a.name,
@@ -36,8 +36,8 @@ DROP INDEX osm_linestring_geom;
 DROP INDEX IF EXISTS idx_osm_linestring_merged_false;
 
 -- set merged_into for all merged linestrings
-UPDATE osm_linestring SET merged_into = osm_merged_multi_linestring.id
+UPDATE osm_linestring SET merged_into = osm_merged_multi_linestring.osm_id
 FROM osm_merged_multi_linestring
-WHERE osm_linestring.id = ANY(osm_merged_multi_linestring.member_ids);
+WHERE osm_linestring.osm_id = ANY(osm_merged_multi_linestring.member_ids);
 
 CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring(merged_into) WHERE merged_into IS NULL;

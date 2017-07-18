@@ -13,7 +13,7 @@ def schema():
 
 def test_when_street_with_same_parent_id_and_name_exists(session, schema, tables):
     session.add(tables.osm_housenumber(id=1, parent_id=1337, street="Haldenweg"))
-    session.add(tables.osm_linestring(id=42, parent_id=1337, name="Haldenweg"))
+    session.add(tables.osm_linestring(id=2, osm_id=42, parent_id=1337, name="Haldenweg"))
 
     session.commit()
 
@@ -24,7 +24,7 @@ def test_when_street_with_same_parent_id_and_name_exists(session, schema, tables
 
 def test_when_street_with_same_parent_id_but_different_name_exists(session, schema, tables):
     session.add(tables.osm_housenumber(id=1, parent_id=1337, street="Haldenweg"))
-    session.add(tables.osm_linestring(id=42, parent_id=1337, name="Hornstrasse"))
+    session.add(tables.osm_linestring(id=2, osm_id=42, parent_id=1337, name="Hornstrasse"))
 
     session.commit()
 
@@ -35,7 +35,7 @@ def test_when_street_with_same_parent_id_but_different_name_exists(session, sche
 
 def test_when_street_with_same_name_but_different_parent_id_exists(session, schema, tables):
     session.add(tables.osm_housenumber(id=1, parent_id=1337, street="Haldenweg"))
-    session.add(tables.osm_linestring(id=42, parent_id=9999, name="Haldenweg"))
+    session.add(tables.osm_linestring(id=2, osm_id=42, parent_id=9999, name="Haldenweg"))
 
     session.commit()
 
@@ -46,7 +46,7 @@ def test_when_street_with_same_name_but_different_parent_id_exists(session, sche
 
 def test_when_merged_street_with_same_parent_id_and_name_exists(session, schema, tables):
     session.add(tables.osm_housenumber(id=1, parent_id=1337, street="Haldenweg"))
-    session.add(tables.osm_linestring(id=42, merged_into=77, parent_id=1337, name="Haldenweg"))
+    session.add(tables.osm_linestring(id=2, osm_id=42, merged_into=77, parent_id=1337, name="Haldenweg"))
 
     session.commit()
 

@@ -1,7 +1,6 @@
 DROP MATERIALIZED VIEW IF EXISTS mv_points;
 CREATE MATERIALIZED VIEW mv_points AS
 SELECT
-  id,
   name,
   alternative_names,
   'node'::TEXT as osm_type,
