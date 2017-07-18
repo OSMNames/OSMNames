@@ -63,7 +63,10 @@ def export_to_tsv(query, path):
     check_call([
         "psql",
         "-c", "COPY ({}) TO STDOUT WITH NULL AS '' DELIMITER '\t' CSV HEADER".format(query),
-        "-o", path])
+        "-o", path,
+        settings.get("DB_USER"),
+        settings.get("DB_NAME"),
+        ])
 
 
 def gzip_tsv_files():
