@@ -17,8 +17,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN pip install --upgrade pip
 RUN pip install -U setuptools
 
-RUN go get github.com/lukasmartinelli/pgclimb \
- && go install github.com/lukasmartinelli/pgclimb
 RUN go get github.com/omniscale/imposm3 \
  && go install github.com/omniscale/imposm3/cmd/imposm3
 
