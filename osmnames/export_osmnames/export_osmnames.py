@@ -52,21 +52,18 @@ def create_geonames_view():
 
 
 def export_geonames():
-    export_to_tsv("SELECT * FROM geonames_view;", geonames_export_path())
+    export_to_tsv("SELECT * FROM geonames_view", geonames_export_path())
 
 
 def export_housenumbers():
-    export_to_tsv("SELECT * FROM mv_housenumbers;", housenumbers_export_path())
+    export_to_tsv("SELECT * FROM mv_housenumbers", housenumbers_export_path())
 
 
 def export_to_tsv(query, path):
-    check_call(["pgclimb", "-c", query,
-                           "-o", path,
-                           "--host", settings.get("DB_HOST"),
-                           "--dbname", settings.get("DB_NAME"),
-                           "--username", settings.get("DB_USER"),
-                           "--pass", settings.get("DB_PASSWORD"),
-                           "tsv", "--header"])
+    check_call([
+        "psql",
+        "-c", "COPY ({}) TO STDOUT WITH NULL AS '' DELIMITER '\t' CSV HEADER".format(query),
+        "-o", path])
 
 
 def gzip_tsv_files():
