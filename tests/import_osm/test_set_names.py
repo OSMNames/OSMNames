@@ -1,7 +1,6 @@
 import pytest
 import os
 
-from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
 from osmnames.import_osm import import_osm
 
@@ -13,8 +12,8 @@ def schema():
 
 
 def test_name_get_set_from_all_tags(session, schema, tables):
-    session.add(tables.osm_polygon(id=1, name="", all_tags={"name:en":"Zurich"}))
-    session.add(tables.osm_linestring(id=1, name="", all_tags={"name:de":"Rhein"}))
+    session.add(tables.osm_polygon(id=1, name="", all_tags={"name:en": "Zurich"}))
+    session.add(tables.osm_linestring(id=1, name="", all_tags={"name:de": "Rhein"}))
     session.commit()
 
     import_osm.set_names()
@@ -27,18 +26,18 @@ def test_name_get_set_according_to_priority(session, schema, tables):
     # Where priority order is en, fr, de, es, ru, zh
 
     session.add(
-    	tables.osm_polygon(
-			id=2,
-			name="",
-			all_tags={"name:fr":"Lac Leman","name:de":"Genfersee","name:en":"Lake Geneva"}
-		)
+      tables.osm_polygon(
+          id=2,
+          name="",
+          all_tags={"name:fr": "Lac Leman", "name:de": "Genfersee", "name:en": "Lake Geneva"}
+        )
     )
     session.add(
-    	tables.osm_linestring(
-			id=2,
-			name="",
-			all_tags={"name:es":"Rin","name:it":"Reno","name:de":"Rhein"}
-		)
+      tables.osm_linestring(
+          id=2,
+          name="",
+          all_tags={"name:es": "Rin", "name:it": "Reno", "name:de": "Rhein"}
+        )
     )
     session.commit()
     import_osm.set_names()
@@ -51,7 +50,7 @@ def test_alternative_names_get_set(session, schema, tables):
     session.add(
         tables.osm_point(
             id=1,
-            all_tags={"name:de":"Matterhorn","name:fr":"Cervin","name:it":"Cervino"}
+            all_tags={"name:de": "Matterhorn", "name:fr": "Cervin", "name:it": "Cervino"}
         )
     )
     session.commit()
@@ -67,7 +66,7 @@ def test_alternative_names_do_not_contain_name(session, schema, tables):
         tables.osm_point(
             id=2,
             name="Matterhorn",
-            all_tags={"name:de":"Matterhorn","name:fr":"Cervin","name:it":"Cervino"}
+            all_tags={"name:de": "Matterhorn", "name:fr": "Cervin", "name:it": "Cervino"}
         )
     )
     session.commit()
@@ -81,7 +80,7 @@ def test_alternative_names_do_not_contain_duplicates(session, schema, tables):
         tables.osm_point(
             id=3,
             name="Matterhorn",
-            all_tags={"name:fr":"Cervin","name:it":"Cervino","alt_name":"Cervino"}
+            all_tags={"name:fr": "Cervin", "name:it": "Cervino", "alt_name": "Cervino"}
         )
     )
     session.commit()
@@ -120,8 +119,8 @@ def test_tabs_get_deleted_from_alternative_names(session, schema, tables):
     session.add(
         tables.osm_polygon(
             id=4,
-            name = 'Bodensee',
-            all_tags={"name:en":"Lake         Constance","name:fr":"Lac\tde\tConstance" }            
+            name='Bodensee',
+            all_tags={"name:en": "Lake         Constance", "name:fr": "Lac\tde\tConstance"}
             )
         )
     session.commit()

@@ -133,13 +133,13 @@ def test_osm_polygon_parent_id_get_set_if_place_rank_not_provided(session, schem
     assert session.query(tables.osm_polygon).get(1).parent_id == 2
 
 
-def test_linestring_parent_id_get_set_if_place_rank_larger_than_20(session, schema, tables):
+def test_linestring_parent_id_get_set_based_on_geometry_center(session, schema, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
                 name="Some linestring with missing parent",
                 type='street',
-                geometry=WKTElement("LINESTRING(1 1, 2 1)", srid=3857)
+                geometry_center=WKTElement("POINT(2 2)", srid=3857)
             )
         )
 
@@ -158,30 +158,3 @@ def test_linestring_parent_id_get_set_if_place_rank_larger_than_20(session, sche
     set_parent_id_for_elements_covered_by_single_polygon()
 
     assert session.query(tables.osm_linestring).get(1).parent_id == 2
-
-
-def test_linestring_parent_id_get_NOT_set_if_place_rank_lower_than_20(session, schema, tables):
-    session.add(
-            tables.osm_linestring(
-                id=1,
-                name="Some linestring with missing parent",
-                type='street',
-                geometry=WKTElement("LINESTRING(1 1, 2 1)", srid=3857)
-            )
-        )
-
-    session.add(
-            tables.osm_polygon(
-                id=2,
-                name="Some Polygon covering the linestring",
-                place_rank=18,
-                type='country',
-                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
-            )
-        )
-
-    session.commit()
-
-    set_parent_id_for_elements_covered_by_single_polygon()
-
-    assert session.query(tables.osm_linestring).get(1).parent_id is None

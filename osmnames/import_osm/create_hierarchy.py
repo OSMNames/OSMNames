@@ -2,38 +2,34 @@ import os
 
 from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import consistency_check
+from osmnames import logger
 
 SQL_DIR = "{}/create_hierarchy/".format(os.path.dirname(__file__))
+log = logger.setup(__name__)
 
 
 def create_hierarchy():
-    cluster_geoms()
-    create_indexes()
+    set_linestring_centers()
+    cluster_geometries()
+
     set_parent_id_for_elements_covered_by_single_polygon()
     set_parent_id_for_polygons_intersecting_multiple_polygons()
-    set_parent_id_for_linestrings_intersecting_multiple_polygons()
+
+    drop_linestring_center_index()
     consistency_check.missing_parent_ids()
 
 
-def cluster_geoms():
+def set_linestring_centers():
+    exec_sql_from_file("set_linestring_centers.sql", cwd=SQL_DIR)
+    vacuum_database()
+
+
+def cluster_geometries():
     exec_sql("""
-        CLUSTER osm_linestring_geom ON osm_linestring;
+        CLUSTER osm_linestring_center_geom ON osm_linestring;
         CLUSTER osm_polygon_geom ON osm_polygon;
         CLUSTER osm_housenumber_geom ON osm_housenumber;
         CLUSTER osm_point_geom ON osm_point;
-    """)
-
-
-def create_indexes():
-    exec_sql("""
-        CREATE INDEX IF NOT EXISTS idx_osm_polygon_place_rank ON osm_polygon(place_rank);
-        CREATE INDEX IF NOT EXISTS idx_osm_polygon_admin_level ON osm_polygon(admin_level);
-        CREATE INDEX IF NOT EXISTS idx_osm_polygon_type
-            ON osm_polygon(type)
-            WHERE type NOT IN ('water', 'desert', 'bay', 'reservoir');
-        CREATE INDEX IF NOT EXISTS idx_osm_polygon_parent_id_not_null
-            ON osm_polygon(parent_id)
-            WHERE parent_id IS NOT NULL;
     """)
 
 
@@ -47,6 +43,5 @@ def set_parent_id_for_polygons_intersecting_multiple_polygons():
     vacuum_database()
 
 
-def set_parent_id_for_linestrings_intersecting_multiple_polygons():
-    exec_sql_from_file("set_parent_id_for_linestrings_intersecting_multiple_polygons.sql", cwd=SQL_DIR)
-    vacuum_database()
+def drop_linestring_center_index():
+    exec_sql("DROP INDEX osm_linestring_center_geom")

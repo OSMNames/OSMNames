@@ -17,17 +17,13 @@ BEGIN
                                                AND linked IS FALSE;
 
 
-  -- setting the parent_id of linestrings makes only sense when the polygons place_rank is >= 20
-  -- Because a linestring is likely to intersect multiple polygons with high place_ranks,
-  -- it will only be fully covered by a polygon with a small place_rank, which is not the correct parent.
-  -- The parent for the remaining linestrings will be set later
-  IF place_rank_in >= 20 THEN
-    UPDATE osm_linestring SET parent_id = id_in WHERE parent_id IS NULL
-                                                      AND id_in != id
-                                                      AND st_contains(geometry_in, geometry);
-  END IF;
+  UPDATE osm_linestring SET parent_id = id_in WHERE parent_id IS NULL
+                                                    AND id_in != id
+                                                    AND st_contains(geometry_in, geometry_center);
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE INDEX IF NOT EXISTS idx_osm_polygon_place_rank ON osm_polygon(place_rank);
 
 DO $$
 BEGIN

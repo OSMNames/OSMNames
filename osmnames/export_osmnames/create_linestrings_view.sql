@@ -17,7 +17,7 @@ SELECT
   COALESCE(parentInfo.state, '') AS state,
   COALESCE(get_country_name(parentInfo.country_code), '') AS country,
   COALESCE(parentInfo.country_code, '') AS country_code,
-  parentInfo.displayName  AS display_name,
+  parentInfo.displayName AS display_name,
   round(ST_XMIN(ST_Transform(geometry, 4326))::numeric, 7) AS west,
   round(ST_YMIN(ST_Transform(geometry, 4326))::numeric, 7) AS south,
   round(ST_XMAX(ST_Transform(geometry, 4326))::numeric, 7) AS east,
