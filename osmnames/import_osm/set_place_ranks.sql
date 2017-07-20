@@ -15,7 +15,7 @@ BEGIN
     WHEN type IN ('region', 'peak', 'volcano') THEN 18
     WHEN type IN ('town') THEN 18
     WHEN type IN ('village','hamlet','municipality','district','unincorporated_area','borough') THEN 19
-    WHEN type IN ('suburb','croft','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass','hill') THEN 20
+    WHEN type IN ('suburb','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass','hill') THEN 20
     WHEN type IN ('neighbourhood', 'residential','reservoir','stream') THEN 22
     WHEN type IN ('motorway','trunk','primary','secondary','tertiary','unclassified','residential','road','living_street','raceway','construction','track','crossing','riverbank','canal') THEN 26
     WHEN type IN ('motorway_link','trunk_link','primary_link','secondary_link','tertiary_link','service','path','cycleway','steps','bridleway','footway','corridor','pedestrian') THEN 27

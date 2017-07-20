@@ -135,21 +135,34 @@ tables:
       name: admin_level
       type: integer
     mapping:
+      # https://taginfo.openstreetmap.org/keys/place#values
       place:
-      - city
-      - borough
-      - suburb
-      - quarter
-      - neighbourhood
-      - town
+      - locality
       - village
       - hamlet
+      - isolated_dwelling
       - island
+      - neighbourhood
+      - islet
+      - suburb
+      - town
+      - farm
+      - city
+      - allotments
+      - city_block
+      - plot
+      - county
+      - square
+      - quarter
+      - region
+      - municipality
+      - state
+      - borough
+      - district
+
       - ocean
       - sea
       - continent
-      - country
-      - state
       natural:
       - peak
       - volcano
