@@ -9,6 +9,7 @@ ALTER TABLE osm_polygon ADD COLUMN place_rank INTEGER;
 ALTER TABLE osm_polygon ADD COLUMN linked_osm_id BIGINT;
 ALTER TABLE osm_polygon ADD COLUMN alternative_names TEXT;
 ALTER TABLE osm_polygon ADD COLUMN country_code VARCHAR(2);
+ALTER TABLE osm_polygon ADD COLUMN geometry_center GEOMETRY;
 
 ALTER TABLE osm_point ADD COLUMN parent_id BIGINT;
 ALTER TABLE osm_point ADD COLUMN place_rank INTEGER;
