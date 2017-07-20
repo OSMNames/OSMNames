@@ -16,6 +16,7 @@ def init_database():
 
 def create_hstore_extension():
     exec_sql("CREATE EXTENSION IF NOT EXISTS hstore;", user="postgres", database="template_postgis")
+    exec_sql("CREATE EXTENSION IF NOT EXISTS unaccent;", user="postgres", database="template_postgis")
 
 
 def create_database():

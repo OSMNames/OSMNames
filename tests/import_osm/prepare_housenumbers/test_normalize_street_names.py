@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import pytest
 
@@ -39,3 +41,13 @@ def test_remove_dashes(session, schema, tables):
     normalize_street_names()
 
     assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "chemindupradevillars"
+
+
+def test_remove_accents(session, schema, tables):
+    session.add(tables.osm_linestring(id=1, name="Cité Préville"))
+
+    session.commit()
+
+    normalize_street_names()
+
+    assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "citepreville"
