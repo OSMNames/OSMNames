@@ -3,6 +3,7 @@ import os
 from subprocess import check_call
 from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import settings
+from osmnames.import_osm.set_names import set_names
 from osmnames.import_osm.prepare_housenumbers import prepare_housenumbers
 from osmnames.import_osm.create_hierarchy import create_hierarchy
 from osmnames import consistency_check
@@ -99,11 +100,6 @@ def set_tables_unlogged():
 
 def set_linestring_centers():
     exec_sql_from_file("set_linestring_centers.sql", cwd=os.path.dirname(__file__))
-    vacuum_database()
-
-
-def set_names():
-    exec_sql_from_file("set_names.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
 
 
