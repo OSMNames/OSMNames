@@ -25,9 +25,9 @@ def set_geometry_centers():
 
 def cluster_geometries():
     exec_sql("""
-        CLUSTER osm_linestring_center_geom ON osm_linestring;
-        CLUSTER osm_polygon_geom ON osm_polygon;
-        CLUSTER osm_housenumber_geom ON osm_housenumber;
+        CLUSTER osm_linestring_geometry_center ON osm_linestring;
+        CLUSTER osm_polygon_geometry_center ON osm_polygon;
+        CLUSTER osm_housenumber_geometry_center ON osm_housenumber;
         CLUSTER osm_point_geom ON osm_point;
     """)
 
@@ -38,5 +38,6 @@ def set_parent_ids():
 
 
 def drop_geometry_center_indexes():
-    exec_sql("DROP INDEX osm_linestring_center_geom")
-    exec_sql("DROP INDEX osm_polygon_center_geom")
+    exec_sql("DROP INDEX osm_linestring_geometry_center")
+    exec_sql("DROP INDEX osm_polygon_geometry_center")
+    exec_sql("DROP INDEX osm_housenumber_geometry_center")

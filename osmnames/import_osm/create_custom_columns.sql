@@ -20,3 +20,4 @@ ALTER TABLE osm_point ADD COLUMN linked BOOL DEFAULT FALSE;
 ALTER TABLE osm_housenumber ADD COLUMN parent_id BIGINT;
 ALTER TABLE osm_housenumber ADD COLUMN street_id BIGINT;
 ALTER TABLE osm_housenumber ADD COLUMN normalized_street TEXT;
+ALTER TABLE osm_housenumber ADD COLUMN geometry_center GEOMETRY;

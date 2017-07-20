@@ -2,13 +2,13 @@ import pytest
 import os
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm import import_osm
+from osmnames.import_osm.set_names import set_names_from_tags
 
 
 @pytest.fixture(scope="module")
 def schema():
     current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
+    exec_sql_from_file('../fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
 
 
 def test_name_get_set_from_all_tags(session, schema, tables):
@@ -16,7 +16,7 @@ def test_name_get_set_from_all_tags(session, schema, tables):
     session.add(tables.osm_linestring(id=1, name="", all_tags={"name:de": "Rhein"}))
     session.commit()
 
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(1).name == "Zurich"
     assert session.query(tables.osm_linestring).get(1).name == "Rhein"
@@ -40,7 +40,7 @@ def test_name_get_set_according_to_priority(session, schema, tables):
         )
     )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(2).name == "Lake Geneva"
     assert session.query(tables.osm_linestring).get(2).name == "Rhein"
@@ -54,7 +54,7 @@ def test_alternative_names_get_set(session, schema, tables):
         )
     )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     alternative_names = session.query(tables.osm_point).get(1).alternative_names
 
@@ -70,7 +70,7 @@ def test_alternative_names_do_not_contain_name(session, schema, tables):
         )
     )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert "Matterhorn" not in session.query(tables.osm_point).get(2).alternative_names
 
@@ -84,7 +84,7 @@ def test_alternative_names_do_not_contain_duplicates(session, schema, tables):
         )
     )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_point).get(3).alternative_names.count("Cervino") == 1
 
@@ -97,7 +97,7 @@ def test_alternative_names_are_empty_if_only_name_is_present(session, schema, ta
         )
     )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_point).get(4).alternative_names == ''
 
@@ -110,7 +110,7 @@ def test_tabs_get_deleted_from_name(session, schema, tables):
             )
         )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(3).name == "Lake Zurich"
 
@@ -124,6 +124,6 @@ def test_tabs_get_deleted_from_alternative_names(session, schema, tables):
             )
         )
     session.commit()
-    import_osm.set_names()
+    set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(4).alternative_names.count('\t') == 0

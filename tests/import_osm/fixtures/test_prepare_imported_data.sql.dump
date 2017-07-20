@@ -117,7 +117,8 @@ CREATE TABLE osm_housenumber (
     geometry geometry(Geometry,3857),
     parent_id bigint,
     street_id bigint,
-    normalized_street text
+    normalized_street text,
+    geometry_center geometry
 );
 
 
