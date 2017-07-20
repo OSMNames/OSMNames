@@ -7,11 +7,16 @@ SQL_DIR = "{}/prepare_housenumbers/".format(os.path.dirname(__file__))
 
 
 def prepare_housenumbers():
+    normalize_street_names()
     set_street_attributes_by_street_relation_members()
     set_street_names_by_relation_attributes()
-    set_street_ids_by_matching_street_name()
+    set_street_ids_by_street_name()
     set_street_attributes_by_nearest_street()
     consistency_check.missing_street_ids()
+
+
+def normalize_street_names():
+    exec_sql_from_file("normalize_street_names.sql", cwd=SQL_DIR)
 
 
 def set_street_attributes_by_street_relation_members():
@@ -22,8 +27,8 @@ def set_street_names_by_relation_attributes():
     exec_sql_from_file("set_street_names_by_relation_attributes.sql", cwd=SQL_DIR)
 
 
-def set_street_ids_by_matching_street_name():
-    exec_sql_from_file("set_street_ids_by_matching_street_name.sql", cwd=SQL_DIR)
+def set_street_ids_by_street_name():
+    exec_sql_from_file("set_street_ids_by_street_name.sql", cwd=SQL_DIR)
 
 
 def set_street_attributes_by_nearest_street():
