@@ -9,18 +9,17 @@ log = logger.setup(__name__)
 
 
 def create_hierarchy():
-    set_linestring_centers()
+    set_geometry_centers()
     cluster_geometries()
 
-    set_parent_id_for_elements_covered_by_single_polygon()
-    set_parent_id_for_polygons_intersecting_multiple_polygons()
+    set_parent_ids()
 
-    drop_linestring_center_index()
+    drop_geometry_center_indexes()
     consistency_check.missing_parent_ids()
 
 
-def set_linestring_centers():
-    exec_sql_from_file("set_linestring_centers.sql", cwd=SQL_DIR)
+def set_geometry_centers():
+    exec_sql_from_file("set_geometry_centers.sql", cwd=SQL_DIR)
     vacuum_database()
 
 
@@ -33,15 +32,11 @@ def cluster_geometries():
     """)
 
 
-def set_parent_id_for_elements_covered_by_single_polygon():
-    exec_sql_from_file("set_parent_id_for_elements_covered_by_single_polygon.sql", cwd=SQL_DIR)
+def set_parent_ids():
+    exec_sql_from_file("set_parent_ids.sql", cwd=SQL_DIR)
     vacuum_database()
 
 
-def set_parent_id_for_polygons_intersecting_multiple_polygons():
-    exec_sql_from_file("set_parent_id_for_polygons_intersecting_multiple_polygons.sql", cwd=SQL_DIR)
-    vacuum_database()
-
-
-def drop_linestring_center_index():
+def drop_geometry_center_indexes():
     exec_sql("DROP INDEX osm_linestring_center_geom")
+    exec_sql("DROP INDEX osm_polygon_center_geom")
