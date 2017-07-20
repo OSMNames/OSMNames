@@ -34,7 +34,6 @@ ALTER TABLE osm_merged_multi_linestring ADD PRIMARY KEY (id);
 
 -- drop not needed indexes
 DROP INDEX idx_osm_linestring_name;
-DROP INDEX osm_linestring_geom;
 DROP INDEX IF EXISTS idx_osm_linestring_merged_false;
 
 -- set merged_into for all merged linestrings
