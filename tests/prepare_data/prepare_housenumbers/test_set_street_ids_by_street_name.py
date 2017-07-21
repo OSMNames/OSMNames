@@ -1,7 +1,7 @@
 import os
 import pytest
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.prepare_housenumbers import set_street_ids_by_street_name
+from osmnames.prepare_data.prepare_housenumbers import set_street_ids_by_street_name
 
 
 @pytest.fixture(scope="function")

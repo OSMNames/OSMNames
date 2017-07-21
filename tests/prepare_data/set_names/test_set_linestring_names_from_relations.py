@@ -2,7 +2,7 @@ import pytest
 import os
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.set_names import set_linestring_names_from_relations
+from osmnames.prepare_data.set_names import set_linestring_names_from_relations
 
 
 @pytest.fixture(scope="module")

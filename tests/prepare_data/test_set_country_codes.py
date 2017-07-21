@@ -3,7 +3,7 @@ import os
 
 from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.import_osm import set_country_codes
+from osmnames.prepare_data.prepare_data import set_country_codes
 
 
 @pytest.fixture(scope="function")
