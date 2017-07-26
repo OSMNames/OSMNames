@@ -114,18 +114,8 @@ LANGUAGE plpgsql IMMUTABLE;
 
 
 DROP FUNCTION IF EXISTS get_country_language_code(VARCHAR);
-CREATE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS TEXT
-  AS $$
-DECLARE
-  country RECORD;
-BEGIN
-  FOR country IN SELECT DISTINCT country_default_language_code FROM country_name WHERE country_code = country_code_in LIMIT 1
-  LOOP
-    RETURN lower(country.country_default_language_code);
-  END LOOP;
-  RETURN NULL;
-END;
-$$
-LANGUAGE plpgsql IMMUTABLE;
-
-
+CREATE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS VARCHAR(2) AS $$
+  SELECT lower(country_default_language_code)
+         FROM country_name
+         WHERE country_code = country_code_in LIMIT 1;
+$$ LANGUAGE 'sql' IMMUTABLE;
