@@ -1,29 +1,3 @@
------------------------------------
---                               --
---  FUNCTIONS FOR EXPORTING DATA --
---                               --
------------------------------------
-
-
-DROP FUNCTION IF EXISTS get_type_for_relations(BIGINT, TEXT, INTEGER);
-CREATE OR REPLACE FUNCTION get_type_for_relations(linked_osm_id BIGINT, type_value TEXT, place_rank INTEGER) returns TEXT as $$
-DECLARE
-  retVal TEXT;
-BEGIN
-IF linked_osm_id IS NOT NULL AND type_value = 'administrative' AND (place_rank = 16 OR place_rank = 12) THEN
-  SELECT type FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
-  IF retVal = 'city' THEN
-  RETURN retVal;
-  ELSE
-  RETURN type_value;
-  END IF;
-ELSE
-  return type_value;
- END IF;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
-
-
 CREATE OR REPLACE FUNCTION determine_class(type TEXT)
 RETURNS TEXT AS $$
 BEGIN
@@ -155,16 +129,3 @@ $$
 LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_name_for_relations(BIGINT, TEXT);
-CREATE FUNCTION get_name_for_relations(linked_osm_id bigint, type TEXT) RETURNS TEXT AS $$
-DECLARE
-  retVal TEXT;
-BEGIN
-IF type = 'city' THEN
-  SELECT name FROM osm_point WHERE osm_id = linked_osm_id INTO retVal;
-  ELSE
-  retVal = '';
-  END IF;
-  return retVal;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
