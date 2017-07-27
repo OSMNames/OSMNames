@@ -8,7 +8,8 @@ UPDATE osm_housenumber AS housenumber
 FROM osm_linestring AS street
 WHERE street.parent_id = housenumber.parent_id
       AND street.normalized_name = housenumber.normalized_street
-      AND housenumber.street_id IS NULL;
+      AND housenumber.street_id IS NULL
+      AND housenumber.normalized_street != '';
 
 -- set street ids for names with typos (levenshtein distance 1)
 UPDATE osm_housenumber AS housenumber
@@ -16,7 +17,8 @@ UPDATE osm_housenumber AS housenumber
 FROM osm_linestring AS street
 WHERE street.parent_id = housenumber.parent_id
       AND levenshtein_less_equal(street.normalized_name, housenumber.normalized_street, 1) = 1
-      AND housenumber.street_id IS NULL;
+      AND housenumber.street_id IS NULL
+      AND housenumber.normalized_street != '';
 
 -- set street ids where street name contains full street name of housenumber
 -- or the housenumber street name contains the full street name of a linestring
@@ -28,7 +30,8 @@ FROM osm_linestring AS street
 WHERE street.parent_id = housenumber.parent_id
       AND (street.normalized_name LIKE '%' || housenumber.normalized_street || '%'
            OR housenumber.normalized_street LIKE '%' || street.normalized_name || '%')
-      AND housenumber.street_id IS NULL;
+      AND housenumber.street_id IS NULL
+      AND housenumber.normalized_street != '';
 
 DROP INDEX idx_osm_housenumber_normalized_street;
 DROP INDEX idx_osm_linestring_normalized_name;
