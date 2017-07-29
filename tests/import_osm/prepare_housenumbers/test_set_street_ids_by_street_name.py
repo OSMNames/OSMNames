@@ -65,17 +65,6 @@ def test_when_street_with_same_parent_id_but_almost_same_name_exists(session, sc
     assert session.query(tables.osm_housenumber).get(1).street_id == 42
 
 
-def test_when_street_name_contains_full_housenumber_street(session, schema, tables):
-    session.add(tables.osm_housenumber(id=1, parent_id=1337, osm_id=271182498, normalized_street="serre"))
-    session.add(tables.osm_linestring(id=2, osm_id=42, parent_id=1337, normalized_name="ruedelaserre"))
-
-    session.commit()
-
-    set_street_ids_by_street_name()
-
-    assert session.query(tables.osm_housenumber).get(1).street_id == 42
-
-
 def test_when_housenumber_street_contains_full_street_name(session, schema, tables):
     session.add(tables.osm_housenumber(id=1, parent_id=1337, osm_id=88267051, normalized_street="citepreville19"))
     session.add(tables.osm_linestring(id=2, osm_id=42, parent_id=1337, normalized_name="citepreville"))
