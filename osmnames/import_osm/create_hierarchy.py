@@ -24,12 +24,8 @@ def set_geometry_centers():
 
 
 def cluster_geometries():
-    exec_sql("""
-        CLUSTER osm_linestring_geometry_center ON osm_linestring;
-        CLUSTER osm_polygon_geometry_center ON osm_polygon;
-        CLUSTER osm_housenumber_geometry_center ON osm_housenumber;
-        CLUSTER osm_point_geom ON osm_point;
-    """)
+    exec_sql_from_file("cluster_geometries.sql", cwd=SQL_DIR)
+    vacuum_database()
 
 
 def set_parent_ids():
