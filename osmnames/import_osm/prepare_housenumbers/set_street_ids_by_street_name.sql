@@ -1,4 +1,3 @@
-CREATE INDEX IF NOT EXISTS idx_osm_housenumber_normalized_street ON osm_housenumber(normalized_street);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_normalized_name ON osm_linestring(normalized_name);
 CREATE INDEX IF NOT EXISTS idx_osm_housenumber_parent_id ON osm_housenumber(parent_id);
 
@@ -33,5 +32,4 @@ WHERE street.parent_id = housenumber.parent_id
       AND housenumber.street_id IS NULL
       AND housenumber.normalized_street != '';
 
-DROP INDEX idx_osm_housenumber_normalized_street;
 DROP INDEX idx_osm_linestring_normalized_name;
