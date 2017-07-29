@@ -51,3 +51,13 @@ def test_remove_accents(session, schema, tables):
     normalize_street_names()
 
     assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "citepreville"
+
+
+def test_remove_quotes(session, schema, tables):
+    session.add(tables.osm_linestring(id=1, name="Grand'Rue"))
+
+    session.commit()
+
+    normalize_street_names()
+
+    assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "grandrue"
