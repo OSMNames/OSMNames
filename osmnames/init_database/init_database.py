@@ -9,14 +9,15 @@ def init_database():
         print("skip database init, since it is already initialized")
         return
 
-    create_hstore_extension()
+    create_extensions()
     create_database()
-    create_database_functions()
+    create_custom_types()
 
 
-def create_hstore_extension():
+def create_extensions():
     exec_sql("CREATE EXTENSION IF NOT EXISTS hstore;", user="postgres", database="template_postgis")
     exec_sql("CREATE EXTENSION IF NOT EXISTS unaccent;", user="postgres", database="template_postgis")
+    exec_sql("CREATE EXTENSION IF NOT EXISTS pg_trgm;", user="postgres", database="template_postgis")
 
 
 def create_database():
@@ -31,5 +32,5 @@ def create_database():
     exec_sql(create_database_query, user="postgres", database="postgres")
 
 
-def create_database_functions():
-    exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
+def create_custom_types():
+    exec_sql_from_file("create_custom_types.sql", cwd=os.path.dirname(__file__))

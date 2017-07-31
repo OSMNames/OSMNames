@@ -8,11 +8,9 @@ BEGIN
                                                  AND COALESCE(place_rank, 100) > COALESCE(place_rank_in, -1);
 
   UPDATE osm_housenumber SET parent_id = id_in WHERE parent_id IS NULL
-                                                     AND id_in != id
                                                      AND st_contains(geometry_in, geometry_center);
 
   UPDATE osm_point SET parent_id = id_in WHERE parent_id IS NULL
-                                               AND id_in != id
                                                AND st_contains(geometry_in, geometry)
                                                AND linked IS FALSE;
 

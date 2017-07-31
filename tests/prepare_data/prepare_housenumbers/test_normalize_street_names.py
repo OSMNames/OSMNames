@@ -4,7 +4,7 @@ import os
 import pytest
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.prepare_housenumbers import normalize_street_names
+from osmnames.prepare_data.prepare_housenumbers import normalize_street_names
 
 
 @pytest.fixture(scope="function")
@@ -51,3 +51,13 @@ def test_remove_accents(session, schema, tables):
     normalize_street_names()
 
     assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "citepreville"
+
+
+def test_remove_quotes(session, schema, tables):
+    session.add(tables.osm_linestring(id=1, name="Grand'Rue"))
+
+    session.commit()
+
+    normalize_street_names()
+
+    assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "grandrue"

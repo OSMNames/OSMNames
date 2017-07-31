@@ -3,7 +3,7 @@ import os
 
 from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm import import_osm
+from osmnames.prepare_data.prepare_data import delete_unusable_entries
 
 
 @pytest.fixture(scope="module")
@@ -17,7 +17,7 @@ def test_osm_polygon_with_blank_names_get_deleted(session, schema, tables):
     session.add(tables.osm_polygon(name=""))
     session.commit()
 
-    import_osm.delete_unusable_entries()
+    delete_unusable_entries()
 
     assert session.query(tables.osm_polygon).count(), 1
 
@@ -27,7 +27,7 @@ def test_osm_polygon_with_null_names_get_deleted(session, schema, tables):
     session.add(tables.osm_polygon())
     session.commit()
 
-    import_osm.delete_unusable_entries()
+    delete_unusable_entries()
 
     assert session.query(tables.osm_polygon).count(), 1
 
@@ -37,7 +37,7 @@ def test_osm_point_with_blank_names_get_deleted(session, schema, tables):
     session.add(tables.osm_point(name=""))
     session.commit()
 
-    import_osm.delete_unusable_entries()
+    delete_unusable_entries()
 
     assert session.query(tables.osm_point).count(), 1
 
@@ -47,7 +47,7 @@ def test_osm_linestring_with_blank_names_get_deleted(session, schema, tables):
     session.add(tables.osm_linestring(name=""))
     session.commit()
 
-    import_osm.delete_unusable_entries()
+    delete_unusable_entries()
 
     assert session.query(tables.osm_linestring).count(), 1
 
@@ -57,6 +57,6 @@ def test_osm_polygon_with_empty_geometries_get_deleted(session, schema, tables):
     session.add(tables.osm_polygon(geometry=WKTElement('POLYGON EMPTY', srid=3857)))
     session.commit()
 
-    import_osm.delete_unusable_entries()
+    delete_unusable_entries()
 
     assert session.query(tables.osm_polygon).count(), 1

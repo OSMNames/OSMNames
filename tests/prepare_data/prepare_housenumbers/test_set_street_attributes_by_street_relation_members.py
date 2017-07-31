@@ -2,7 +2,7 @@ import os
 import pytest
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.prepare_housenumbers import set_street_attributes_by_street_relation_members
+from osmnames.prepare_data.prepare_housenumbers import set_street_attributes_by_street_relation_members
 
 
 @pytest.fixture(scope="function")
