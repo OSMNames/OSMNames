@@ -3,7 +3,7 @@ import os
 
 from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.create_hierarchy import set_parent_ids
+from osmnames.prepare_data.create_hierarchy import set_parent_ids
 
 
 @pytest.fixture(scope="function")

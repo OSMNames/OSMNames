@@ -2,7 +2,7 @@ import pytest
 import os
 
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.import_osm import set_place_ranks
+from osmnames.prepare_data.prepare_data import set_place_ranks
 
 
 @pytest.fixture(scope="function")

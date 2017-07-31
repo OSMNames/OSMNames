@@ -3,7 +3,7 @@ import os
 
 from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
-from osmnames.import_osm.import_osm import merge_corresponding_linestrings
+from osmnames.prepare_data.prepare_data import merge_corresponding_linestrings
 
 
 @pytest.fixture(scope="function")
