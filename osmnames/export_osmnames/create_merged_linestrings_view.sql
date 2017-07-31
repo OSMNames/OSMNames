@@ -23,7 +23,8 @@ SELECT
   round(ST_XMAX(ST_Transform(geometry, 4326))::numeric, 7) AS east,
   round(ST_YMAX(ST_Transform(geometry, 4326))::numeric, 7) AS north,
   wikidata AS wikidata,
-  wikipedia AS wikipedia
+  wikipedia AS wikipedia,
+  get_housenumbers(osm_id) AS housenumbers
 FROM
   osm_merged_multi_linestring,
   determine_class(type) AS class,

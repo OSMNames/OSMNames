@@ -2,12 +2,13 @@ import os
 import gzip
 import shutil
 from subprocess import check_call
-from osmnames.database.functions import exec_sql_from_file
+from osmnames.database.functions import exec_sql, exec_sql_from_file
 from osmnames import settings
 
 
 def export_osmnames():
     create_functions()
+    create_indexes()
     create_views()
     export_geonames()
     export_housenumbers()
@@ -16,6 +17,10 @@ def export_osmnames():
 
 def create_functions():
     exec_sql_from_file("functions.sql", cwd=os.path.dirname(__file__))
+
+
+def create_indexes():
+    exec_sql("CREATE INDEX osm_housenumber_street_id ON osm_housenumber(street_id);")
 
 
 def create_views():
