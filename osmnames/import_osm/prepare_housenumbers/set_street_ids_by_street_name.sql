@@ -1,6 +1,7 @@
 CREATE INDEX IF NOT EXISTS osm_linestring_normalized_name ON osm_linestring(normalized_name);
 CREATE INDEX IF NOT EXISTS osm_linestring_normalized_name_trgm ON osm_linestring USING GIN(normalized_name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS osm_linestring_geometry ON osm_linestring USING GIST(geometry);
+CREATE INDEX IF NOT EXISTS osm_housenumber_geometry_center ON osm_housenumber USING GIST(geometry_center);
 
 -- see https://www.postgresql.org/docs/9.6/static/pgtrgm.html for more information
 UPDATE pg_settings SET setting = '0.5' WHERE name = 'pg_trgm.similarity_threshold';
@@ -36,6 +37,15 @@ WHERE street.parent_id = housenumber.parent_id
       AND housenumber.street_id IS NULL
       AND housenumber.normalized_street != '';
 
+-- set street id by fully matching names within range
+UPDATE osm_housenumber AS housenumber
+  SET street_id = COALESCE(street.merged_into, street.osm_id)
+FROM osm_linestring AS street
+WHERE st_dwithin(street.geometry, housenumber.geometry_center, 1000)
+      AND street.normalized_name = housenumber.normalized_street
+      AND housenumber.street_id IS NULL
+      AND housenumber.normalized_street != '';
+
 -- set street id by best matching name within same parent
 UPDATE osm_housenumber
   SET street_id = best_matching_street_within_parent(parent_id, normalized_street)
@@ -52,4 +62,4 @@ UPDATE osm_housenumber
 
 DROP INDEX osm_linestring_normalized_name;
 DROP INDEX osm_linestring_normalized_name_trgm;
-DROP INDEX osm_linestring_geometry;
+DROP INDEX osm_housenumber_geometry_center;
