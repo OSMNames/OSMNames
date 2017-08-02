@@ -27,37 +27,15 @@ OpenStreetMap for full text search downloadable for free: http://osmnames.org
 
 ## Data format of tsv export of OSMNames
 
-| Column            | Description |
-| -------------     | ------------- |
-| id                | internal identifier
-| name              | the name of the feature (default language is en, others available(de,es,fr,ru,zh))
-| alternative_names | all other available and distinct names separated by commas
-| osm_type          | the osm type of this feature (node, way, relation)
-| osm_id            |
-| class             |
-| type              |
-| lon               |
-| lat               |
-| place_rank        | rank from 1-30 ascending depending on the type and class
-| importance        | importance [0.0-1.0] depending on wikipedia
-| street            |
-| city              |
-| county            |
-| state             |
-| country           |
-| country_code      | ISO-3166 2-letter country code
-| display_name      | the display name representing the hierarchy
-| west              | bbox
-| south             | bbox
-| east              | bbox
-| north             | bbox
-| wikidata          | the wikidata associated with this feature
-| wikipedia         | the wikipedia URL associated with this feature
+Details about the output format of OSMNames can be found in the
+[documentation](http://osmnames-development-branch.readthedocs.io/en/latest/introduction.html#output-format).
 
 ## Data
 
 The world extract can be downloaded here:
-https://github.com/geometalab/OSMNames/releases/download/v1.1/planet-latest.tsv.gz
+https://github.com/geometalab/OSMNames/releases/download/v2.0/planet-latest_geonames.tsv.gz
+
+https://github.com/geometalab/OSMNames/releases/download/v2.0/planet-latest_housenumbers.tsv.gz
 
 
 If you want to extract only the information for a specific country, you can use the following command
@@ -107,6 +85,14 @@ A simple command to get started is:
 ```bash
 mv export.tsv data.tsv
 docker run --rm --name klokantech-osmnames-sphinxsearch -v `pwd`:/data/input/ -p 80:80 klokantech/osmnames-sphinxsearch
+```
+
+:warning: The current version of the osmnames-sphinxsearch cannot handle the
+newest export of osmnames yet. To make it work, the house number column in the
+export must be removed. This can be done like this:
+
+``` bash
+cut -f  24 --complement export.tsv > data.tsv
 ```
 
 ## Development
