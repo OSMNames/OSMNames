@@ -144,19 +144,20 @@ BEGIN
   ELSIF admin_level = 2 AND lower(country_code) = 'nl' THEN
     bounding_box := ARRAY[3.133,50.75,7.217,53.683];
   ELSE
-    shifted_geom := ST_Shift_Longitude(geom);
-    original_geom_length := ST_XMAX(ST_Transform(geom, 4326)) - ST_XMIN(ST_Transform(geom, 4326));
-    shifted_geom_length := ST_XMAX(ST_Transform(shifted_geom, 4326)) - ST_XMIN(ST_Transform(shifted_geom, 4326));
+    geom := ST_Transform(geom, 4326);
+    shifted_geom := ST_ShiftLongitude(geom);
+    original_geom_length := ST_XMAX(geom) - ST_XMIN(geom);
+    shifted_geom_length := ST_XMAX(shifted_geom) - ST_XMIN(shifted_geom);
 
     IF original_geom_length > shifted_geom_length THEN
       geom := shifted_geom;
     END IF;
 
     bounding_box := ARRAY[
-                          ST_XMIN(ST_Transform(geom, 4326)),
-                          ST_YMIN(ST_Transform(geom, 4326)),
-                          ST_XMAX(ST_Transform(geom, 4326)),
-                          ST_YMAX(ST_Transform(geom, 4326))
+                          round(ST_XMIN(geom)::numeric, 7),
+                          round(ST_YMIN(geom)::numeric, 7),
+                          round(ST_XMAX(geom)::numeric, 7),
+                          round(ST_YMAX(geom)::numeric, 7)
                           ];
   END IF;
   return bounding_box;
