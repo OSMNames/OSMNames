@@ -30,7 +30,7 @@ ALTER TABLE IF EXISTS ONLY public.osm_relation DROP CONSTRAINT IF EXISTS osm_rel
 ALTER TABLE IF EXISTS ONLY public.osm_relation_member DROP CONSTRAINT IF EXISTS osm_relation_member_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_polygon DROP CONSTRAINT IF EXISTS osm_polygon_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_point DROP CONSTRAINT IF EXISTS osm_point_pkey;
-ALTER TABLE IF EXISTS ONLY public.osm_merged_multi_linestring DROP CONSTRAINT IF EXISTS osm_merged_multi_linestring_pkey;
+ALTER TABLE IF EXISTS ONLY public.osm_merged_linestring DROP CONSTRAINT IF EXISTS osm_merged_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_linestring DROP CONSTRAINT IF EXISTS osm_linestring_pkey;
 ALTER TABLE IF EXISTS ONLY public.osm_housenumber DROP CONSTRAINT IF EXISTS osm_housenumber_pkey;
 ALTER TABLE IF EXISTS ONLY public.country_name DROP CONSTRAINT IF EXISTS country_name_pkey;
@@ -52,7 +52,7 @@ DROP SEQUENCE IF EXISTS public.osm_linestring_id_seq;
 DROP TABLE IF EXISTS public.osm_linestring;
 DROP SEQUENCE IF EXISTS public.osm_housenumber_id_seq;
 DROP TABLE IF EXISTS public.osm_housenumber;
-DROP TABLE IF EXISTS public.osm_merged_multi_linestring;
+DROP TABLE IF EXISTS public.osm_merged_linestring;
 DROP TABLE IF EXISTS public.country_osm_grid;
 DROP TABLE IF EXISTS public.country_name;
 SET search_path = public, pg_catalog;
@@ -85,10 +85,10 @@ CREATE TABLE country_osm_grid (
 
 
 --
--- Name: osm_merged_multi_linestring; Type: TABLE; Schema: public; Owner: -
+-- Name: osm_merged_linestring; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE osm_merged_multi_linestring (
+CREATE TABLE osm_merged_linestring (
     id integer NOT NULL,
     member_ids integer[],
     osm_id bigint,
@@ -400,11 +400,11 @@ ALTER TABLE ONLY osm_linestring
 
 
 --
--- Name: osm_merged_multi_linestring osm_merged_multi_linestring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: osm_merged_linestring osm_merged_linestring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY osm_merged_multi_linestring
-    ADD CONSTRAINT osm_merged_multi_linestring_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY osm_merged_linestring
+    ADD CONSTRAINT osm_merged_linestring_pkey PRIMARY KEY (id);
 
 
 --

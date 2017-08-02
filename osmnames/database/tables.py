@@ -32,8 +32,8 @@ class Tables:
         return getattr(self.base.classes, 'osm_linestring')
 
     @lazy_property.LazyProperty
-    def osm_merged_multi_linestring(self):
-        return getattr(self.base.classes, 'osm_merged_multi_linestring')
+    def osm_merged_linestring(self):
+        return getattr(self.base.classes, 'osm_merged_linestring')
 
     @lazy_property.LazyProperty
     def osm_relation(self):

@@ -1,7 +1,7 @@
-# OSM Names [![Build Status](https://travis-ci.org/OSMNames/OSMNames.svg?branch=master)](https://travis-ci.org/OSMNames/OSMNames)
-Database of geographic place names from OpenStreetMap for full text search downloadable for free: http://osmnames.org
+# OSM Names [![Build Status](https://travis-ci.org/OSMNames/OSMNames.svg?branch=master)](https://travis-ci.org/OSMNames/OSMNames) [![Documentation Status](https://readthedocs.org/projects/osmnames-development-branch/badge/?version=latest)](http://osmnames.readthedocs.io/en/latest/?badge=latest)
 
-Does include hierarchy information without house numbers or zip codes.
+Database of geographic place names with hierarchy and bounding boxes from
+OpenStreetMap for full text search downloadable for free: http://osmnames.org
 
 ## Target of OSM Names
 
@@ -23,7 +23,7 @@ Does include hierarchy information without house numbers or zip codes.
 - JSON/JSONP API similar to Nominatim: nominatim.openstreetmap.org
 - Ready to use via Docker in minutes
 - https://github.com/klokantech/osmnames-sphinxsearch
-- osmnames.klokantech.com/
+- http://osmnames.org
 
 ## Data format of tsv export of OSMNames
 
@@ -54,9 +54,6 @@ Does include hierarchy information without house numbers or zip codes.
 | wikidata          | the wikidata associated with this feature
 | wikipedia         | the wikipedia URL associated with this feature
 
-REMARKs:
-* Fields like housenumber and postalcode don't belong to this dataset.
-
 ## Data
 
 The world extract can be downloaded here:
@@ -71,8 +68,7 @@ awk -F $'\t' 'BEGIN {OFS = FS}{if (NR!=1) {  if ($16 =="[country_code]")  { prin
 where country_code is the ISO-3166 2-letter country code.
 
 
-
-### Get Started
+## Get Started
 
 The OSM PBF data dump will be download when starting the process. By default it
 will download the entire world. If you want to change this, edit the `.env`
@@ -86,7 +82,7 @@ We can now start the process with:
 docker-compose run --rm osmnames
 ```
 
-This will call the script `src/run.sh` in the docker container, which will execute following steps:
+This will call the script `src/run.py` in the docker container, which will execute following steps:
 * Initialize the database
 * Download the pbf
 * Download and import the wikipedia dump
@@ -101,14 +97,16 @@ docker-compose kill postgres
 docker-compose rm postgres
 ```
 
-The process will create a file `export.tsv` with all the geonames. To use the export with osmnames-sphinxsearch, have a look at the corresponding [section in the readme](https://github.com/klokantech/osmnames-sphinxsearch#usage-of-docker-image). A simple command to get started is:
+The process will create a file `<import-file-name>_geonames.tsv` with all the
+geonames and `<import-file-name>_housenumbers.tsv` with the house numbres. To
+use the export with osmnames-sphinxsearch, have a look at the corresponding
+[section in the
+readme](https://github.com/klokantech/osmnames-sphinxsearch#usage-of-docker-image).
+A simple command to get started is:
+
 ```bash
 mv export.tsv data.tsv
 docker run --rm --name klokantech-osmnames-sphinxsearch -v `pwd`:/data/input/ -p 80:80 klokantech/osmnames-sphinxsearch
-```
-:warning: The current version of the osmnames-sphinxsearch cannot handle the newest export of osmnames yet. To make it work, the first column in the export must be removed. This can be done like this:
-``` bash
-cut -f  1 --complement export.tsv > data.tsv
 ```
 
 ## Development
@@ -123,3 +121,8 @@ docker-compose run --rm osmnames bash run_tests.sh
 ### SQL Style Guide
 
 To have a consistent style of SQL code, try to follow this guideline: http://www.sqlstyle.guide/
+
+
+## More Documentation
+
+The full documentation of the project can be found here: http://osmnames.readthedocs.io/en/latest/.

@@ -26,6 +26,6 @@ SELECT
   wikipedia AS wikipedia,
   get_housenumbers(osm_id) AS housenumbers
 FROM
-  osm_merged_multi_linestring,
+  osm_merged_linestring,
   determine_class(type) AS class,
   get_parent_info(parent_id, name) as parentInfo;
