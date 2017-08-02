@@ -9,7 +9,7 @@ OSMNames is written in Python. Whereas the main entry point is the file `run.py
 the necessary tasks in the correct order. The following diagram shows the full
 process of OSMNames:
 
-.. image:: /static/bpmns/run.svg
+.. image:: /static/bpmns/run.png
    :alt: OSMNames Process
    :align: center
    :scale: 100%

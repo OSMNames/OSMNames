@@ -1,7 +1,7 @@
 Import OSM
 ==========
 
-.. image:: /static/bpmns/import_osm.svg
+.. image:: /static/bpmns/import_osm.png
    :alt: Import OSM
    :align: center
    :scale: 100%
