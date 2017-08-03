@@ -6,7 +6,7 @@ of OSMNames. Missing names are completed, a hierarchy is created, unusable
 entries are removed and more. In this document are all involved steps explained
 in detail. The following diagram shows the full process of preparing the data:
 
-.. image:: /static/bpmns/prepare_data.svg
+.. image:: /static/bpmns/prepare_data.png
    :alt: Prepare Data
    :align: center
    :scale: 100%
@@ -239,7 +239,7 @@ For these house numbers multiple approaches are applied to complete the missing
 `street` attributes. The steps are shown by the following diagram:
 
 
-.. image:: /static/bpmns/prepare_housenumbers.svg
+.. image:: /static/bpmns/prepare_housenumbers.png
    :alt: Prepare House Numbers
    :align: center
    :scale: 100%

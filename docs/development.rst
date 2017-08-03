@@ -138,7 +138,7 @@ indirectly, since the fixture `session` in `conftest` includes it. The fixture
 dump `fixtures/test_prepare_imported_data.sql.dump` which contains relevant
 database schema for the test. The following diagram visualizes this process:
 
-.. image:: static/bpmns/testing_example.svg
+.. image:: static/bpmns/testing_example.png
    :alt: Testing Example
    :align: center
    :scale: 100%
