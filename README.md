@@ -28,7 +28,7 @@ OpenStreetMap for full text search downloadable for free: http://osmnames.org
 ## Data format of tsv export of OSMNames
 
 Details about the output format of OSMNames can be found in the
-[documentation](http://osmnames-development-branch.readthedocs.io/en/latest/introduction.html#output-format).
+[documentation](http://osmnames.readthedocs.io/en/latest/introduction.html#output-format).
 
 ## Data
 
