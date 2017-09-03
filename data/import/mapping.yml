@@ -8,7 +8,7 @@ tables:
       type: geometry
     - name: type
       type: mapping_value
-    - key: name
+    - key: name:en
       name: name
       type: string
     - key: null
@@ -71,7 +71,7 @@ tables:
       name: imported_country_code
       type: string
       key: ISO3166-1:alpha2
-    - key: name
+    - key: name:en
       name: name
       type: string
     - key: null
@@ -117,7 +117,7 @@ tables:
       type: geometry
     - name: type
       type: mapping_value
-    - key: name
+    - key: name:en
       name: name
       type: string
     - key: null
@@ -157,7 +157,6 @@ tables:
       - state
       - borough
       - district
-
       - ocean
       - sea
       - continent
@@ -196,7 +195,7 @@ tables:
     columns:
     - name: osm_id
       type: id
-    - key: name
+    - key: name:en
       name: name
       type: string
     - key: type
@@ -224,7 +223,7 @@ tables:
       name: relation_type
       type: string
     - name: name
-      key: name
+      key: name:en
       type: string
       from_member: true
     mapping:

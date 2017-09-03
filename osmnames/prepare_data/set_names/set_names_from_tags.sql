@@ -2,7 +2,7 @@ DROP FUNCTION IF EXISTS get_names(TEXT, HSTORE);
 CREATE FUNCTION get_names(current_name TEXT, all_tags HSTORE)
 RETURNS TABLE(name TEXT, alternative_names_string TEXT) AS $$
 DECLARE
-  accepted_name_tags TEXT[] := ARRAY['name:left','name:right','int_name','loc_name','nat_name',
+  accepted_name_tags TEXT[] := ARRAY['name','name:left','name:right','int_name','loc_name','nat_name',
                                      'official_name','old_name','reg_name','short_name','alt_name'];
   alternative_names TEXT[];
 BEGIN
@@ -14,7 +14,7 @@ BEGIN
   name := current_name;
   IF name = '' IS NOT FALSE THEN
     SELECT COALESCE(
-                  all_tags -> 'name:en',
+                  all_tags -> 'name',
                   all_tags -> 'name:fr',
                   all_tags -> 'name:de',
                   all_tags -> 'name:es',
