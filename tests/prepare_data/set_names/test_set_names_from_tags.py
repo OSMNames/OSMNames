@@ -89,7 +89,7 @@ def test_alternative_names_do_not_contain_duplicates(session, schema, tables):
     assert session.query(tables.osm_point).get(3).alternative_names.count("Cervino") == 1
 
 
-def test_alternative_names_are_empty_if_only_name_is_present(session, schema, tables):
+def test_alternative_names_are_null_if_only_name_is_present(session, schema, tables):
     session.add(
         tables.osm_point(
             id=4,
@@ -99,7 +99,7 @@ def test_alternative_names_are_empty_if_only_name_is_present(session, schema, ta
     session.commit()
     set_names_from_tags()
 
-    assert session.query(tables.osm_point).get(4).alternative_names == ''
+    assert session.query(tables.osm_point).get(4).alternative_names is None
 
 
 def test_tabs_get_deleted_from_name(session, schema, tables):
