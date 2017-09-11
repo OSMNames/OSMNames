@@ -23,13 +23,13 @@ def test_name_get_set_from_all_tags(session, schema, tables):
 
 
 def test_name_get_set_according_to_priority(session, schema, tables):
-    # Where priority order is en, fr, de, es, ru, zh
+    # Where priority order is en, local_language, fr, de, es, ru, zh
 
     session.add(
       tables.osm_polygon(
           id=2,
           name="",
-          all_tags={"name:fr": "Lac Leman", "name:de": "Genfersee", "name:en": "Lake Geneva"}
+          all_tags={"name": "Lac Leman", "name:de": "Genfersee"}
         )
     )
     session.add(
@@ -42,7 +42,7 @@ def test_name_get_set_according_to_priority(session, schema, tables):
     session.commit()
     set_names_from_tags()
 
-    assert session.query(tables.osm_polygon).get(2).name == "Lake Geneva"
+    assert session.query(tables.osm_polygon).get(2).name == "Lac Leman"
     assert session.query(tables.osm_linestring).get(2).name == "Rhein"
 
 
