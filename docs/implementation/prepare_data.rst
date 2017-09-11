@@ -33,14 +33,14 @@ attribute on polygons, linestrings and points.
 set names from tags
 -------------------
 
-All tags of polygons, linestrings and points imported. On some elements is the
-name not set with the key `name` but with a different key, e.g. `name:en`. The
-value of the name attribute is tried to set with following approaches, whereas
-the order matches the priority:
+All tags of polygons, linestrings and points are imported. On some elements is
+the name not set with the key `name:en` but with a different key, e.g.
+`name:fr`.  The value of the name attribute is tried to set with following
+approaches, whereas the order matches the priority:
 
-1. Set the name to the imported name if present.
+1. Set the name to the imported `name:en` if present.
 2. Set the name to the first present value of these keys, whereas the order matches the priority:
-    1. `name:en`
+    1. `name`
     2. `name:fr`
     3. `name:de`
     4. `name:es`
@@ -77,7 +77,7 @@ After running set_names_from_tags, the following values are set:
 =================  =====================  ==============================================================================
 Attribute          Value                  Explanation
 =================  =====================  ==============================================================================
-name               Cervin                 The French name from all_tags because the name
+name               Cervin                 The French name from all_tags because the name and `name:en`
                                           attribute was empty and French has a higher priority then German
 alternative_names  Matterhorn, Cervino    All remaining names from all_tags, except the French, since it was set as name
 =================  =====================  ==============================================================================

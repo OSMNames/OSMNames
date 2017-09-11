@@ -12,6 +12,7 @@ def prepare_housenumbers():
     normalize_street_names()
     set_street_ids_by_street_name()
     set_street_attributes_by_nearest_street()
+    sanitize_housenumbers()
     consistency_check.missing_street_ids()
 
 
@@ -33,3 +34,7 @@ def set_street_ids_by_street_name():
 
 def set_street_attributes_by_nearest_street():
     exec_sql_from_file("set_street_attributes_by_nearest_street.sql", cwd=SQL_DIR)
+
+
+def sanitize_housenumbers():
+    exec_sql_from_file("sanitize_housenumbers.sql", cwd=SQL_DIR)

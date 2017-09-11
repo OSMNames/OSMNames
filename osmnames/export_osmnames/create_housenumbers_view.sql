@@ -2,8 +2,8 @@ DROP MATERIALIZED VIEW IF EXISTS mv_housenumbers;
 CREATE MATERIALIZED VIEW mv_housenumbers AS
 SELECT
   osm_id,
-  COALESCE(street_id::VARCHAR, '') AS street_id,
-  COALESCE(street, '') AS street,
+  street_id::VARCHAR AS street_id,
+  street,
   housenumber,
   round(ST_X(ST_Centroid(ST_Transform(geometry, 4326)))::numeric, 7) AS lon,
   round(ST_Y(ST_Centroid(ST_Transform(geometry, 4326)))::numeric, 7) AS lat

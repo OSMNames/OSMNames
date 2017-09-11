@@ -67,7 +67,7 @@ def export_housenumbers():
 def export_to_tsv(query, path):
     check_call([
         "psql",
-        "-c", "COPY ({}) TO STDOUT WITH NULL AS '' DELIMITER '\t' CSV HEADER".format(query),
+        "-c", "COPY ({}) TO STDOUT WITH DELIMITER '\t' CSV HEADER".format(query),
         "-o", path,
         settings.get("DB_USER"),
         settings.get("DB_NAME"),
