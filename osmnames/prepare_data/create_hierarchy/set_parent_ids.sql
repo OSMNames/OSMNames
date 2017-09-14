@@ -12,7 +12,8 @@ BEGIN
 
   UPDATE osm_point SET parent_id = id_in WHERE parent_id IS NULL
                                                AND st_contains(geometry_in, geometry)
-                                               AND linked IS FALSE;
+                                               AND linked IS FALSE
+                                               AND COALESCE(place_rank, 100) > COALESCE(place_rank_in, -1);
 
 
   UPDATE osm_linestring SET parent_id = id_in WHERE parent_id IS NULL
