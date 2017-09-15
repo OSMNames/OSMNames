@@ -227,6 +227,36 @@ tables:
       type: string
       from_member: true
     mapping:
+      place:
+      - locality
+      - village
+      - hamlet
+      - isolated_dwelling
+      - island
+      - neighbourhood
+      - islet
+      - suburb
+      - town
+      - farm
+      - city
+      - allotments
+      - city_block
+      - plot
+      - county
+      - square
+      - quarter
+      - region
+      - municipality
+      - state
+      - borough
+      - district
+      - ocean
+      - sea
+      - continent
+      natural:
+      - peak
+      - volcano
+      - hill
       landuse:
       - residential
       boundary:
