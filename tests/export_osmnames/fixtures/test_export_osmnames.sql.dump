@@ -165,7 +165,7 @@ CREATE TABLE osm_polygon (
     geometry geometry(Geometry,3857),
     parent_id bigint,
     place_rank integer,
-    linked_osm_id bigint,
+    linked_osm_ids bigint[],
     alternative_names text,
     country_code character varying(2)
 );
