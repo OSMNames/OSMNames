@@ -57,7 +57,7 @@ def create_geonames_view():
 
 
 def export_geonames():
-    export_to_tsv("SELECT * FROM geonames_view", geonames_export_path())
+    export_to_tsv("SELECT * FROM geonames_view ORDER BY importance DESC NULLS LAST", geonames_export_path())
 
 
 def export_housenumbers():
