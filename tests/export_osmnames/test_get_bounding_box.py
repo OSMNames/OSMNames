@@ -60,6 +60,20 @@ def test_bbox_for_brazil(session, schema, tables):
                            5.2842872]
 
 
+def test_bbox_for_falkland_islands(session, schema, tables):
+    # SELECT st_astext(st_simplify(geometry, 100000)) FROM osm_polygon WHERE osm_id = -2185374;
+    geometry_falkland_island = """MULTIPOLYGON(((-6876502.97291447 -6619095.9618266,-6439638.44644622
+      -6651658.66806542,-6387351.76814869 -6752035.30436411,-6544170.5147295 -6916410.57664787,-6760580.27584192
+      -6882454.668139,-6861295.56860645 -6786432.95551777,-6876502.97291447 -6619095.9618266)))"""
+
+    bbox_falkland_island = get_bounding_box(session, geometry_falkland_island, "fk", 2)
+
+    assert bbox_falkland_island == [-61.7726772,
+                                    -52.6385132,
+                                    -57.3785572,
+                                    -50.9875738]
+
+
 def get_bounding_box(session, geometry, country_code, admin_level):
     query = """SELECT get_bounding_box(
                     ST_SetSRID('{}'::GEOMETRY, 3857),

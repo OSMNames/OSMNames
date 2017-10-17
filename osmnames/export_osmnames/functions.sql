@@ -150,7 +150,7 @@ BEGIN
     shifted_geom_length := ST_XMAX(shifted_geom) - ST_XMIN(shifted_geom);
 
     IF original_geom_length > shifted_geom_length THEN
-      geom := shifted_geom;
+      geom := shifted_geom::geography;
     END IF;
 
     bounding_box := ARRAY[
