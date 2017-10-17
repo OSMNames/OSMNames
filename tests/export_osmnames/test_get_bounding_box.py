@@ -1,7 +1,6 @@
 import os
 import pytest
 
-from geoalchemy2.elements import WKTElement
 from osmnames.database.functions import exec_sql_from_file
 from osmnames.export_osmnames.export_osmnames import create_functions
 
@@ -18,7 +17,7 @@ def test_get_bounding_box(session, schema, tables):
                             6075049.14132019,1167669.27353812 5931925.52282563,1003885.85590161
                             5751249.46091655,663009.012524866 5801584.86199727))"""
 
-    bounding_box_switzerland = get_bounding_box(session, WKTElement(geometry_switzerland, srid=3857), "ch", 2)
+    bounding_box_switzerland = get_bounding_box(session, geometry_switzerland, "ch", 2)
 
     assert bounding_box_switzerland == [5.9559113,
                                         45.8181130,
@@ -27,10 +26,10 @@ def test_get_bounding_box(session, schema, tables):
 
 
 def test_bbox_for_countries_with_colonies(session, schema, tables):
-    bounding_box_fr = get_bounding_box(session, WKTElement("POLYGON((0 0,5 0,5 5,0 5,0 0))", srid=3857), "fr", 2)
+    bounding_box_fr = get_bounding_box(session, "POLYGON((0 0,5 0,5 5,0 5,0 0))", "fr", 2)
     assert bounding_box_fr == [-5.225, 41.333, 9.55, 51.2]
 
-    bounding_box_nl = get_bounding_box(session, WKTElement("POLYGON((0 0,5 0,5 5,0 5,0 0))", srid=3857), "nl", 2)
+    bounding_box_nl = get_bounding_box(session, "POLYGON((0 0,5 0,5 5,0 5,0 0))", "nl", 2)
     assert bounding_box_nl == [3.133, 50.75, 7.217, 53.683]
 
 
@@ -39,7 +38,7 @@ def test_bbox_for_polygon_crossing_dateline(session, schema, tables):
                             -4955491.9787282,19204739.6279404 -4065136.81803059,19900995.6639275
                             -4516506.15533551,18494464.2739796 -5765490.1114168)))"""
 
-    bbox_new_zealand = get_bounding_box(session, WKTElement(geometry_new_zealand, srid=3857), "nz", 2)
+    bbox_new_zealand = get_bounding_box(session, geometry_new_zealand, "nz", 2)
 
     assert bbox_new_zealand == [166.1385993,
                                 -45.9071982,
@@ -52,7 +51,7 @@ def test_bbox_for_brazil(session, schema, tables):
     geometry_brazil = """MULTIPOLYGON(((-8235756.84786684 -841190.874919642,-6703496.97807383 589079.881640186,-3851602.21902411
                          -793669.585571994,-5920091.83157294 -4011212.81087996,-8235756.84786684 -841190.874919642)))"""
 
-    bbox_brazil = get_bounding_box(session, WKTElement(geometry_brazil, srid=3857), "br", 2)
+    bbox_brazil = get_bounding_box(session, geometry_brazil, "br", 2)
 
     assert bbox_brazil == [-73.9830625,
                            -33.8689056,
