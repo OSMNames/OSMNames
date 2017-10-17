@@ -47,6 +47,19 @@ def test_bbox_for_polygon_crossing_dateline(session, schema, tables):
                                 -34.2701671]
 
 
+def test_bbox_for_brazil(session, schema, tables):
+    # SELECT st_astext(st_simplify(geometry, 100000)) FROM osm_polygon WHERE osm_id = -59470;
+    geometry_brazil = """MULTIPOLYGON(((-8235756.84786684 -841190.874919642,-6703496.97807383 589079.881640186,-3851602.21902411
+                         -793669.585571994,-5920091.83157294 -4011212.81087996,-8235756.84786684 -841190.874919642)))"""
+
+    bbox_brazil = get_bounding_box(session, WKTElement(geometry_brazil, srid=3857), "br", 2)
+
+    assert bbox_brazil == [-73.9830625,
+                           -33.8689056,
+                           -34.5995314,
+                           5.2842872]
+
+
 def get_bounding_box(session, geometry, country_code, admin_level):
     query = """SELECT get_bounding_box(
                     ST_SetSRID('{}'::GEOMETRY, 3857),
