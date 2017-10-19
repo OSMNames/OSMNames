@@ -137,8 +137,10 @@ DECLARE
   shifted_geom GEOMETRY;
   original_geom_length DECIMAL;
   shifted_geom_length DECIMAL;
+  x_min DECIMAL;
+  x_max DECIMAL;
 BEGIN
-  -- manually set bounding box for country fr and nl
+  -- manually set bounding box for some countries
   IF admin_level = 2 AND lower(country_code) = 'fr' THEN
     bounding_box := ARRAY[-5.225,41.333,9.55,51.2];
   ELSIF admin_level = 2 AND lower(country_code) = 'nl' THEN
@@ -149,14 +151,25 @@ BEGIN
     original_geom_length := ST_XMAX(geom) - ST_XMIN(geom);
     shifted_geom_length := ST_XMAX(shifted_geom) - ST_XMIN(shifted_geom);
 
+    -- if shifted geometry is less wide then original geometry,
+    -- use the shifted geometry to create the bounding box (see #94)
     IF original_geom_length > shifted_geom_length THEN
-      geom := shifted_geom::geography;
+      -- the cast to geography coerces the bounding box in range [-180, 180]
+      geom = shifted_geom::geography;
+
+      -- if the max x > 180 after the cast, the geometry still crossed the anti merdian
+      -- which need to be handled specially (this results in a bounding box where
+      -- the east longitude is smaller then the west longitude, e.g. for the United States)
+      IF st_xmax(shifted_geom) >= 180 AND st_xmin(shifted_geom) < 180 THEN
+        x_min = st_xmin(shifted_geom);
+        x_max = st_xmax(shifted_geom) - 360;
+      END IF;
     END IF;
 
     bounding_box := ARRAY[
-                          round(ST_XMIN(geom)::numeric, 7),
+                          round(COALESCE(x_min, ST_XMIN(geom)::numeric), 7),
                           round(ST_YMIN(geom)::numeric, 7),
-                          round(ST_XMAX(geom)::numeric, 7),
+                          round(COALESCE(x_max, ST_XMAX(geom)::numeric), 7),
                           round(ST_YMAX(geom)::numeric, 7)
                           ];
   END IF;

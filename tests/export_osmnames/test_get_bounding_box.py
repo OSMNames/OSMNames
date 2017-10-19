@@ -46,17 +46,19 @@ def test_bbox_for_polygon_crossing_dateline(session, schema, tables):
                                 -34.2701671]
 
 
-def test_bbox_for_brazil(session, schema, tables):
-    # SELECT st_astext(st_simplify(geometry, 100000)) FROM osm_polygon WHERE osm_id = -59470;
-    geometry_brazil = """MULTIPOLYGON(((-8235756.84786684 -841190.874919642,-6703496.97807383 589079.881640186,-3851602.21902411
-                         -793669.585571994,-5920091.83157294 -4011212.81087996,-8235756.84786684 -841190.874919642)))"""
+def test_bbox_for_shifted_polygon_crossing_dateline(session, schema, tables):
+    # SELECT st_astext(st_simplify(geometry, 50000)) FROM osm_polygon WHERE osm_id = -571747;
+    geometry_fiji = """MULTIPOLYGON(((19666822.7473415
+                     -1945432.25453485,20037508.3335705 -1747916.03957713,20037508.3335705
+                     -2249414.75862629,19795402.1361301 -2190671.57259429,19666822.7473415
+                     -1945432.25453485)),((-20037508.3427892 -2249414.75862629,-20033425.0920396
+                         -1747790.52537892,-19923986.5820418 -1800938.34212573,-19818247.7940324
+                         -2022903.46913563,-19879359.4594201 -2407253.84591183,-20037508.3427892
+                         -2249414.75862629)))"""
 
-    bbox_brazil = get_bounding_box(session, geometry_brazil, "br", 2)
+    bbox_fiji = get_bounding_box(session, geometry_fiji, "fj", 4)
 
-    assert bbox_brazil == [-73.9830625,
-                           -33.8689056,
-                           -34.5995314,
-                           5.2842872]
+    assert bbox_fiji == [176.6700746, -21.1288887, -178.030349, -15.5077817]
 
 
 def test_bbox_for_falkland_islands(session, schema, tables):

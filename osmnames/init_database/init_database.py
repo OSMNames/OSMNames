@@ -12,6 +12,7 @@ def init_database():
     create_extensions()
     create_database()
     create_custom_types()
+    disable_notices()
 
 
 def create_extensions():
@@ -34,3 +35,7 @@ def create_database():
 
 def create_custom_types():
     exec_sql_from_file("create_custom_types.sql", cwd=os.path.dirname(__file__))
+
+
+def disable_notices():
+    exec_sql("SET client_min_messages TO WARNING;")
