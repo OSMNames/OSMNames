@@ -11,7 +11,7 @@ services:
     env_file: .env
 
   postgres:
-    image: mdillon/postgis:9.6
+    image: mdillon/postgis:10
     environment:
       - POSTGRES_PASSWORD
     ports:

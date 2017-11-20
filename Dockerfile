@@ -8,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libprotobuf-dev \
       libleveldb-dev \
       libgeos-dev \
-      postgresql-client-9.6 \
+      postgresql-client-10 \
       python-pip \
       python-psycopg2 \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
