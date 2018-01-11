@@ -12,13 +12,13 @@ def schema(engine):
     exec_sql_from_file('../fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
 
 
-def test_polygon_parent_id_get_set_based_on_geometry_center(session, schema, tables):
+def test_polygon_parent_id_get_set_based_on_geometry(session, schema, tables):
     session.add(
             tables.osm_polygon(
                 id=1,
                 name="Some polygon with missing parent",
                 type='town',
-                geometry_center=WKTElement("POINT(2 2)", srid=3857)
+                geometry=WKTElement("POLYGON((2 2,4 0,4 4,0 4,2 2))", srid=3857)
             )
         )
 
@@ -39,6 +39,33 @@ def test_polygon_parent_id_get_set_based_on_geometry_center(session, schema, tab
     assert session.query(tables.osm_polygon).get(1).parent_id == 2
 
 
+def test_polygon_parent_id_NOT_set_if_polygon_not_fully_covered(session, schema, tables):
+    session.add(
+            tables.osm_polygon(
+                id=1,
+                name="Some polygon with missing parent",
+                type='town',
+                geometry=WKTElement("POLYGON((2 0,6 0,4 4,0 4,2 0))", srid=3857)
+            )
+        )
+
+    session.add(
+            tables.osm_polygon(
+                id=2,
+                name="Some Polygon covering the polygon",
+                place_rank=20,
+                type='state',
+                geometry=WKTElement("POLYGON((0 0,4 0,4 4,0 4,0 0))", srid=3857)
+            )
+        )
+
+    session.commit()
+
+    set_parent_ids()
+
+    assert session.query(tables.osm_polygon).get(1).parent_id is None
+
+
 def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables):
     session.add(
             tables.osm_polygon(
@@ -46,7 +73,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, schema, tables
                 name="Some Polygon with missing parent",
                 place_rank=20,
                 type='city',
-                geometry_center=WKTElement("POINT(2 2)", srid=3857)
+                geometry=WKTElement("POINT(2 2)", srid=3857)
             )
         )
 
@@ -84,7 +111,7 @@ def test_osm_polygon_parent_id_get_NOT_set_if_place_rank_is_lower(session, schem
                 name="Some Polygon with missing parent",
                 place_rank=12,
                 type='city',
-                geometry_center=WKTElement("POINT(2 2)", srid=3857)
+                geometry=WKTElement("POINT(2 2)", srid=3857)
             )
         )
 
@@ -111,7 +138,7 @@ def test_osm_polygon_parent_id_get_set_if_place_rank_not_provided(session, schem
                 id=1,
                 name="Some Polygon with missing parent and place_rank",
                 type='city',
-                geometry_center=WKTElement("POINT(2 2)", srid=3857)
+                geometry=WKTElement("POINT(2 2)", srid=3857)
             )
         )
 
