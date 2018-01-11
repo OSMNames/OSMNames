@@ -20,8 +20,7 @@ BEGIN
     WHEN type IN ('motorway','trunk','primary','secondary','tertiary','unclassified','residential','road','living_street','raceway','construction','track','crossing','riverbank','canal') THEN 26
     WHEN type IN ('motorway_link','trunk_link','primary_link','secondary_link','tertiary_link','service','path','cycleway','steps','bridleway','footway','corridor','pedestrian') THEN 27
     WHEN type IN ('houses') THEN 28
-    WHEN type IN ('house', 'building', 'drain', 'ditch') THEN 30
-    WHEN type IN ('quarter') THEN 30
+    ELSE 30
   END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
