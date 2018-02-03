@@ -76,24 +76,16 @@ docker-compose rm postgres
 ```
 
 The process will create a file `<import-file-name>_geonames.tsv` with all the
-geonames and `<import-file-name>_housenumbers.tsv` with the house numbres. To
+geonames and `<import-file-name>_housenumbers.tsv` with the house numbers. To
 use the export with osmnames-sphinxsearch, have a look at the corresponding
 [section in the
 readme](https://github.com/klokantech/osmnames-sphinxsearch#usage-of-docker-image).
 A simple command to get started is:
 
 ```bash
-mv export.tsv data.tsv
-docker run --rm --name klokantech-osmnames-sphinxsearch -v `pwd`:/data/input/ -p 80:80 klokantech/osmnames-sphinxsearch
+docker run --rm --name klokantech-osmnames-sphinxsearch -v `pwd`/planet-latest_geonames.tsv.gz:/data/input/data.tsv.gz -p 80:80 klokantech/osmnames-sphinxsearch
 ```
-
-:warning: The current version of the osmnames-sphinxsearch cannot handle the
-newest export of osmnames yet. To make it work, the house number column in the
-export must be removed. This can be done like this:
-
-``` bash
-cut -f  24 --complement export.tsv > data.tsv
-```
+Afterwards you can access the web interface in a browser with `http://localhost`.
 
 ## Development
 
