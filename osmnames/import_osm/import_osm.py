@@ -40,7 +40,7 @@ def import_pbf_file():
         )
 
     check_call([
-        "imposm3", "import",
+        "imposm", "import",
         "-connection", imposm_connection,
         "-mapping", "{}/mapping.yml".format(settings.get("IMPORT_DIR")),
         "-dbschema-import", settings.get("DB_SCHEMA"),

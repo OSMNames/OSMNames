@@ -18,7 +18,7 @@ RUN pip install --upgrade pip
 RUN pip install -U setuptools
 
 RUN go get github.com/omniscale/imposm3 \
- && go install github.com/omniscale/imposm3/cmd/imposm3
+ && go install github.com/omniscale/imposm3/cmd/imposm
 
 # Purge no longer needed packages to keep image small.
 # Protobuf and LevelDB dependencies cannot be removed
