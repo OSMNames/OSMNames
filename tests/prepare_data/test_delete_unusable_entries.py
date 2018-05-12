@@ -60,3 +60,14 @@ def test_osm_polygon_with_empty_geometries_get_deleted(session, schema, tables):
     delete_unusable_entries()
 
     assert session.query(tables.osm_polygon).count(), 1
+
+
+def test_osm_linestring_get_deleted_if_polygon_with_same_osm_id_exists(session, schema, tables):
+    session.add(tables.osm_linestring(osm_id=1337))
+    session.add(tables.osm_polygon(osm_id=1337))
+    session.commit()
+
+    delete_unusable_entries()
+
+    assert session.query(tables.osm_linestring).count(), 0
+    assert session.query(tables.osm_polygon).count(), 1
