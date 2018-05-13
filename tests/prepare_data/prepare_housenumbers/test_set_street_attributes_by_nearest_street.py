@@ -1,18 +1,8 @@
-import os
-import pytest
-
 from geoalchemy2.elements import WKTElement
-from osmnames.database.functions import exec_sql_from_file
 from osmnames.prepare_data.prepare_housenumbers import set_street_attributes_by_nearest_street
 
 
-@pytest.fixture(scope="function")
-def schema(engine):
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('../fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
-
-
-def test_street_id_and_name_set_to_nearest_street_with_same_parent(session, schema, tables):
+def test_street_id_and_name_set_to_nearest_street_with_same_parent(session, tables):
     session.add(
             tables.osm_housenumber(
                     id=1,

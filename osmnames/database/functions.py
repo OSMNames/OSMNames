@@ -13,6 +13,7 @@ def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings
     log.info("start executing sql file {}".format(filename))
     check_call([
             "psql",
+            "-v", "ON_ERROR_STOP=1",
             "--username={}".format(user),
             "--dbname={}".format(settings.get("DB_NAME")),
             "--file={}/{}".format(cwd, filename)

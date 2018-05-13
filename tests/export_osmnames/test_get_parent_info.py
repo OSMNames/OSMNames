@@ -1,18 +1,4 @@
-import pytest
-import os
-
-from osmnames.database.functions import exec_sql_from_file
-from osmnames.export_osmnames.export_osmnames import create_functions
-
-
-@pytest.fixture(scope="function")
-def schema(engine):
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_export_osmnames.sql.dump', cwd=current_directory)
-    create_functions()
-
-
-def test_get_parent_info_1(session, schema, tables):
+def test_get_parent_info_1(session, tables):
     session.add(
             tables.osm_polygon(
                 id=1,
@@ -94,7 +80,7 @@ def test_get_parent_info_1(session, schema, tables):
     assert parent_info[4] == "a small lake, a village, a town, a city, a county, a state, a country"
 
 
-def test_get_parent_info_2(session, schema, tables):
+def test_get_parent_info_2(session, tables):
 
     session.add(
             tables.osm_linestring(
@@ -156,7 +142,7 @@ def test_get_parent_info_2(session, schema, tables):
     assert parent_info[4] == "Halkova, Rakovnik, Okres Rakovnik, Stredocesky kraj, Czech Republic"
 
 
-def test_get_parent_info_3(session, schema, tables):
+def test_get_parent_info_3(session, tables):
 
     session.add(
             tables.osm_linestring(
@@ -218,7 +204,7 @@ def test_get_parent_info_3(session, schema, tables):
     assert parent_info[4] == "Oberseestrasse, Rapperswil-Jona, Wahlkreis See-Gaster, Sankt Gallen, Switzerland"
 
 
-def test_city_name_gets_set(session, schema, tables):
+def test_city_name_gets_set(session, tables):
 
     session.add(
             tables.osm_polygon(

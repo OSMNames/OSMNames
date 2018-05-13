@@ -1,19 +1,20 @@
 import pytest
+import os
 
 from geoalchemy2 import Geometry # NOQA
 from sqlalchemy.orm.session import Session
 
-from osmnames import settings
 from osmnames.init_database.init_database import init_database
 from osmnames.database import connection
 from osmnames.database.tables import Tables
-from osmnames.database.functions import exec_sql, wait_for_database
+from osmnames.database.functions import exec_sql, exec_sql_from_file, wait_for_database
+from osmnames.export_osmnames import export_osmnames
 
 
 @pytest.fixture(scope="module")
 def engine():
     wait_for_database()
-    _recreate_database()
+    _init_and_clear_database()
 
     yield connection.engine
 
@@ -28,18 +29,26 @@ def session(engine):
 
     session.close()
 
+    exec_sql("SELECT truncate_tables('osm_test')")
+
 
 @pytest.fixture(scope="module")
 def tables(engine):
     return Tables(engine)
 
 
-def _recreate_database():
-    print("drop database")
-    drop_database_query = "DROP DATABASE IF EXISTS {};".format(settings.get("DB_NAME"))
-    drop_user_query = "DROP USER IF EXISTS {};".format(settings.get("DB_USER"))
-    exec_sql(drop_database_query, user="postgres", database="postgres")
-    exec_sql(drop_user_query, user="postgres", database="postgres")
-
-    print("create database")
+def _init_and_clear_database():
+    # creates database if necessary
     init_database()
+
+    exec_sql("DROP OWNED BY osm_test")
+
+    # prepare schema for tests
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    exec_sql_from_file('helpers/schema.sql.dump', cwd=current_directory)
+    exec_sql_from_file('helpers/functions.sql', cwd=current_directory)
+    export_osmnames.create_functions()
+
+    # necessary for export tests
+    if not os.path.exists('/tmp/osmnames/export/'):
+        os.makedirs('/tmp/osmnames/export/')
