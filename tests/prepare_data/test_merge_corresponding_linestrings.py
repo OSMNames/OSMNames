@@ -1,18 +1,8 @@
-import pytest
-import os
-
 from geoalchemy2.elements import WKTElement
-from osmnames.database.functions import exec_sql_from_file
 from osmnames.prepare_data.prepare_data import merge_corresponding_linestrings
 
 
-@pytest.fixture(scope="function")
-def schema(engine):
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
-
-
-def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
+def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -41,12 +31,12 @@ def test_touching_linestrings_with_same_name_and_parent_id_get_merged(session, s
 
     merge_corresponding_linestrings()
 
-    assert session.query(tables.osm_merged_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged_into, 1111
-    assert session.query(tables.osm_linestring).get(2).merged_into, 1111
+    assert session.query(tables.osm_merged_linestring).get(1).member_ids == [1, 2]
+    assert session.query(tables.osm_linestring).get(1).merged_into == 1111
+    assert session.query(tables.osm_linestring).get(2).merged_into == 1111
 
 
-def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
+def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(session, tables):
     # following geometries are simplified from the osm linestring with the osm_id 35901448
     session.add(
             tables.osm_linestring(
@@ -100,14 +90,14 @@ def test_multiple_touching_linestrings_with_same_name_and_parent_id_get_merged(s
 
     merge_corresponding_linestrings()
 
-    assert session.query(tables.osm_merged_linestring).get(1).member_ids, [1, 2, 3, 4]
-    assert session.query(tables.osm_linestring).get(1).merged_into, 1111
-    assert session.query(tables.osm_linestring).get(2).merged_into, 1111
-    assert session.query(tables.osm_linestring).get(3).merged_into, 1111
-    assert session.query(tables.osm_linestring).get(4).merged_into, 1111
+    assert session.query(tables.osm_merged_linestring).get(1).member_ids == [1, 2, 3, 4]
+    assert session.query(tables.osm_linestring).get(1).merged_into == 1111
+    assert session.query(tables.osm_linestring).get(2).merged_into == 1111
+    assert session.query(tables.osm_linestring).get(3).merged_into == 1111
+    assert session.query(tables.osm_linestring).get(4).merged_into == 1111
 
 
-def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(session, schema, tables):
+def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(session, tables):
     # the following geometries do not touch directly but has to be merged
     session.add(
             tables.osm_linestring(
@@ -136,12 +126,12 @@ def test_almost_touching_linestrings_with_same_name_and_parent_id_get_merged(ses
 
     merge_corresponding_linestrings()
 
-    assert session.query(tables.osm_merged_linestring).get(1).member_ids, [1, 2]
-    assert session.query(tables.osm_linestring).get(1).merged_into, 1
-    assert session.query(tables.osm_linestring).get(2).merged_into, 1
+    assert session.query(tables.osm_merged_linestring).get(1).member_ids == [1, 2]
+    assert session.query(tables.osm_linestring).get(1).merged_into == 24055427
+    assert session.query(tables.osm_linestring).get(2).merged_into == 24055427
 
 
-def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_merged(session, schema, tables):
+def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_merged(session, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -168,11 +158,11 @@ def test_touching_linestrings_with_same_name_but_different_parent_id_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
-    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
+    assert session.query(tables.osm_linestring).get(1).merged_into is None
+    assert session.query(tables.osm_linestring).get(2).merged_into is None
 
 
-def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_merged(session, schema, tables):
+def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_merged(session, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -199,5 +189,5 @@ def test_touching_linestrings_with_same_parent_id_but_different_name_dont_get_me
 
     merge_corresponding_linestrings()
 
-    assert str(session.query(tables.osm_linestring).get(1).merged_into), False
-    assert str(session.query(tables.osm_linestring).get(2).merged_into), False
+    assert session.query(tables.osm_linestring).get(1).merged_into is None
+    assert session.query(tables.osm_linestring).get(2).merged_into is None

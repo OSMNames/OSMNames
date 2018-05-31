@@ -123,7 +123,7 @@ $$ LANGUAGE 'sql' IMMUTABLE;
 
 DROP FUNCTION IF EXISTS get_housenumbers(BIGINT);
 CREATE FUNCTION get_housenumbers(osm_id_in BIGINT) RETURNS TEXT AS $$
-  SELECT string_agg(housenumber, ', ')
+  SELECT string_agg(housenumber, ', ' ORDER BY housenumber ASC)
     FROM osm_housenumber
     WHERE street_id = osm_id_in;
 $$ LANGUAGE 'sql' IMMUTABLE;

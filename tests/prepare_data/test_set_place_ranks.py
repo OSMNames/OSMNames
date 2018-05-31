@@ -1,17 +1,7 @@
-import pytest
-import os
-
-from osmnames.database.functions import exec_sql_from_file
 from osmnames.prepare_data.prepare_data import set_place_ranks
 
 
-@pytest.fixture(scope="function")
-def schema(engine):
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_prepare_imported_data.sql.dump', cwd=current_directory)
-
-
-def test_osm_polygon_place_rank_get_set(session, schema, tables):
+def test_osm_polygon_place_rank_get_set(session, tables):
     session.add(
             tables.osm_polygon(
                 id=1,
@@ -27,7 +17,7 @@ def test_osm_polygon_place_rank_get_set(session, schema, tables):
     assert session.query(tables.osm_polygon).get(1).place_rank == 4
 
 
-def test_osm_linestring_place_rank_get_set(session, schema, tables):
+def test_osm_linestring_place_rank_get_set(session, tables):
     session.add(
             tables.osm_linestring(
                 id=1,
@@ -43,7 +33,7 @@ def test_osm_linestring_place_rank_get_set(session, schema, tables):
     assert session.query(tables.osm_linestring).get(1).place_rank == 26
 
 
-def test_administrative_place_rank_gets_calculated_from_admin_level(session, schema, tables):
+def test_administrative_place_rank_gets_calculated_from_admin_level(session, tables):
     session.add(
             tables.osm_polygon(
                 id=1,

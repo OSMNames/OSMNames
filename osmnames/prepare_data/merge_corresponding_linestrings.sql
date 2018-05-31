@@ -1,4 +1,5 @@
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
+CREATE INDEX IF NOT EXISTS osm_linestring_geom ON osm_linestring USING gist(geometry);
 CREATE INDEX IF NOT EXISTS idx_osm_linestring_name ON osm_linestring(name);
 CLUSTER osm_linestring_geom ON osm_linestring;
 

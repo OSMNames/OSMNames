@@ -34,7 +34,7 @@ def create_database():
 
 
 def create_custom_types():
-    exec_sql_from_file("create_custom_types.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("create_custom_types.sql", cwd=os.path.dirname(__file__), user="postgres")
 
 
 def disable_notices():

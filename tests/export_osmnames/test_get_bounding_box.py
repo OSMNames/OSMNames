@@ -1,18 +1,4 @@
-import os
-import pytest
-
-from osmnames.database.functions import exec_sql_from_file
-from osmnames.export_osmnames.export_osmnames import create_functions
-
-
-@pytest.fixture(scope="function")
-def schema(engine):
-    current_directory = os.path.dirname(os.path.realpath(__file__))
-    exec_sql_from_file('fixtures/test_export_osmnames.sql.dump', cwd=current_directory)
-    create_functions()
-
-
-def test_get_bounding_box(session, schema, tables):
+def test_get_bounding_box(session, tables):
     geometry_switzerland = """POLYGON((663009.012524866 5801584.86199727,953786.907618496
                             6075049.14132019,1167669.27353812 5931925.52282563,1003885.85590161
                             5751249.46091655,663009.012524866 5801584.86199727))"""
@@ -25,7 +11,7 @@ def test_get_bounding_box(session, schema, tables):
                                         47.8084648]
 
 
-def test_bbox_for_countries_with_colonies(session, schema, tables):
+def test_bbox_for_countries_with_colonies(session, tables):
     bounding_box_fr = get_bounding_box(session, "POLYGON((0 0,5 0,5 5,0 5,0 0))", "fr", 2)
     assert bounding_box_fr == [-5.225, 41.333, 9.55, 51.2]
 
@@ -33,7 +19,7 @@ def test_bbox_for_countries_with_colonies(session, schema, tables):
     assert bounding_box_nl == [3.133, 50.75, 7.217, 53.683]
 
 
-def test_bbox_for_polygon_crossing_dateline(session, schema, tables):
+def test_bbox_for_polygon_crossing_dateline(session, tables):
     geometry_new_zealand = """MULTIPOLYGON(((18494464.2739796 -5765490.1114168,19469739.2751992
                             -4955491.9787282,19204739.6279404 -4065136.81803059,19900995.6639275
                             -4516506.15533551,18494464.2739796 -5765490.1114168)))"""
@@ -46,7 +32,7 @@ def test_bbox_for_polygon_crossing_dateline(session, schema, tables):
                                 -34.2701671]
 
 
-def test_bbox_for_shifted_polygon_crossing_dateline(session, schema, tables):
+def test_bbox_for_shifted_polygon_crossing_dateline(session, tables):
     # SELECT st_astext(st_simplify(geometry, 50000)) FROM osm_polygon WHERE osm_id = -571747;
     geometry_fiji = """MULTIPOLYGON(((19666822.7473415
                      -1945432.25453485,20037508.3335705 -1747916.03957713,20037508.3335705
@@ -61,7 +47,7 @@ def test_bbox_for_shifted_polygon_crossing_dateline(session, schema, tables):
     assert bbox_fiji == [176.6700746, -21.1288887, -178.030349, -15.5077817]
 
 
-def test_bbox_for_falkland_islands(session, schema, tables):
+def test_bbox_for_falkland_islands(session, tables):
     # SELECT st_astext(st_simplify(geometry, 100000)) FROM osm_polygon WHERE osm_id = -2185374;
     geometry_falkland_island = """MULTIPOLYGON(((-6876502.97291447 -6619095.9618266,-6439638.44644622
       -6651658.66806542,-6387351.76814869 -6752035.30436411,-6544170.5147295 -6916410.57664787,-6760580.27584192
