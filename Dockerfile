@@ -1,6 +1,6 @@
-FROM golang:1.8
+FROM golang:1.11
 
-RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' >> /etc/apt/sources.list && \
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main' >> /etc/apt/sources.list && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -8,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libprotobuf-dev \
       libleveldb-dev \
       libgeos-dev \
-      postgresql-client-10 \
+      postgresql-client-11 \
       python-pip \
       python-psycopg2 \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
