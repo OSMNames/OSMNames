@@ -10,7 +10,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libgeos-dev \
       postgresql-client-11 \
       python-pip \
-      python-psycopg2 \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
  && rm -rf /var/lib/apt/lists/*
 
