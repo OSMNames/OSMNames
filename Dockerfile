@@ -9,12 +9,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
       libleveldb-dev \
       libgeos-dev \
       postgresql-client-11 \
-      python-pip \
+      python3-pip \
  && ln -s /usr/lib/libgeos_c.so /usr/lib/libgeos.so \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip
-RUN pip install -U setuptools
+RUN pip3 install --upgrade pip
+RUN pip3 install -U setuptools
 
 RUN go get github.com/omniscale/imposm3 \
  && go install github.com/omniscale/imposm3/cmd/imposm
@@ -29,6 +29,6 @@ RUN apt-get purge -y --auto-remove \
 ADD . /osmnames
 WORKDIR /osmnames
 
-RUN pip install -r requirements.txt.lock
+RUN pip3 install -r requirements.txt.lock
 
 CMD ["./run.py"]

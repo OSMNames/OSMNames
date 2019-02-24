@@ -13,7 +13,7 @@ def import_osm():
 
 def download_pbf():
     if settings.get("PBF_FILE"):
-        print "skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE"))
+        print("skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE")))
         return
 
     url = settings.get("PBF_FILE_URL")
