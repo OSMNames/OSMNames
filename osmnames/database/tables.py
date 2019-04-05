@@ -64,6 +64,10 @@ class Tables:
         return getattr(self.base.classes, 'wikipedia_article')
 
     @lazy_property.LazyProperty
+    def wikipedia_redirect(self):
+        return getattr(self.base.classes, 'wikipedia_redirect')
+
+    @lazy_property.LazyProperty
     def country_name(self):
         return getattr(self.base.classes, 'country_name')
 

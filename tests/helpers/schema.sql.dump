@@ -48,6 +48,7 @@ ALTER TABLE IF EXISTS public.osm_point ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_linestring ALTER COLUMN id DROP DEFAULT;
 ALTER TABLE IF EXISTS public.osm_housenumber ALTER COLUMN id DROP DEFAULT;
 DROP TABLE IF EXISTS public.wikipedia_article;
+DROP TABLE IF EXISTS public.wikipedia_redirect;
 DROP SEQUENCE IF EXISTS public.osm_relation_member_id_seq;
 DROP TABLE IF EXISTS public.osm_relation_member;
 DROP SEQUENCE IF EXISTS public.osm_relation_id_seq;
@@ -365,6 +366,17 @@ CREATE TABLE public.wikipedia_article (
 
 
 --
+-- Name: wikipedia_redirect; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.wikipedia_redirect (
+    language text,
+    from_title text NOT NULL,
+    to_title text NOT NULL
+);
+
+
+--
 -- Name: osm_housenumber id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -476,6 +488,13 @@ ALTER TABLE ONLY public.osm_relation
 
 ALTER TABLE ONLY public.wikipedia_article
     ADD CONSTRAINT pagelinks_pkey PRIMARY KEY (language, title);
+
+
+-- Name: wikipedia_redirect pagelinks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wikipedia_redirect
+    ADD CONSTRAINT pageredirect_pkey PRIMARY KEY (from_title);
 
 
 --
