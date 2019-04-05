@@ -1,4 +1,3 @@
-from osmnames.database.functions import exec_sql_from_file
 from osmnames.prepare_data.set_names import set_names_from_tags
 
 
@@ -104,6 +103,19 @@ def test_tabs_get_deleted_from_name(session, tables):
     set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(3).name == "Lake Zurich"
+
+
+def test_backslashes_get_deleted_from_name(session, tables):
+    session.add(
+        tables.osm_polygon(
+            id=3,
+            name="Lake\\Zuerich"
+            )
+        )
+    session.commit()
+    set_names_from_tags()
+
+    assert session.query(tables.osm_polygon).get(3).name == "LakeZuerich"
 
 
 def test_tabs_get_deleted_from_alternative_names(session, tables):
