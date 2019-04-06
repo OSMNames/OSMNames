@@ -7,6 +7,7 @@ DB_PASSWORD = 'osm'
 DB_SCHEMA = 'public'
 SKIP_VACUUM = os.getenv('SKIP_VACUUM', False)
 VACUUM_JOBS = os.getenv('VACUUM_JOBS', 4)
+SKIP_WIKIPEDIA = os.getenv('SKIP_WIKIPEDIA', False)
 
 DATA_DIR = '/osmnames/data/'
 IMPORT_DIR = '/osmnames/data/import/'

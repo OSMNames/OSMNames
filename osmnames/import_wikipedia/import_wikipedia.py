@@ -1,11 +1,19 @@
 from osmnames.database.functions import exec_sql, exists
 from osmnames import settings
+from osmnames import logger
 from osmnames.logger import logged_check_call
+
+log = logger.setup(__name__)
 
 
 def import_wikipedia():
     if exists("SELECT * FROM information_schema.tables WHERE table_name='wikipedia_article'"):
-        print("skip wikipedia import, since table already exists")
+        log.info("skip wikipedia import, since table already exists")
+        return
+
+    if settings.get("SKIP_WIKIPEDIA"):
+        log.info("SKIP_WIKIPEDIA = True in .env file, therefore skipping import and only create basic scaffolding")
+        create_basic_scaffolding()
         return
 
     download_dump(settings.get("WIKIPEDIA_DUMP_URL"))

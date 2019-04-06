@@ -253,6 +253,9 @@ These tips may help for efficient development:
   file.  When running a small PBF file the environment variable `SKIP_VACUUM`
   can be set to `True` in the `.env` file.
 
+* For development, the wikipedia import can be skipped by setting the
+  environment variable `SKIP_WIKIPEDIA` to `True` in the `.env` file.
+
 * When working with a small file in development, one can forget about the
   performance influences for large files easily. Some minutes more for small
   files can lead to a increased runtime of multiple hours for the whole planet.
