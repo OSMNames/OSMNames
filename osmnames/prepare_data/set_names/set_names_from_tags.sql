@@ -39,6 +39,6 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-UPDATE osm_linestring SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
-UPDATE osm_polygon SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
-UPDATE osm_point SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
+UPDATE osm_linestring SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&
+UPDATE osm_polygon SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&
+UPDATE osm_point SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&

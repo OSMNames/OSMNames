@@ -35,8 +35,7 @@ def create_custom_columns():
 
 
 def set_tables_unlogged():
-    for table in ["osm_linestring", "osm_point", "osm_polygon", "osm_housenumber"]:
-        exec_sql("ALTER TABLE {} SET UNLOGGED;".format(table))
+    exec_sql_from_file("set_tables_unlogged.sql", cwd=os.path.dirname(__file__), parallelize=True)
 
 
 def set_linestring_centers():
@@ -45,7 +44,7 @@ def set_linestring_centers():
 
 
 def delete_unusable_entries():
-    exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__), parallelize=True)
     vacuum_database()
 
 
@@ -66,5 +65,5 @@ def determine_linked_places():
 
 
 def merge_corresponding_linestrings():
-    exec_sql_from_file("merge_corresponding_linestrings.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("merge_corresponding_linestrings.sql", cwd=os.path.dirname(__file__), parallelize=True)
     vacuum_database()

@@ -20,25 +20,21 @@ def create_hierarchy():
 
 
 def set_geometry_centers():
-    exec_sql_from_file("set_geometry_centers.sql", cwd=SQL_DIR)
+    exec_sql_from_file("set_geometry_centers.sql", cwd=SQL_DIR, parallelize=True)
     vacuum_database()
 
 
 def create_geometry_indexes():
-    exec_sql("""
-      CREATE INDEX osm_linestring_geometry_center ON osm_linestring USING gist(geometry_center);
-      CREATE INDEX osm_housenumber_geometry_center ON osm_housenumber USING gist(geometry_center);
-      CREATE INDEX osm_polygon_geometry ON osm_polygon USING gist(geometry);
-    """)
+    exec_sql_from_file("create_geometry_indexes.sql", cwd=SQL_DIR, parallelize=True)
 
 
 def cluster_geometries():
-    exec_sql_from_file("cluster_geometries.sql", cwd=SQL_DIR)
+    exec_sql_from_file("cluster_geometries.sql", cwd=SQL_DIR, parallelize=True)
     vacuum_database()
 
 
 def set_parent_ids():
-    exec_sql_from_file("set_parent_ids.sql", cwd=SQL_DIR)
+    exec_sql_from_file("set_parent_ids.sql", cwd=SQL_DIR, parallelize=True)
     vacuum_database()
 
 

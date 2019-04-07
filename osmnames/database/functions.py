@@ -9,10 +9,10 @@ from osmnames import logger
 log = logger.setup(__name__)
 
 
-def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd=""):
+def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd="", parallelize=False):
     log.info("start executing sql file {}".format(filename))
     check_call([
-            "psql",
+            "par_psql" if parallelize else "psql",
             "-v", "ON_ERROR_STOP=1",
             "--username={}".format(user),
             "--dbname={}".format(settings.get("DB_NAME")),
