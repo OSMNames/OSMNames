@@ -1,3 +1,5 @@
+-- the functions are seperated for each geometry type to run them in parallel
+
 DROP FUNCTION IF EXISTS set_parent_id_for_polygons_within_geometry(BIGINT, INT, geometry);
 CREATE FUNCTION set_parent_id_for_polygons_within_geometry(id_in BIGINT, place_rank_in INT, geometry_in GEOMETRY)
 RETURNS VOID AS $$
