@@ -1,6 +1,6 @@
 import os
 
-from osmnames.export_osmnames.export_osmnames import export_geonames, create_views
+from osmnames.export_osmnames.export_osmnames import export_geonames, create_export_dir, create_views
 
 
 def test_tsv_get_created(session, tables):
@@ -10,8 +10,9 @@ def test_tsv_get_created(session, tables):
                 name="Just a city",
             )
         )
+    create_export_dir()
     create_views()
 
     export_geonames()
 
-    assert os.path.exists('/tmp/osmnames/export/switzerland_geonames.tsv')
+    assert os.path.exists('/tmp/osmnames/export/test_geonames.tsv')

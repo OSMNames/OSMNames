@@ -1,6 +1,10 @@
-from subprocess import check_call
+import os
 from osmnames.database.functions import exec_sql, exec_sql_from_file
 from osmnames import settings
+from osmnames import logger
+from osmnames.logger import logged_check_call
+
+log = logger.setup(__name__)
 
 
 def import_osm():
@@ -13,12 +17,12 @@ def import_osm():
 
 def download_pbf():
     if settings.get("PBF_FILE"):
-        print("skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE")))
+        log.info("skip pbf download since PBF_FILE env is defined: {}".format(settings.get("PBF_FILE")))
         return
 
     url = settings.get("PBF_FILE_URL")
     destination_dir = settings.get("IMPORT_DIR")
-    check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
+    logged_check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
 
 def sanatize_for_import():
@@ -39,10 +43,10 @@ def import_pbf_file():
         db_name=settings.get("DB_NAME"),
         )
 
-    check_call([
+    logged_check_call([
         "imposm", "import",
         "-connection", imposm_connection,
-        "-mapping", "{}/mapping.yml".format(settings.get("IMPORT_DIR")),
+        "-mapping", "{}/mapping.yml".format(os.path.dirname(__file__)),
         "-dbschema-import", settings.get("DB_SCHEMA"),
         "-read", pbf_filepath,
         "-write",

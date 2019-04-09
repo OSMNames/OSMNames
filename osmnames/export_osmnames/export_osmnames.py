@@ -5,12 +5,16 @@ from subprocess import check_call
 from osmnames.database.functions import exec_sql, exec_sql_from_file
 from osmnames import settings
 from multiprocessing import Process
+from osmnames import logger
+
+log = logger.setup(__name__)
 
 
 def export_osmnames():
     create_functions()
     create_indexes()
     create_views()
+    create_export_dir()
     export_geonames()
     export_housenumbers()
     gzip_tsv_files()
@@ -60,11 +64,18 @@ def create_geonames_view():
     exec_sql_from_file("create_geonames_view.sql", cwd=os.path.dirname(__file__))
 
 
+def create_export_dir():
+    if not os.path.exists(settings.get("EXPORT_DIR")):
+        os.makedirs(settings.get("EXPORT_DIR"))
+
+
 def export_geonames():
+    log.info("export geonames to {}".format(geonames_export_path()))
     export_to_tsv("SELECT * FROM geonames_view ORDER BY importance DESC NULLS LAST", geonames_export_path())
 
 
 def export_housenumbers():
+    log.info("export housenumbers to {}".format(housenumbers_export_path()))
     export_to_tsv("SELECT * FROM mv_housenumbers", housenumbers_export_path())
 
 

@@ -46,6 +46,7 @@ def vacuum_database():
     check_call([
             "vacuumdb",
             "--username=postgres",
+            "--dbname={}".format(settings.get("DB_NAME")),
             "--analyze",
             "--jobs={}".format(settings.get('VACUUM_JOBS')),
         ], stdout=open(os.devnull, 'w')

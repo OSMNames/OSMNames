@@ -11,16 +11,20 @@ from osmnames.prepare_data.prepare_data import prepare_data
 from osmnames.export_osmnames.export_osmnames import export_osmnames
 
 
-wait_for_database()
+def run():
+    wait_for_database()
 
-profiler = cProfile.Profile()
-started_at = datetime.datetime.now()
-profiler.enable()
+    profiler = cProfile.Profile()
+    started_at = datetime.datetime.now()
+    profiler.enable()
 
-init_database()
-import_wikipedia()
-import_osm()
-prepare_data()
-export_osmnames()
+    init_database()
+    import_wikipedia()
+    import_osm()
+    prepare_data()
+    export_osmnames()
 
-profiler.dump_stats("data/logs/{}.cprofile".format(started_at.strftime('%Y_%m_%d-%H%M')))
+    profiler.dump_stats("data/logs/{}.cprofile".format(started_at.strftime('%Y_%m_%d-%H%M')))
+
+
+run()

@@ -1,0 +1,277 @@
+tables:
+  linestring:
+    type: linestring
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name:en
+      name: name
+      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      highway:
+      - pedestrian
+      - motorway
+      - motorway_link
+      - trunk
+      - trunk_link
+      - primary
+      - primary_link
+      - secondary
+      - secondary_link
+      - tertiary
+      - tertiary_link
+      - unclassified
+      - residential
+      - road
+      - living_street
+      - raceway
+      - construction
+      - track
+      - service
+      - path
+      - cycleway
+      - steps
+      - bridleway
+      - footway
+      - corridor
+      - crossing
+      waterway:
+      - river
+      - riverbank
+      - stream
+      - canal
+      - drain
+      - ditch
+  polygon:
+    type: polygon
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: country_code
+      name: imported_country_code
+      type: string
+      key: ISO3166-1:alpha2
+    - key: name:en
+      name: name
+      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      place:
+      - city
+      - borough
+      - suburb
+      - quarter
+      - neighbourhood
+      - town
+      - village
+      - hamlet
+      - island
+      landuse:
+      - residential
+      - reservoir
+      boundary:
+      - administrative
+      natural:
+      - water
+      - bay
+      - desert
+      highway:
+      - pedestrian
+      railway:
+      - station
+      aeroway:
+      - aerodrome
+  point:
+    type: point
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name:en
+      name: name
+      type: string
+    - key: null
+      name: all_tags
+      type: hstore_tags
+    - key: wikipedia
+      name: wikipedia
+      type: string
+    - key: wikidata
+      name: wikidata
+      type: string
+    - key: admin_level
+      name: admin_level
+      type: integer
+    mapping:
+      # https://taginfo.openstreetmap.org/keys/place#values
+      place:
+      - locality
+      - village
+      - hamlet
+      - isolated_dwelling
+      - island
+      - neighbourhood
+      - islet
+      - suburb
+      - town
+      - farm
+      - city
+      - allotments
+      - city_block
+      - plot
+      - county
+      - square
+      - quarter
+      - region
+      - municipality
+      - state
+      - borough
+      - district
+      - ocean
+      - sea
+      - continent
+      natural:
+      - peak
+      - volcano
+      - hill
+      railway:
+      - station
+      aeroway:
+      - aerodrome
+  housenumber:
+    type: geometry
+    fields:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - key: name
+      name: name
+      type: string
+    - key: addr:street
+      name: street
+      type: string
+    - key: addr:housenumber
+      name: housenumber
+      type: string
+    - key: addr:place
+      name: place
+      type: string
+    type_mappings:
+      points:
+        addr:housenumber:
+        - __any__
+      polygons:
+        addr:housenumber:
+        - __any__
+  relation:
+    type: relation
+    columns:
+    - name: osm_id
+      type: id
+    - key: name:en
+      name: name
+      type: string
+    - key: type
+      name: type
+      type: string
+    - key: addr:street
+      name: street
+      type: string
+    mapping:
+      type:
+      - associatedStreet
+      - street
+  relation_member:
+    type: relation_member
+    columns:
+    - name: osm_id
+      type: id
+    - name: member_id
+      type: member_id
+    - name: role
+      type: member_role
+    - name: member_type
+      type: member_type
+    - key: type
+      name: relation_type
+      type: string
+    - name: name
+      key: name:en
+      type: string
+      from_member: true
+    mapping:
+      place:
+      - locality
+      - village
+      - hamlet
+      - isolated_dwelling
+      - island
+      - neighbourhood
+      - islet
+      - suburb
+      - town
+      - farm
+      - city
+      - allotments
+      - city_block
+      - plot
+      - county
+      - square
+      - quarter
+      - region
+      - municipality
+      - state
+      - borough
+      - district
+      - ocean
+      - sea
+      - continent
+      natural:
+      - peak
+      - volcano
+      - hill
+      landuse:
+      - residential
+      boundary:
+      - administrative
+      type:
+      - associatedStreet
+      - street
+tags:
+  load_all: true
+
