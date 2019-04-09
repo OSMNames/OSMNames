@@ -43,7 +43,13 @@ def vacuum_database():
         return
 
     log.info("start vacuum database")
-    exec_sql('VACUUM ANALYZE', user="postgres")
+    check_call([
+            "vacuumdb",
+            "--username=postgres",
+            "--analyze",
+            "--jobs={}".format(settings.get('VACUUM_JOBS')),
+        ], stdout=open(os.devnull, 'w')
+    )
     log.info("finished vacuum database")
 
 
