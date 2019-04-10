@@ -4,6 +4,7 @@ import shutil
 from subprocess import check_call
 from osmnames.database.functions import exec_sql, exec_sql_from_file
 from osmnames import settings
+from multiprocessing import Process
 
 
 def export_osmnames():
@@ -24,12 +25,15 @@ def create_indexes():
 
 
 def create_views():
-    create_polygons_view()
-    create_points_view()
-    create_linestrings_view()
-    create_merged_linestrings_view()
+    run_in_parallel(
+        create_polygons_view,
+        create_points_view,
+        create_linestrings_view,
+        create_merged_linestrings_view,
+        create_housenumbers_view
+    )
+
     create_geonames_view()
-    create_housenumbers_view()
 
 
 def create_polygons_view():
@@ -91,3 +95,14 @@ def housenumbers_export_path():
 def imported_pbf_filename():
     filename_with_suffix = settings.get("PBF_FILE") or settings.get("PBF_FILE_URL").split('/')[-1]
     return filename_with_suffix.split(".")[0]
+
+
+def run_in_parallel(*fns):
+    proc = []
+    for fn in fns:
+        p = Process(target=fn)
+        p.start()
+        proc.append(p)
+
+    for p in proc:
+        p.join()
