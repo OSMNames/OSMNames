@@ -38,11 +38,6 @@ def set_tables_unlogged():
     exec_sql_from_file("set_tables_unlogged.sql", cwd=os.path.dirname(__file__), parallelize=True)
 
 
-def set_linestring_centers():
-    exec_sql_from_file("set_linestring_centers.sql", cwd=os.path.dirname(__file__))
-    vacuum_database()
-
-
 def delete_unusable_entries():
     exec_sql_from_file("delete_unusable_entries.sql", cwd=os.path.dirname(__file__), parallelize=True)
     vacuum_database()
