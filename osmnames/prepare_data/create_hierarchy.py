@@ -3,6 +3,8 @@ import os
 from osmnames.database.functions import exec_sql, exec_sql_from_file, vacuum_database
 from osmnames import consistency_check
 from osmnames import logger
+from osmnames.helpers import run_in_parallel
+
 
 SQL_DIR = "{}/create_hierarchy/".format(os.path.dirname(__file__))
 log = logger.setup(__name__)
@@ -33,9 +35,42 @@ def cluster_geometries():
     vacuum_database()
 
 
+def create_parent_polygons_view():
+    exec_sql_from_file("create_parent_polygons_view.sql", cwd=SQL_DIR)
+
+
+def drop_parent_polygons_view():
+    exec_sql("DROP MATERIALIZED VIEW parent_polygons")
+
+
 def set_parent_ids():
-    exec_sql_from_file("set_parent_ids.sql", cwd=SQL_DIR, parallelize=True)
+    create_parent_polygons_view()
+
+    run_in_parallel(
+        set_polygons_parent_ids,
+        set_points_parent_ids,
+        set_linestrings_parent_ids,
+        set_housenumbers_parent_ids
+    )
+
+    drop_parent_polygons_view()
     vacuum_database()
+
+
+def set_polygons_parent_ids():
+    exec_sql_from_file("set_polygons_parent_ids.sql", cwd=SQL_DIR)
+
+
+def set_points_parent_ids():
+    exec_sql_from_file("set_points_parent_ids.sql", cwd=SQL_DIR)
+
+
+def set_linestrings_parent_ids():
+    exec_sql_from_file("set_linestrings_parent_ids.sql", cwd=SQL_DIR)
+
+
+def set_housenumbers_parent_ids():
+    exec_sql_from_file("set_housenumbers_parent_ids.sql", cwd=SQL_DIR)
 
 
 def drop_geometry_center_indexes():
