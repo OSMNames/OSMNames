@@ -4,8 +4,8 @@ import shutil
 from subprocess import check_call
 from osmnames.database.functions import exec_sql, exec_sql_from_file
 from osmnames import settings
-from multiprocessing import Process
 from osmnames import logger
+from osmnames.helpers import run_in_parallel
 
 log = logger.setup(__name__)
 
@@ -106,14 +106,3 @@ def housenumbers_export_path():
 def imported_pbf_filename():
     filename_with_suffix = settings.get("PBF_FILE") or settings.get("PBF_FILE_URL").split('/')[-1]
     return filename_with_suffix.split(".")[0]
-
-
-def run_in_parallel(*fns):
-    proc = []
-    for fn in fns:
-        p = Process(target=fn)
-        p.start()
-        proc.append(p)
-
-    for p in proc:
-        p.join()
