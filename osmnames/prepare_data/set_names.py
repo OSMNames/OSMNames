@@ -12,7 +12,7 @@ def set_names():
 
 
 def set_names_from_tags():
-    exec_sql_from_file("set_names_from_tags.sql", cwd=SQL_DIR)
+    exec_sql_from_file("set_names_from_tags.sql", cwd=SQL_DIR, parallelize=True)
 
 
 def set_linestring_names_from_relations():

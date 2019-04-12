@@ -1,9 +1,10 @@
+from subprocess import check_call
 import logging
 import datetime
 
 
 def setup(name):
-    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(module)s - %(message)s')
+    formatter = logging.Formatter(fmt='%(asctime)s - %(levelname)s - %(message)s')
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
@@ -19,3 +20,12 @@ def setup(name):
     logger.addHandler(file_handler)
 
     return logger
+
+
+log = setup(__name__)
+
+
+def logged_check_call(parameters):
+    log.info("run {command}".format(command=' '.join(parameters)))
+    check_call(parameters)
+    log.info("finished")

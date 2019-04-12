@@ -223,6 +223,23 @@ and called at the relevant position in the code.
 
 
 
+Parallelising PostgreSQL Queries
+********************************
+
+`par_psql <https://github.com/gbb/par_psql/>`_ is used for simply parallelising PostgreSQL queries by adding
+--& at the end of the lines. All lines with --& at the end, are executed in
+parallel. par_psql is a thin wrapper arround psql.
+
+Example use:
+
+.. code-block:: sql
+
+    UPDATE osm_linestring ...; --&
+    UPDATE osm_point ...; --&
+    UPDATE osm_polygon ...; --&
+
+
+
 Tips
 *****
 These tips may help for efficient development:
