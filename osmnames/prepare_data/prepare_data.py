@@ -11,6 +11,7 @@ def prepare_data():
     configure_for_preparation()
     set_names()
     delete_unusable_entries()
+    follow_wikipedia_redirects()
     set_place_ranks()
     set_country_codes()
     determine_linked_places()
@@ -61,4 +62,9 @@ def determine_linked_places():
 
 def merge_corresponding_linestrings():
     exec_sql_from_file("merge_corresponding_linestrings.sql", cwd=os.path.dirname(__file__), parallelize=True)
+    vacuum_database()
+
+
+def follow_wikipedia_redirects():
+    exec_sql_from_file("follow_wikipedia_redirects.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
