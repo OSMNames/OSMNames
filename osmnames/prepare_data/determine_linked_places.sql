@@ -19,5 +19,3 @@ FROM osm_relation_member r
 UPDATE osm_point
   SET linked = TRUE
 WHERE osm_id IN (SELECT unnest(linked_osm_ids) FROM osm_polygon WHERE linked_osm_ids IS NOT NULL);
-
-CREATE INDEX IF NOT EXISTS idx_osm_point_linked_false ON osm_point(linked) WHERE linked IS FALSE;
