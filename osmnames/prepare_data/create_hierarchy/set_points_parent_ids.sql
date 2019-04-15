@@ -3,8 +3,8 @@ CREATE FUNCTION set_parent_id_for_points_within_geometry(id_in BIGINT, place_ran
 RETURNS VOID AS $$
 BEGIN
   UPDATE osm_point SET parent_id = id_in WHERE parent_id IS NULL
+                                               AND geometry_in && geometry
                                                AND st_contains(geometry_in, geometry)
-                                               AND linked IS FALSE
                                                AND COALESCE(place_rank, 100) > COALESCE(place_rank_in, -1);
 END;
 $$ LANGUAGE plpgsql;

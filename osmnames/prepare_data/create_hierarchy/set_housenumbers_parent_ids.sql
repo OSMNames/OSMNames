@@ -3,6 +3,7 @@ CREATE FUNCTION set_parent_id_for_housenumbers_within_geometry(id_in BIGINT, pla
 RETURNS VOID AS $$
 BEGIN
   UPDATE osm_housenumber SET parent_id = id_in WHERE parent_id IS NULL
+                                                     AND geometry_in && geometry_center
                                                      AND st_contains(geometry_in, geometry_center);
 END;
 $$ LANGUAGE plpgsql;
