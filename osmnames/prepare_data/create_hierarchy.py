@@ -77,5 +77,4 @@ def drop_geometry_center_indexes():
     exec_sql("""
         DROP INDEX osm_linestring_geometry_center;
         DROP INDEX osm_housenumber_geometry_center;
-        DROP INDEX osm_polygon_geometry;
     """)
