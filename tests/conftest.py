@@ -1,14 +1,18 @@
 import pytest
 import os
+import warnings
 
 from geoalchemy2 import Geometry # NOQA
 from sqlalchemy.orm.session import Session
+from sqlalchemy import exc as sa_exc
 
 from osmnames.init_database.init_database import init_database
 from osmnames.database import connection
 from osmnames.database.tables import Tables
 from osmnames.database.functions import exec_sql, exec_sql_from_file, wait_for_database
 from osmnames.export_osmnames import export_osmnames
+
+warnings.simplefilter("ignore", category=sa_exc.SAWarning)
 
 
 @pytest.fixture(scope="module")
