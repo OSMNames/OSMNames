@@ -4,7 +4,7 @@ UPDATE osm_polygon p
   SET linked_osm_ids = array_append(linked_osm_ids, r.member_id)
 FROM osm_relation_member r
 WHERE r.member_type = 0
-      AND (r.role = 'label' OR 'political')
+      AND (r.role = 'label' OR r.role = 'political')
       AND p.osm_id = r.osm_id;
 
 -- places with admin_centre tag
