@@ -13,6 +13,7 @@ def import_osm():
     import_pbf_file()
     import_country_names()
     import_country_osm_grid()
+    import_admin_level_type_mapping()
 
 
 def download_pbf():
@@ -60,3 +61,7 @@ def import_country_names():
 
 def import_country_osm_grid():
     exec_sql_from_file("country_osm_grid.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))
+
+
+def import_admin_level_type_mapping():
+    exec_sql_from_file("admin_level_type_mapping.sql", cwd="{}/sql/".format(settings.get("DATA_DIR")))

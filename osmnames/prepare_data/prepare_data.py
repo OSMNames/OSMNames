@@ -15,6 +15,7 @@ def prepare_data():
     follow_wikipedia_redirects()
     set_place_ranks()
     set_country_codes()
+    set_polygon_types()
     determine_linked_places()
     create_hierarchy()
     merge_corresponding_linestrings()
@@ -58,6 +59,11 @@ def set_country_codes():
     exec_sql_from_file("set_country_codes.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
     consistency_check.missing_country_codes()
+
+
+def set_polygon_types():
+    exec_sql_from_file("set_polygon_types.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def determine_linked_places():

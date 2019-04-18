@@ -75,6 +75,10 @@ class Tables:
     def country_osm_grid(self):
         return getattr(self.base.classes, 'country_osm_grid')
 
+    @lazy_property.LazyProperty
+    def admin_level_type_mapping(self):
+        return getattr(self.base.classes, 'admin_level_type_mapping')
+
     def _define_tables_without_primary_keys(self, metadata):
         # sqlalchemys automap only works with primary keys, even though country_code is not unique in production
         Table('country_osm_grid', metadata, Column('country_code', Integer, primary_key=True))
