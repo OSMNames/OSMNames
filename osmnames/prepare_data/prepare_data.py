@@ -9,6 +9,7 @@ from osmnames import consistency_check
 
 def prepare_data():
     configure_for_preparation()
+    consider_label_nodes()
     set_names()
     delete_unusable_entries()
     follow_wikipedia_redirects()
@@ -37,6 +38,10 @@ def create_custom_columns():
 
 def set_tables_unlogged():
     exec_sql_from_file("set_tables_unlogged.sql", cwd=os.path.dirname(__file__), parallelize=True)
+
+
+def consider_label_nodes():
+    exec_sql_from_file("consider_label_nodes.sql", cwd=os.path.dirname(__file__))
 
 
 def delete_unusable_entries():
