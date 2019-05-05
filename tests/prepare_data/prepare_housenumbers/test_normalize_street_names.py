@@ -51,3 +51,13 @@ def test_remove_quotes(session, tables):
     normalize_street_names()
 
     assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "grandrue"
+
+
+def test_remove_dots_and_brackets(session, tables):
+    session.add(tables.osm_linestring(id=1, name="Grand.Rue(FR)"))
+
+    session.commit()
+
+    normalize_street_names()
+
+    assert str(session.query(tables.osm_linestring).get(1).normalized_name) == "grandruefr"

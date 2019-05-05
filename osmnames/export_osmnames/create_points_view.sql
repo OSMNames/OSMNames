@@ -29,4 +29,4 @@ FROM
   osm_point,
   get_parent_info(parent_id, name) as parentInfo
 WHERE
-  linked IS FALSE;
+  merged IS FALSE;
