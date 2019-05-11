@@ -9,7 +9,7 @@ from osmnames import consistency_check
 
 def prepare_data():
     configure_for_preparation()
-    consider_linked_nodes()
+    merge_linked_nodes()
     set_names()
     delete_unusable_entries()
     follow_wikipedia_redirects()
@@ -45,8 +45,8 @@ def create_helper_functions():
     exec_sql_from_file("create_helper_functions.sql", cwd=os.path.dirname(__file__), parallelize=True)
 
 
-def consider_linked_nodes():
-    exec_sql_from_file("consider_linked_nodes.sql", cwd=os.path.dirname(__file__))
+def merge_linked_nodes():
+    exec_sql_from_file("merge_linked_nodes/merge_nodes_linked_by_relation.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
 
 
