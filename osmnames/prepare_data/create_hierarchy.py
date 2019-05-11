@@ -35,16 +35,16 @@ def cluster_geometries():
     vacuum_database()
 
 
-def create_parent_polygons_view():
-    exec_sql_from_file("create_parent_polygons_view.sql", cwd=SQL_DIR)
+def create_parent_polygons():
+    exec_sql_from_file("create_parent_polygons.sql", cwd=SQL_DIR)
 
 
-def drop_parent_polygons_view():
-    exec_sql("DROP MATERIALIZED VIEW parent_polygons")
+def drop_parent_polygons():
+    exec_sql("DROP TABLE parent_polygons CASCADE")
 
 
 def set_parent_ids():
-    create_parent_polygons_view()
+    create_parent_polygons()
 
     run_in_parallel(
         set_polygons_parent_ids,
@@ -53,7 +53,7 @@ def set_parent_ids():
         set_housenumbers_parent_ids
     )
 
-    drop_parent_polygons_view()
+    drop_parent_polygons()
     vacuum_database()
 
 

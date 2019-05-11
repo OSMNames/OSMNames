@@ -1,5 +1,5 @@
 from geoalchemy2.elements import WKTElement
-from osmnames.prepare_data.create_hierarchy import set_housenumbers_parent_ids, create_parent_polygons_view
+from osmnames.prepare_data.create_hierarchy import set_housenumbers_parent_ids, create_parent_polygons
 
 
 def test_housenumber_parent_id_get_set_based_on_geometry_center(session, tables):
@@ -23,7 +23,7 @@ def test_housenumber_parent_id_get_set_based_on_geometry_center(session, tables)
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_housenumbers_parent_ids()
 
     assert session.query(tables.osm_housenumber).get(1).parent_id == 2

@@ -1,4 +1,4 @@
-from osmnames.prepare_data.create_hierarchy import create_parent_polygons_view
+from osmnames.prepare_data.create_hierarchy import create_parent_polygons
 
 
 def test_parent_polygons_contains_correct_polygons(session, tables):
@@ -41,7 +41,7 @@ def test_parent_polygons_contains_correct_polygons(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
 
     parent_polygons_ids = [polygon.id for polygon in session.query(tables.parent_polygons)]
     assert parent_polygons_ids == [1, 2]
@@ -74,7 +74,7 @@ def test_parent_polygons_orders_polygons_by_place_rank(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
 
     parent_polygons_ids = [polygon.id for polygon in session.query(tables.parent_polygons)]
     assert parent_polygons_ids == [2, 1, 3]
