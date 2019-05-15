@@ -1,4 +1,4 @@
-DROP FUNCTION IF EXISTS set_parent_id_for_housenumbers_within_geometry(BIGINT, INT, geometry);
+DROP FUNCTION IF EXISTS set_parent_id_for_housenumbers_within_geometry(BIGINT, geometry);
 CREATE FUNCTION set_parent_id_for_housenumbers_within_geometry(id_in BIGINT, geometry_in GEOMETRY)
 RETURNS VOID AS $$
 BEGIN
