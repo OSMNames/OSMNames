@@ -9,14 +9,13 @@ from osmnames import consistency_check
 
 def prepare_data():
     configure_for_preparation()
-    consider_label_nodes()
+    merge_linked_nodes()
     set_names()
     delete_unusable_entries()
     follow_wikipedia_redirects()
     set_place_ranks()
     set_country_codes()
     set_polygon_types()
-    determine_linked_places()
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()
@@ -26,6 +25,7 @@ def configure_for_preparation():
     drop_unused_indexes()
     create_custom_columns()
     set_tables_unlogged()
+    create_helper_functions()
 
 
 def drop_unused_indexes():
@@ -41,8 +41,13 @@ def set_tables_unlogged():
     exec_sql_from_file("set_tables_unlogged.sql", cwd=os.path.dirname(__file__), parallelize=True)
 
 
-def consider_label_nodes():
-    exec_sql_from_file("consider_label_nodes.sql", cwd=os.path.dirname(__file__))
+def create_helper_functions():
+    exec_sql_from_file("create_helper_functions.sql", cwd=os.path.dirname(__file__), parallelize=True)
+
+
+def merge_linked_nodes():
+    exec_sql_from_file("merge_linked_nodes/merge_nodes_linked_by_relation.sql", cwd=os.path.dirname(__file__))
+    vacuum_database()
 
 
 def delete_unusable_entries():
@@ -63,11 +68,6 @@ def set_country_codes():
 
 def set_polygon_types():
     exec_sql_from_file("set_polygon_types.sql", cwd=os.path.dirname(__file__))
-    vacuum_database()
-
-
-def determine_linked_places():
-    exec_sql_from_file("determine_linked_places.sql", cwd=os.path.dirname(__file__))
     vacuum_database()
 
 

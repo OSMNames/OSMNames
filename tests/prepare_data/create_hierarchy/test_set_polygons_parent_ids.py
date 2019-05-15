@@ -1,5 +1,5 @@
 from geoalchemy2.elements import WKTElement
-from osmnames.prepare_data.create_hierarchy import set_polygons_parent_ids, create_parent_polygons_view
+from osmnames.prepare_data.create_hierarchy import set_polygons_parent_ids, create_parent_polygons
 
 
 def test_polygon_parent_id_get_set_based_on_geometry(session, tables):
@@ -24,7 +24,7 @@ def test_polygon_parent_id_get_set_based_on_geometry(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_polygons_parent_ids()
 
     assert session.query(tables.osm_polygon).get(1).parent_id == 2
@@ -52,7 +52,7 @@ def test_polygon_parent_id_NOT_set_if_polygon_not_fully_covered(session, tables)
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_polygons_parent_ids()
 
     assert session.query(tables.osm_polygon).get(1).parent_id is None
@@ -91,7 +91,7 @@ def test_osm_polygon_parent_id_get_set_with_nearest_rank(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_polygons_parent_ids()
 
     assert session.query(tables.osm_polygon).get(1).parent_id == 3
@@ -120,7 +120,7 @@ def test_osm_polygon_parent_id_get_NOT_set_if_place_rank_is_lower(session, table
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_polygons_parent_ids()
 
     assert session.query(tables.osm_polygon).get(1).parent_id is None
@@ -148,7 +148,7 @@ def test_osm_polygon_parent_id_get_set_if_place_rank_not_provided(session, table
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_polygons_parent_ids()
 
     assert session.query(tables.osm_polygon).get(1).parent_id == 2

@@ -26,7 +26,6 @@ DROP INDEX IF EXISTS public.osm_housenumber_street_id;
 DROP INDEX IF EXISTS public.osm_housenumber_geom;
 DROP INDEX IF EXISTS public.idx_wikipedia_article_title;
 DROP INDEX IF EXISTS public.idx_osm_polygon_place_rank;
-DROP INDEX IF EXISTS public.idx_osm_point_linked_false;
 DROP INDEX IF EXISTS public.idx_osm_linestring_parent_id;
 DROP INDEX IF EXISTS public.idx_osm_linestring_merged_false;
 DROP INDEX IF EXISTS public.idx_osm_id;
@@ -161,8 +160,7 @@ CREATE UNLOGGED TABLE public.osm_point (
     geometry public.geometry(Point,3857),
     parent_id bigint,
     place_rank integer,
-    alternative_names text,
-    linked boolean DEFAULT false
+    alternative_names text
 );
 
 
@@ -183,9 +181,9 @@ CREATE UNLOGGED TABLE public.osm_polygon (
     geometry public.geometry(Geometry,3857),
     parent_id bigint,
     place_rank integer,
-    linked_osm_ids bigint[],
     alternative_names text,
-    country_code character varying(2)
+    country_code character varying(2),
+    merged_osm_id bigint
 );
 
 
@@ -550,13 +548,6 @@ CREATE INDEX idx_osm_linestring_merged_false ON public.osm_linestring USING btre
 --
 
 CREATE INDEX idx_osm_linestring_parent_id ON public.osm_linestring USING btree (parent_id);
-
-
---
--- Name: idx_osm_point_linked_false; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_osm_point_linked_false ON public.osm_point USING btree (linked) WHERE (linked IS FALSE);
 
 
 --

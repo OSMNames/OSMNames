@@ -1,5 +1,5 @@
 from geoalchemy2.elements import WKTElement
-from osmnames.prepare_data.create_hierarchy import set_points_parent_ids, create_parent_polygons_view
+from osmnames.prepare_data.create_hierarchy import set_points_parent_ids, create_parent_polygons
 
 
 def test_point_parent_id_get_set(session, tables):
@@ -25,7 +25,7 @@ def test_point_parent_id_get_set(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_points_parent_ids()
 
     assert session.query(tables.osm_point).get(1).parent_id == 2
@@ -54,7 +54,7 @@ def test_point_parent_id_get_not_set_if_place_rank_lower(session, tables):
 
     session.commit()
 
-    create_parent_polygons_view()
+    create_parent_polygons()
     set_points_parent_ids()
 
     assert session.query(tables.osm_point).get(1).parent_id is None

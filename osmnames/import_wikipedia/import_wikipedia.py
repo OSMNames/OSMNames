@@ -2,6 +2,7 @@ from osmnames.database.functions import exec_sql, exists
 from osmnames import settings
 from osmnames import logger
 from osmnames.logger import logged_check_call
+from osmnames.helpers import run_in_parallel
 
 log = logger.setup(__name__)
 
@@ -19,8 +20,11 @@ def import_wikipedia():
     download_dump(settings.get("WIKIPEDIA_DUMP_URL"))
     download_dump(settings.get("WIKIPEDIA_REDIRECTS_DUMP_URL"))
     restore_wikipedia_dumps()
-    prepare_wikipedia_redirects()
-    create_wikipedia_index()
+
+    run_in_parallel(
+        prepare_wikipedia_redirects,
+        create_wikipedia_index
+    )
 
 
 def download_dump(url):

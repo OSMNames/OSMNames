@@ -7,14 +7,13 @@ ALTER TABLE osm_linestring ADD parent_id BIGINT,
 
 ALTER TABLE osm_polygon ADD parent_id BIGINT,
                         ADD place_rank INTEGER,
-                        ADD linked_osm_ids BIGINT[],
                         ADD alternative_names TEXT,
-                        ADD country_code VARCHAR(2);
+                        ADD country_code VARCHAR(2),
+                        ADD merged_osm_id BIGINT;
 
 ALTER TABLE osm_point ADD parent_id BIGINT,
                       ADD place_rank INTEGER,
-                      ADD alternative_names TEXT,
-                      ADD linked BOOL DEFAULT FALSE;
+                      ADD alternative_names TEXT;
 
 ALTER TABLE osm_housenumber ADD parent_id BIGINT,
                             ADD street_id BIGINT,

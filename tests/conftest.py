@@ -11,6 +11,7 @@ from osmnames.database import connection
 from osmnames.database.tables import Tables
 from osmnames.database.functions import exec_sql, exec_sql_from_file, wait_for_database
 from osmnames.export_osmnames import export_osmnames
+from osmnames.prepare_data import prepare_data
 
 warnings.simplefilter("ignore", category=sa_exc.SAWarning)
 
@@ -51,6 +52,7 @@ def _init_and_clear_database():
     current_directory = os.path.dirname(os.path.realpath(__file__))
     exec_sql_from_file('helpers/schema.sql.dump', cwd=current_directory)
     exec_sql_from_file('helpers/functions.sql', cwd=current_directory)
+    prepare_data.create_helper_functions()
     export_osmnames.create_functions()
 
     # necessary for export tests
