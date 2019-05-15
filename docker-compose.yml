@@ -12,6 +12,7 @@ services:
 
   postgres:
     image: mdillon/postgis:11
+    shm_size: 256mb
     environment:
       - POSTGRES_PASSWORD
     ports:
