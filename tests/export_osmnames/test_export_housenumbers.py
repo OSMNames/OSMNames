@@ -13,4 +13,4 @@ def test_tsv_get_created(session, tables):
 
     export_housenumbers()
 
-    assert os.path.exists('/tmp/osmnames/export/switzerland_housenumbers.tsv')
+    assert os.path.exists('/tmp/osmnames/export/test_housenumbers.tsv')

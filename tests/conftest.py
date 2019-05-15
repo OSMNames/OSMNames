@@ -1,14 +1,19 @@
 import pytest
 import os
+import warnings
 
 from geoalchemy2 import Geometry # NOQA
 from sqlalchemy.orm.session import Session
+from sqlalchemy import exc as sa_exc
 
 from osmnames.init_database.init_database import init_database
 from osmnames.database import connection
 from osmnames.database.tables import Tables
 from osmnames.database.functions import exec_sql, exec_sql_from_file, wait_for_database
 from osmnames.export_osmnames import export_osmnames
+from osmnames.prepare_data import prepare_data
+
+warnings.simplefilter("ignore", category=sa_exc.SAWarning)
 
 
 @pytest.fixture(scope="module")
@@ -47,6 +52,7 @@ def _init_and_clear_database():
     current_directory = os.path.dirname(os.path.realpath(__file__))
     exec_sql_from_file('helpers/schema.sql.dump', cwd=current_directory)
     exec_sql_from_file('helpers/functions.sql', cwd=current_directory)
+    prepare_data.create_helper_functions()
     export_osmnames.create_functions()
 
     # necessary for export tests

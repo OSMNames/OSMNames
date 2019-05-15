@@ -1,6 +1,6 @@
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id);
-CREATE INDEX IF NOT EXISTS osm_linestring_geom ON osm_linestring USING gist(geometry);
-CREATE INDEX IF NOT EXISTS idx_osm_linestring_name ON osm_linestring(name);
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_parent_id ON osm_linestring(parent_id); --&
+CREATE INDEX IF NOT EXISTS osm_linestring_geom ON osm_linestring USING gist(geometry); --&
+CREATE INDEX IF NOT EXISTS idx_osm_linestring_name ON osm_linestring(name); --&
 CLUSTER osm_linestring_geom ON osm_linestring;
 
 -- create merged linestrings
@@ -34,9 +34,9 @@ CREATE TABLE osm_merged_linestring AS
 ALTER TABLE osm_merged_linestring ADD PRIMARY KEY (id);
 
 -- drop not needed indexes
-DROP INDEX idx_osm_linestring_name;
-DROP INDEX osm_linestring_geom;
-DROP INDEX IF EXISTS idx_osm_linestring_merged_false;
+DROP INDEX idx_osm_linestring_name; --&
+DROP INDEX osm_linestring_geom; --&
+DROP INDEX IF EXISTS idx_osm_linestring_merged_false; --&
 
 -- set merged_into for all merged linestrings
 UPDATE osm_linestring SET merged_into = osm_merged_linestring.osm_id

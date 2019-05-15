@@ -64,6 +64,10 @@ class Tables:
         return getattr(self.base.classes, 'wikipedia_article')
 
     @lazy_property.LazyProperty
+    def wikipedia_redirect(self):
+        return getattr(self.base.classes, 'wikipedia_redirect')
+
+    @lazy_property.LazyProperty
     def country_name(self):
         return getattr(self.base.classes, 'country_name')
 
@@ -71,6 +75,15 @@ class Tables:
     def country_osm_grid(self):
         return getattr(self.base.classes, 'country_osm_grid')
 
+    @lazy_property.LazyProperty
+    def admin_level_type_mapping(self):
+        return getattr(self.base.classes, 'admin_level_type_mapping')
+
+    @lazy_property.LazyProperty
+    def parent_polygons(self):
+        return getattr(self.base.classes, 'parent_polygons')
+
     def _define_tables_without_primary_keys(self, metadata):
         # sqlalchemys automap only works with primary keys, even though country_code is not unique in production
         Table('country_osm_grid', metadata, Column('country_code', Integer, primary_key=True))
+        Table('parent_polygons', metadata, Column('id', Integer, primary_key=True))

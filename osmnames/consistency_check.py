@@ -19,9 +19,9 @@ def missing_parent_ids():
     if missing_polygons > 0:
         log.warning('{} polygons (place_rank > 4) with missing parent_id'.format(missing_polygons))
 
-    missing_points = count("SELECT COUNT(id) FROM osm_point WHERE linked IS FALSE AND parent_id IS NULL")
+    missing_points = count("SELECT COUNT(id) FROM osm_point WHERE parent_id IS NULL")
     if missing_points > 0:
-        log.warning('{} points (not linked) with missing parent_id'.format(missing_points))
+        log.warning('{} points with missing parent_id'.format(missing_points))
 
     missing_housenumbers = count("SELECT COUNT(id) FROM osm_housenumber WHERE parent_id IS NULL")
     if missing_housenumbers > 0:

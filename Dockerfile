@@ -19,6 +19,9 @@ RUN pip3 install -U setuptools
 RUN go get github.com/omniscale/imposm3 \
  && go install github.com/omniscale/imposm3/cmd/imposm
 
+RUN git clone https://github.com/gbb/par_psql && \
+    cd par_psql && ./install.sh
+
 # Purge no longer needed packages to keep image small.
 # Protobuf and LevelDB dependencies cannot be removed
 # because they are dynamically linked.

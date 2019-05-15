@@ -223,6 +223,23 @@ and called at the relevant position in the code.
 
 
 
+Parallelising PostgreSQL Queries
+********************************
+
+`par_psql <https://github.com/gbb/par_psql/>`_ is used for simply parallelising PostgreSQL queries by adding
+--& at the end of the lines. All lines with --& at the end, are executed in
+parallel. par_psql is a thin wrapper arround psql.
+
+Example use:
+
+.. code-block:: sql
+
+    UPDATE osm_linestring ...; --&
+    UPDATE osm_point ...; --&
+    UPDATE osm_polygon ...; --&
+
+
+
 Tips
 *****
 These tips may help for efficient development:
@@ -235,6 +252,9 @@ These tips may help for efficient development:
   Postgres database a lot. This only makes sense when processing a large PBF
   file.  When running a small PBF file the environment variable `SKIP_VACUUM`
   can be set to `True` in the `.env` file.
+
+* For development, the wikipedia import can be skipped by setting the
+  environment variable `SKIP_WIKIPEDIA` to `True` in the `.env` file.
 
 * When working with a small file in development, one can forget about the
   performance influences for large files easily. Some minutes more for small

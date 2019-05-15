@@ -16,3 +16,5 @@ services:
       - POSTGRES_PASSWORD
     ports:
       - "54320:5432"
+    volumes:
+      - ./data/postgres_config.sh:/docker-entrypoint-initdb.d/postgres_config.sh

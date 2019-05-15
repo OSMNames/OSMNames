@@ -25,8 +25,6 @@ CREATE TABLE country_name (
     partition integer
 );
 
-ALTER TABLE country_name OWNER TO osm;
-
 --
 -- Data for Name: country_name; Type: TABLE DATA; Schema: public; Owner: brian
 --

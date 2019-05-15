@@ -24,10 +24,11 @@ BEGIN
       INTO name;
   END IF;
   name := regexp_replace(name, E'\\s+', ' ', 'g');
+  name := regexp_replace(name, E'\\\\', '', 'g');
 
   alternative_names := array_remove(alternative_names, name);
   alternative_names_string := array_to_string(alternative_names, ',');
-  alternative_names_string := regexp_replace(alternative_names_string, E'\\s+', ' ', 'g');
+  alternative_names_string := regexp_replace(alternative_names_string, E'\\s+|\\\\', ' ', 'g');
 
   IF alternative_names_string = '' THEN
     alternative_names_string = NULL;
@@ -38,6 +39,6 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-UPDATE osm_linestring SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
-UPDATE osm_polygon SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
-UPDATE osm_point SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags));
+UPDATE osm_linestring SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&
+UPDATE osm_polygon SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&
+UPDATE osm_point SET (name, alternative_names) = (SELECT * FROM get_names(name, all_tags)); --&

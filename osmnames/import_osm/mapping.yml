@@ -108,6 +108,10 @@ tables:
       - desert
       highway:
       - pedestrian
+      railway:
+      - station
+      aeroway:
+      - aerodrome
   point:
     type: point
     fields:
@@ -164,6 +168,10 @@ tables:
       - peak
       - volcano
       - hill
+      railway:
+      - station
+      aeroway:
+      - aerodrome
   housenumber:
     type: geometry
     fields:
