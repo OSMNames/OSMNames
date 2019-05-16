@@ -10,3 +10,4 @@ def run_in_parallel(*fns):
 
     for p in proc:
         p.join()
+        assert p.exitcode == 0

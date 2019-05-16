@@ -11,4 +11,4 @@ END;
 $$ LANGUAGE plpgsql;
 
 SELECT set_parent_id_for_polygons_within_geometry(id, place_rank, geometry)
-       FROM parent_polygons;
+       FROM parent_polygons ORDER BY place_rank DESC, admin_level DESC;
