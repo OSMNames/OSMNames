@@ -2,7 +2,7 @@
 -- linked nodes are either label nodes or admin_centers with the same name, wikidata- or wikipedia ref
 DROP VIEW IF EXISTS polygons_with_linked_by_relation_node;
 CREATE VIEW polygons_with_linked_by_relation_node AS (
-  SELECT DISTINCT ON (point.osm_id)
+  SELECT DISTINCT ON(point.osm_id)
     polygon.id AS polygon_id,
     point.id AS linked_node_id,
     point.osm_id AS linked_node_osm_id,
@@ -16,14 +16,21 @@ CREATE VIEW polygons_with_linked_by_relation_node AS (
       AND polygon.osm_id = relation.osm_id
   INNER JOIN osm_point AS point
     ON point.osm_id = relation.member_id
-  WHERE lower(relation.role) = 'label'
-  OR lower(relation.role) = 'political'
-  OR point.wikidata = polygon.wikidata
-  OR point.wikipedia = polygon.wikipedia
-  OR normalize_string(point.name) = normalize_string(polygon.name)
-  OR normalize_string(point.all_tags -> 'official_name') = normalize_string(polygon.name)
-  OR normalize_string(point.all_tags -> 'alt_name') = normalize_string(polygon.name)
-  OR normalize_string(point.all_tags -> 'old_name') = normalize_string(polygon.name)
+  WHERE
+  -- include all pairs where on of the following conditions are met
+  (
+    lower(relation.role) = 'label'
+    OR lower(relation.role) = 'political'
+    OR (point.wikidata != '' AND point.wikidata = polygon.wikidata)
+    OR (point.wikipedia != '' AND point.wikipedia = polygon.wikipedia)
+    OR get_names(point.all_tags) && get_names(polygon.all_tags)
+  )
+  -- exclude all pairs where both wiki refs are set but differ
+  AND NOT (
+    (NULLIF(point.wikipedia, '') IS NOT NULL AND NULLIF(polygon.wikipedia, '') IS NOT NULL AND point.wikipedia != polygon.wikipedia)
+    OR
+    (NULLIF(point.wikidata, '') IS NOT NULL AND NULLIF(polygon.wikidata, '') IS NOT NULL AND point.wikidata != polygon.wikidata)
+  )
   ORDER BY point.osm_id, polygon.place_rank DESC
 );
 
@@ -36,6 +43,8 @@ SET merged_osm_id = linked_node_osm_id,
 FROM polygons_with_linked_by_relation_node
 WHERE polygon_id = polygon.id;
 
-DELETE FROM osm_point WHERE id = ANY(SELECT linked_node_id FROM polygons_with_linked_by_relation_node);
+UPDATE osm_point
+  SET merged = true
+  WHERE id = ANY(SELECT linked_node_id FROM polygons_with_linked_by_relation_node);
 
 DROP VIEW polygons_with_linked_by_relation_node;

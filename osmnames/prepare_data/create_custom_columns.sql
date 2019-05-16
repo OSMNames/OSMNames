@@ -13,7 +13,8 @@ ALTER TABLE osm_polygon ADD parent_id BIGINT,
 
 ALTER TABLE osm_point ADD parent_id BIGINT,
                       ADD place_rank INTEGER,
-                      ADD alternative_names TEXT;
+                      ADD alternative_names TEXT,
+                      ADD merged Boolean DEFAULT(false);
 
 ALTER TABLE osm_housenumber ADD parent_id BIGINT,
                             ADD street_id BIGINT,

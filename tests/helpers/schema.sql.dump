@@ -160,7 +160,8 @@ CREATE UNLOGGED TABLE public.osm_point (
     geometry public.geometry(Point,3857),
     parent_id bigint,
     place_rank integer,
-    alternative_names text
+    alternative_names text,
+    merged boolean DEFAULT false
 );
 
 
