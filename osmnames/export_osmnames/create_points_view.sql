@@ -27,4 +27,5 @@ SELECT
   NULL::VARCHAR AS housenumbers
 FROM
   osm_point,
-  get_parent_info(parent_id, name) as parentInfo;
+  get_parent_info(parent_id, name) as parentInfo
+WHERE NOT merged;

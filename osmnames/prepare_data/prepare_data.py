@@ -9,13 +9,13 @@ from osmnames import consistency_check
 
 def prepare_data():
     configure_for_preparation()
+    set_country_codes()
+    set_polygon_types()
+    set_place_ranks()
     merge_linked_nodes()
     set_names()
     delete_unusable_entries()
     follow_wikipedia_redirects()
-    set_place_ranks()
-    set_country_codes()
-    set_polygon_types()
     create_hierarchy()
     merge_corresponding_linestrings()
     prepare_housenumbers()

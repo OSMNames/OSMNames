@@ -5,4 +5,5 @@ SET parent_id = (
   AND polygon.place_rank < point.place_rank
   ORDER BY place_rank DESC
   LIMIT 1
-);
+)
+WHERE NOT merged;
