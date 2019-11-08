@@ -3,6 +3,12 @@
 Database of geographic place names with hierarchy and bounding boxes from
 OpenStreetMap for full text search downloadable for free: http://osmnames.org
 
+## Support 
+
+If you are a programmer or a documenter and have a pull request, feel free to do so. 
+
+If you are a user and have questions, we're sorry that we can't give individual support. Pls. ask support questions over at Stack Overflow https://stackoverflow.com/search?q=OSMNames .
+
 ## Target of OSM Names
 
 - Downloadable gazeteer data a la GeoNames.org: http://download.geonames.org/export/dump/ but each record has bounding box and an importance rank known from Nominatim
