@@ -18,8 +18,8 @@ This step configures the database for the other steps. This involves:
 
 * Dropping unused indexes for better performance
 * Add custom columns, necessary for the preparation, to tables imported in
-  `import_osm`. The added columns can be found `here
-  <https://github.com/OSMNames/OSMNames/blob/master/osmnames/import_osm/create_custom_columns.sql>`_.
+  `prepare_data`. The added columns can be found `here
+  <https://github.com/OSMNames/OSMNames/blob/master/osmnames/prepare_data/create_custom_columns.sql>`_.
 * Set tables to unlogged for better performance
 
 
@@ -114,7 +114,7 @@ important). A continent for example has a place_rank of 2, which is the lowest
 place_rank possible. The place_rank is either the double of the admin_level, if
 the admin_level is set, or a value depending on the type of the element. The
 mapping can be found `here
-<https://github.com/OSMNames/OSMNames/blob/master/osmnames/import_osm/set_place_ranks.sql>`_.
+<https://github.com/OSMNames/OSMNames/blob/master/osmnames/prepare_data/set_place_ranks.sql>`_.
 
 
 
@@ -127,8 +127,7 @@ polygon. It is only necessary for polygons since the country code of all other
 elements can be determined based on the hierarchically associated polygon.
 
 If present the imported country_code is taken. Otherwise is the country code
-set based on the `country_osm_grid <implementation/import_osm.html#import-helper-tables>`_.
-
+set based on the `country_osm_grid <import_osm.html#import-helper-tables>`_.
 
 
 
@@ -176,7 +175,7 @@ is as simple as this:
   Since it only returns true if a geometry is fully contained in another
   geometry, the child elements are determined only with the center of a geometry
   and not the full geometry. The centers of geometries are set `here
-  <https://github.com/OSMNames/OSMNames/blob/master/osmnames/import_osm/create_hierarchy/set_geometry_centers.sql>`_.
+  <https://github.com/OSMNames/OSMNames/blob/master/osmnames/prepare_data/create_hierarchy/set_geometry_centers.sql>`_.
 
 .. note:: Polygons of the type `water`, `desert`, `bay` and `reservoir` are
   ignored, since it makes no sense to assign them as parents of other elements.
