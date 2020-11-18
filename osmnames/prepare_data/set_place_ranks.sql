@@ -8,13 +8,15 @@ BEGIN
     WHEN type IN ('administrative') THEN 2* COALESCE(admin_level,15)
     WHEN type IN ('continent', 'sea', 'ocean') THEN 2
     WHEN type IN ('country') THEN 4
+    WHEN type IN ('country_region') THEN 6
     WHEN type IN ('state') THEN 8
+    WHEN type IN ('state_district') THEN 10
     WHEN type IN ('county') THEN 12
     WHEN type IN ('city', 'water', 'desert') THEN 16
     WHEN type IN ('island', 'bay', 'river') THEN 17
     WHEN type IN ('region', 'peak', 'volcano') THEN 18
     WHEN type IN ('town') THEN 18
-    WHEN type IN ('village','hamlet','municipality','district','unincorporated_area','borough', 'aerodrome') THEN 19
+    WHEN type IN ('village','hamlet','municipality','district','city_district','unincorporated_area','borough', 'aerodrome') THEN 19
     WHEN type IN ('suburb','subdivision','isolated_dwelling','farm','locality','islet','mountain_pass','hill') THEN 20
     WHEN type IN ('neighbourhood', 'residential','reservoir','stream') THEN 22
     WHEN type IN ('motorway','trunk','primary','secondary','tertiary','unclassified','residential','road','living_street','raceway','construction','track','crossing','riverbank','canal', 'station') THEN 26
