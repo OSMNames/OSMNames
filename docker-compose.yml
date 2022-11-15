@@ -11,10 +11,10 @@ services:
     env_file: .env
 
   postgres:
-    image: mdillon/postgis:11
-    shm_size: 256mb
+    image: postgis/postgis:13-3.3
+    shm_size: 512mb
     environment:
-      - POSTGRES_PASSWORD
+      - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - "54320:5432"
     volumes:
