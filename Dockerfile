@@ -1,9 +1,9 @@
 FROM golang:1.19.3-bullseye
 
-ENV DEBIAN_FRONTEND noninteractive
+# ARG is only set for the build
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get install curl ca-certificates gnupg -y
+RUN apt-get update && apt-get install curl ca-certificates gnupg -y
 
 RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main' >> /etc/apt/sources.list && \
     curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
