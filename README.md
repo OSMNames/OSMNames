@@ -59,7 +59,7 @@ will download the entire world. If you want to change this, edit the `.env`
 file and change `PBF_FILE_URL`. Alternatively, you can manually place a PBF
 file in the `data/import` directory and define `PBF_FILE` with the filename.
 (For example, to process only a specific country you can use the PBF-files from
-`http://download.geofabrik.de/index.html`)
+`http://download.geofabrik.de/index.html` or `https://download.openstreetmap.fr/extracts/`)
 
 We can now start the process with:
 ```bash
