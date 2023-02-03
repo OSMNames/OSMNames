@@ -5,7 +5,7 @@ lazy-property==0.0.1
 more-itertools==6.0.0
 pathlib2==2.3.3
 pluggy==0.8.1
-psycopg2-binary==2.7.7
+psycopg2-binary==2.9.4
 py==1.8.0
 pytest==4.3.0
 simple-settings==0.16.0
