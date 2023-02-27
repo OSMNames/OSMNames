@@ -14,8 +14,18 @@ services:
     image: postgis/postgis:15-3.3
     shm_size: 512mb # for processing the world, I increased this to 16g
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "54320:5432"
+      - "5432:5432"
     volumes:
       - ./data/postgres_config.sh:/docker-entrypoint-initdb.d/postgres_config.sh
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "osm@osm.osm"
+      PGADMIN_DEFAULT_PASSWORD: "osm"
+    ports:
+      - "5050:80" 
