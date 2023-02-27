@@ -37,4 +37,4 @@ RUN apt-get purge -y --auto-remove \
 
 ADD . /osmnames
 
-CMD ["./run.py"]
+CMD python3 run.py
