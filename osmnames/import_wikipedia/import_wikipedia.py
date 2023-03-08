@@ -51,6 +51,7 @@ def _create_temporary_user_for_dump():
     query = """
         CREATE ROLE brian LOGIN PASSWORD 'brian';
         GRANT ALL PRIVILEGES ON DATABASE {database} to brian;
+        GRANT ALL ON SCHEMA public TO brian;
     """.format(database=settings.get("DB_NAME"))
 
     exec_sql(query, user="postgres")
