@@ -24,7 +24,7 @@ have only the relevant data imported.
 PostgreSQL
 **********
 
-`PostgreSQL <http://postgresql.org>`_ is the open source database powering
+`PostgreSQL <https://postgresql.org>`_ is the open source database powering
 OMSNames.
 
 OSMNames uses PostgreSQL for the following tasks:
@@ -40,7 +40,7 @@ At this moment OSMNames runs PostgreSQL 9.6.x version.
 PostGIS
 -------
 
-`PostGIS <http://postgis.net>`_ is the extension which adds spatial
+`PostGIS <https://postgis.net>`_ is the extension which adds spatial
 capabilities to PostgreSQL. It allows working with geospatial types or running
 geospatial functions in PostgreSQL.
 

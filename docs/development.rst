@@ -14,7 +14,7 @@ be covered by a new test case (see `Testing`_).
 Keep in mind that the following styleguides should be respected:
 
 * `PEP8 <https://www.python.org/dev/peps/pep-0008/>_` for Python code
-* `SQL Style Guide <http://www.sqlstyle.guide/>_` for SQL
+* `SQL Style Guide <https://www.sqlstyle.guide/>_` for SQL
 
 
 Testing

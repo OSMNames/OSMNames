@@ -28,7 +28,7 @@ To run OSMNames, follow these steps:
 
 	  .. code-block:: bash
 
-		PBF_FILE_URL=http://download.geofabrik.de/europe/switzerland-latest.osm.pbf
+		PBF_FILE_URL=https://download.geofabrik.de/europe/switzerland-latest.osm.pbf
 
 
 	Alternatively place a custom PBF file in the `data/import` directory and define it in the `.env` file

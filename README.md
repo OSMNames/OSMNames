@@ -1,7 +1,7 @@
-# OSM Names [![Build Status](https://travis-ci.org/OSMNames/OSMNames.svg?branch=master)](https://travis-ci.org/OSMNames/OSMNames) [![Documentation Status](https://readthedocs.org/projects/osmnames-development-branch/badge/?version=latest)](http://osmnames.readthedocs.io/en/latest/?badge=latest)
+# OSM Names [![Build Status](https://travis-ci.org/OSMNames/OSMNames.svg?branch=master)](https://travis-ci.org/OSMNames/OSMNames) [![Documentation Status](https://readthedocs.org/projects/osmnames-development-branch/badge/?version=latest)](https://osmnames.readthedocs.io/en/latest/?badge=latest)
 
 Database of geographic place names with hierarchy and bounding boxes from
-OpenStreetMap for full text search downloadable for free: http://osmnames.org
+OpenStreetMap for full text search downloadable for free: https://osmnames.org
 
 ## Support 
 
@@ -11,7 +11,7 @@ If you are a user and have questions, we're sorry that we can't give individual 
 
 ## Target of OSM Names
 
-- Downloadable gazeteer data a la GeoNames.org: http://download.geonames.org/export/dump/ but each record has bounding box and an importance rank known from Nominatim
+- Downloadable gazeteer data a la GeoNames.org: https://download.geonames.org/export/dump/ but each record has bounding box and an importance rank known from Nominatim
 - Data are derived primarily from OpenStreetMap
 - The data format is simple to use tab-delimited text in utf8 encoding (as geonames.org). First line has column names.
 - Different type of records are stored in different files (download and index just what you need, sometimes you don't need POIs or addresses with house numbers)
@@ -29,12 +29,12 @@ If you are a user and have questions, we're sorry that we can't give individual 
 - JSON/JSONP API similar to Nominatim: nominatim.openstreetmap.org
 - Ready to use via Docker in minutes
 - https://github.com/klokantech/osmnames-sphinxsearch
-- http://osmnames.org
+- https://osmnames.org
 
 ## Data format of tsv export of OSMNames
 
 Details about the output format of OSMNames can be found in the
-[documentation](http://osmnames.readthedocs.io/en/latest/introduction.html#output-format).
+[documentation](https://osmnames.readthedocs.io/en/latest/introduction.html#output-format).
 
 ## Data
 
@@ -59,7 +59,7 @@ will download the entire world. If you want to change this, edit the `.env`
 file and change `PBF_FILE_URL`. Alternatively, you can manually place a PBF
 file in the `data/import` directory and define `PBF_FILE` with the filename.
 (For example, to process only a specific country you can use the PBF-files from
-`http://download.geofabrik.de/index.html` or `https://download.openstreetmap.fr/extracts/`)
+`https://download.geofabrik.de/index.html` or `https://download.openstreetmap.fr/extracts/`)
 
 We can now start the process with:
 ```bash
@@ -104,9 +104,9 @@ docker-compose run --rm osmnames bash run_tests.sh
 
 ### SQL Style Guide
 
-To have a consistent style of SQL code, try to follow this guideline: http://www.sqlstyle.guide/
+To have a consistent style of SQL code, try to follow this guideline: https://www.sqlstyle.guide/
 
 
 ## More Documentation
 
-The full documentation of the project can be found here: http://osmnames.readthedocs.io/en/latest/.
+The full documentation of the project can be found here: https://osmnames.readthedocs.io/en/latest/.
