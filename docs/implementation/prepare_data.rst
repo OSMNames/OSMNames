@@ -144,8 +144,8 @@ features linked to their polygon features as well as determining city types
 instead of administrative types.
 
 For example the relation `Kreuzberg
-<http://www.openstreetmap.org/relation/55765>`_ is linked to the member node
-`Kreuzberg <http://www.openstreetmap.org/node/262328235>`_ with the role
+<https://www.openstreetmap.org/relation/55765>`_ is linked to the member node
+`Kreuzberg <https://www.openstreetmap.org/node/262328235>`_ with the role
 `label`. Since they are linked, only the polygon will be exported.
 
 
@@ -171,7 +171,7 @@ is as simple as this:
    `continent`.
 
 .. note:: If a element is contained in a polygon, is determined with the PostGIS
-  function `st_contains <http://postgis.net/docs/manual-1.4/ST_Contains.html>`_.
+  function `st_contains <https://postgis.net/docs/manual-1.4/ST_Contains.html>`_.
   Since it only returns true if a geometry is fully contained in another
   geometry, the child elements are determined only with the center of a geometry
   and not the full geometry. The centers of geometries are set `here
@@ -215,9 +215,9 @@ of the original linestrings in the table `osm_linestring` are updated to the
 Examples
 --------
 For example the linestrings with the OSM IDs `26085954
-<http://www.openstreetmap.org/way/26085954>`_, `289620118
-<http://www.openstreetmap.org/way/289620118>`_, `289620119
-<http://www.openstreetmap.org/way/289620119>`_ are merged to one linestring.
+<https://www.openstreetmap.org/way/26085954>`_, `289620118
+<https://www.openstreetmap.org/way/289620118>`_, `289620119
+<https://www.openstreetmap.org/way/289620119>`_ are merged to one linestring.
 
 Other examples can be found in the issues `#74
 <https://github.com/OSMNames/OSMNames/issues/74>`_ and `#85

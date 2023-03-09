@@ -66,7 +66,7 @@ Here is an example for the content of the script:
 
 
 Determining the best configuration for a host is not easy. A good starting
-point for that is `PgTune <http://pgtune.leopard.in.ua/>`_.
+point for that is `PgTune <https://pgtune.leopard.in.ua/>`_.
 
 tmpfs
 -----
