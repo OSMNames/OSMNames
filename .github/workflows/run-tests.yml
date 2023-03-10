@@ -1,0 +1,10 @@
+name: run tests
+on: [push, pull_request]
+jobs:
+  Run-Test-With-Docker-Compose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: docker-compose build
+      - run: docker-compose run --rm osmnames bash run_tests.sh
