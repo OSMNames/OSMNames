@@ -38,9 +38,13 @@ DROP INDEX idx_osm_linestring_name; --&
 DROP INDEX osm_linestring_geom; --&
 DROP INDEX IF EXISTS idx_osm_linestring_merged_false; --&
 
+CREATE INDEX IF NOT EXISTS idx_osm_merged_linestring_member_ids ON osm_merged_linestring USING GIN(member_ids); --&
+
 -- set merged_into for all merged linestrings
 UPDATE osm_linestring SET merged_into = osm_merged_linestring.osm_id
 FROM osm_merged_linestring
-WHERE osm_linestring.id = ANY(osm_merged_linestring.member_ids);
+WHERE ARRAY[osm_linestring.id] <@ (osm_merged_linestring.member_ids);
 
-CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring(merged_into) WHERE merged_into IS NULL;
+DROP INDEX idx_osm_merged_linestring_member_ids; --&
+
+CREATE INDEX idx_osm_linestring_merged_false ON osm_linestring(merged_into) WHERE merged_into IS NULL; --&
