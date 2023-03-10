@@ -1,6 +1,7 @@
 CREATE INDEX IF NOT EXISTS osm_linestring_normalized_name ON osm_linestring(normalized_name); --&
 CREATE INDEX IF NOT EXISTS osm_linestring_normalized_name_trgm ON osm_linestring USING GIN(normalized_name gin_trgm_ops); --&
 CREATE INDEX IF NOT EXISTS osm_linestring_geometry ON osm_linestring USING GIST(geometry); --&
+CREATE INDEX IF NOT EXISTS osm_housenumber_normalized_street ON osm_housenumber(normalized_street); --&
 CREATE INDEX IF NOT EXISTS osm_housenumber_geometry_center ON osm_housenumber USING GIST(geometry_center); --&
 
 -- see https://www.postgresql.org/docs/9.6/static/pgtrgm.html for more information
@@ -67,4 +68,5 @@ UPDATE osm_housenumber
 
 DROP INDEX osm_linestring_normalized_name; --&
 DROP INDEX osm_linestring_normalized_name_trgm; --&
+DROP INDEX osm_housenumber_normalized_street; --&
 DROP INDEX osm_housenumber_geometry_center; --&
