@@ -19,7 +19,11 @@ def import_wikipedia():
 
     download_dump(settings.get("WIKIPEDIA_DUMP_URL"))
     download_dump(settings.get("WIKIPEDIA_REDIRECTS_DUMP_URL"))
-    restore_wikipedia_dumps()
+
+    run_in_parallel(
+        restore_wikipedia_articles,
+        restore_wikipedia_redirects
+    )
 
     run_in_parallel(
         prepare_wikipedia_redirects,
@@ -31,43 +35,36 @@ def download_dump(url):
     destination_dir = settings.get("IMPORT_DIR")
     logged_check_call(["wget", "--no-clobber", "--directory-prefix", destination_dir, url])
 
-
-def restore_wikipedia_dumps():
-    _create_temporary_user_for_dump()
-
+def restore_wikipedia_articles():
     article_dump_filename = settings.get("WIKIPEDIA_DUMP_URL").split("/")[-1]
     article_dump_path = "{}/{}".format(settings.get("IMPORT_DIR"), article_dump_filename)
 
+    logged_check_call([
+        "pg_restore",
+        "-j", "2",
+        "--dbname", "osm",
+        "--no-owner",
+        "--section", "pre-data",
+        "--section", "data",
+        article_dump_path
+    ])
+
+
+def restore_wikipedia_redirects():
     redirect_dump_filename = settings.get("WIKIPEDIA_REDIRECTS_DUMP_URL").split("/")[-1]
     redirect_dump_path = "{}/{}".format(settings.get("IMPORT_DIR"), redirect_dump_filename)
 
-    logged_check_call(["pg_restore", "-j", "2", "--dbname", "osm", "-U", "brian", article_dump_path])
-    logged_check_call(["pg_restore", "-j", "2", "--dbname", "osm", "-U", "brian", redirect_dump_path])
-
-    _alter_wikipedia_dump_owner()
-
-
-def _create_temporary_user_for_dump():
-    query = """
-        CREATE ROLE brian LOGIN PASSWORD 'brian';
-        GRANT ALL PRIVILEGES ON DATABASE {database} to brian;
-        GRANT ALL ON SCHEMA public TO brian;
-    """.format(database=settings.get("DB_NAME"))
-
-    exec_sql(query, user="postgres")
-
-
-def _alter_wikipedia_dump_owner():
-    query = """
-        ALTER TABLE wikipedia_article OWNER TO {username};
-        ALTER TABLE wikipedia_redirect OWNER TO {username};
-    """.format(username=settings.get("DB_USER"))
-
-    exec_sql(query, user="postgres")
-
+    logged_check_call([
+        "pg_restore",
+        "-j", "2",
+        "--dbname", "osm",
+        "--no-owner",
+        "--section", "pre-data",
+        "--section", "data",
+        redirect_dump_path
+    ])
 
 def prepare_wikipedia_redirects():
-    exec_sql("DROP INDEX idx_wikipedia_redirect_from_title")
     exec_sql("""
         UPDATE wikipedia_redirect
             SET from_title = concat_ws(':', language, from_title),
