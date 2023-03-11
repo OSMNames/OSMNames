@@ -9,9 +9,7 @@ Also, the same calculations are applied, to achieve the same results.
 The initialization of the database is skipped, if it is already present.
 
 The download and import of the wikipedia dump are skipped, if it is already
-present. Since the dump was created with the username `brian`, a temporary user
-is created to restore the dump, which is dropped after transferring the
-ownership to the `osm` user.
+present.
 
 .. note:: The wikipedia import can be skipped by setting the environment
   variable `SKIP_WIKIPEDIA` to `True` in the `.env` file.
