@@ -24,8 +24,12 @@ services:
     image: dpage/pgadmin4
     depends_on:
       - postgres
+    volumes:
+      - ./data/pgadmin/server.json:/pgadmin4/servers.json
+      - ./data/pgadmin/pass:/pgpass
+      - ./data/pgadmin/config.py:/pgadmin4/config_local.py
     environment:
-      PGADMIN_DEFAULT_EMAIL: "osm@osm.osm"
+      PGADMIN_DEFAULT_EMAIL: "pgadmin4@pgadmin.org"
       PGADMIN_DEFAULT_PASSWORD: "osm"
     ports:
       - "5050:80" 
