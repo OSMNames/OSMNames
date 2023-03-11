@@ -8,3 +8,9 @@ WHERE mapping.country_code = polygon.country_code
   AND mapping.admin_level = polygon.admin_level
   AND polygon.admin_level IS NOT NULL
   AND polygon.type = 'administrative';
+
+UPDATE osm_polygon AS polygon
+  SET type = override.type
+FROM admin_level_type_mapping_override AS override
+WHERE override.country_code = polygon.country_code
+  AND -override.osm_id = polygon.osm_id;
