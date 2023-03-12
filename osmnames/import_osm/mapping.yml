@@ -67,10 +67,9 @@ tables:
       type: geometry
     - name: type
       type: mapping_value
-    - key: country_code
+    - key: ISO3166-1:alpha2
       name: imported_country_code
       type: string
-      key: ISO3166-1:alpha2
     - key: name:en
       name: name
       type: string
