@@ -70,11 +70,11 @@ def prepare_wikipedia_redirects():
             SET from_title = concat_ws(':', language, from_title),
                 to_title = concat_ws(':', language, to_title);
     """)
-    exec_sql("CREATE INDEX ON wikipedia_redirect(from_title)")
+    exec_sql("CREATE INDEX ON wikipedia_redirect USING hash(from_title);")
 
 
 def create_wikipedia_index():
-    exec_sql("CREATE INDEX idx_wikipedia_article_title ON wikipedia_article (title);")
+    exec_sql("CREATE INDEX idx_wikipedia_article_title ON wikipedia_article USING hash(title);")
 
 
 # this function should only be used, when the wikipedia import is skipped
