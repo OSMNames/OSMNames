@@ -63,6 +63,7 @@ DROP TABLE IF EXISTS public.osm_merged_linestring;
 DROP TABLE IF EXISTS public.osm_linestring;
 DROP TABLE IF EXISTS public.country_osm_grid;
 DROP TABLE IF EXISTS public.admin_level_type_mapping;
+DROP TABLE IF EXISTS public.admin_level_type_mapping_override;
 DROP TABLE IF EXISTS public.country_name;
 SET default_tablespace = '';
 
@@ -98,6 +99,17 @@ CREATE TABLE public.country_osm_grid (
 CREATE TABLE public.admin_level_type_mapping (
     country_code character varying(2),
     admin_level integer,
+    type character varying(20)
+);
+
+
+--
+-- Name: admin_level_type_mapping_override; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.admin_level_type_mapping_override (
+    country_code character varying(2),
+    osm_id bigint,
     type character varying(20)
 );
 
@@ -506,14 +518,6 @@ ALTER TABLE ONLY public.wikipedia_article
 
 ALTER TABLE ONLY public.wikipedia_redirect
     ADD CONSTRAINT pageredirect_pkey PRIMARY KEY (from_title);
-
-
---
--- Name: admin_level_type_mapping pagelinks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.admin_level_type_mapping
-    ADD CONSTRAINT admin_level_type_mapping_pkey PRIMARY KEY (country_code, admin_level);
 
 
 --

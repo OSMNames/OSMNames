@@ -80,6 +80,10 @@ class Tables:
         return getattr(self.base.classes, 'admin_level_type_mapping')
 
     @lazy_property.LazyProperty
+    def admin_level_type_mapping_override(self):
+        return getattr(self.base.classes, 'admin_level_type_mapping_override')
+
+    @lazy_property.LazyProperty
     def parent_polygons(self):
         return getattr(self.base.classes, 'parent_polygons')
 
