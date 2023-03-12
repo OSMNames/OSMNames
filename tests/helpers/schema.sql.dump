@@ -521,6 +521,22 @@ ALTER TABLE ONLY public.wikipedia_redirect
 
 
 --
+-- Name: admin_level_type_mapping admin_level_type_mapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_level_type_mapping
+    ADD CONSTRAINT admin_level_type_mapping_pkey PRIMARY KEY (country_code, admin_level);
+
+
+--
+-- Name: admin_level_type_mapping_override admin_level_type_mapping_override_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.admin_level_type_mapping_override
+    ADD CONSTRAINT admin_level_type_mapping_override_pkey PRIMARY KEY (country_code, osm_id);
+
+
+--
 -- Name: idx_country_name_country_code; Type: INDEX; Schema: public; Owner: -
 --
 
