@@ -240,6 +240,32 @@ Example use:
 
 
 
+Parallelizing UPDATE Queries
+****************************
+
+`PostgreSQL 15 doesn't parallelize UPDATE queries
+<https://www.postgresql.org/docs/current/when-can-parallel-query-be-used.html>`_,
+even if that would not be an issue for the queries run in OSMNames. A strategy
+is to work on multiple rows in parallel, by dividing the table and running many
+queries in parallel.
+
+To keep repetition low, the ``auto_modulo(column_name_here)`` function can be
+used (defined in `create_helper_functions.sql
+<https://github.com/OSMNames/OSMNames/blob/d0726a519608ed466b3a0097eaa7144a7ec8dcbd/osmnames/prepare_data/create_helper_functions.sql>`_).
+The query is duplicated automatically before being run (see `functions.py
+<https://github.com/OSMNames/OSMNames/blob/d0726a519608ed466b3a0097eaa7144a7ec8dcbd/osmnames/database/functions.py>`_).
+It uses par_sql as explained in the previous section. The ``--&`` suffix is
+optional. Only ``UPDATE`` queries are supported.
+
+Example use:
+
+.. code-block:: sql
+
+    UPDATE osm_linestring ... WHERE auto_modulo(osm_id);
+    UPDATE osm_linestring ... WHERE auto_modulo(osm_id); --&
+
+
+
 Tips
 *****
 These tips may help for efficient development:
