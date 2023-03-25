@@ -1,3 +1,5 @@
+import functools
+import multiprocessing
 import os
 import time
 import psycopg2
@@ -25,7 +27,8 @@ def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings
             sql = f.read()
 
         with tempfile.NamedTemporaryFile(encoding="utf-8", mode="w", prefix="OSMNames", suffix=".sql") as fp:
-            fp.write(modify_sql_with_auto_modulo(sql))
+            parallelism = auto_modulo_parallelism(user, database)
+            fp.write(modify_sql_with_auto_modulo(sql, parallelism))
             fp.flush()
             check_call(
                 ["par_psql", *shared_args, "--file={}".format(fp.name)],
@@ -39,7 +42,12 @@ def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings
     log.info("finished executing sql file {}".format(filename))
 
 
-def modify_sql_with_auto_modulo(sql):
+def modify_sql_with_auto_modulo(sql, parallelism):
+    replacement = "\n".join(
+        "\g<1>auto_modulo(\g<2>, {}, {})\g<3>; --&".format(parallelism, i)
+        for i in range(0, parallelism)
+    )
+
     return re.sub(
         r"""
             (UPDATE[^;]+?)         # query starting at UPDATE keyword
@@ -49,19 +57,27 @@ def modify_sql_with_auto_modulo(sql):
             ([^;]*);               # rest of query until ;
             \s*(?:--\&)?           # optionally eat --& comment
         """,
-        """
-            \g<1>auto_modulo(\g<2>, 8, 0)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 1)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 2)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 3)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 4)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 5)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 6)\g<3>; --&
-            \g<1>auto_modulo(\g<2>, 8, 7)\g<3>; --&
-        """,
+        replacement,
         sql,
         flags=re.VERBOSE
     )
+
+
+@functools.cache
+def auto_modulo_parallelism(user=settings.get('DB_USER'), database=settings.get('DB_NAME')):
+    max_conns = int(exec_sql("SHOW max_connections;",
+                    user, database).fetchone()[0])
+    max_cpu = multiprocessing.cpu_count()
+    # don't exceed max_connections, even when parallelizing across multiple
+    # levels. Also leave at least one connection free for pgadmin and others.
+    parallel_queries = 3
+    additional_free_conns = 0 if max_conns % parallel_queries == 0 else 1
+    max_safe_conns = max(1, max_conns//parallel_queries - additional_free_conns)
+    parallelization = min(max_cpu, max_safe_conns)
+    log.debug("System cpu_count={}, PostgreSQL max_connections={}, using {} "
+              "connections to parallelize auto_modulo UPDATE queries"
+              .format(max_cpu, max_conns, parallelization))
+    return parallelization
 
 
 def exec_sql(sql, user=settings.get('DB_USER'), database=settings.get('DB_NAME')):
