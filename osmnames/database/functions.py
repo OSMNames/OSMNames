@@ -13,6 +13,8 @@ log = logger.setup(__name__)
 
 def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings.get("DB_NAME"), cwd="", parallelize=False):
     log.info("start executing sql file {}".format(filename))
+    start = time.time()
+
     path = os.path.join(cwd, filename)
     shared_args = [
         "-v", "ON_ERROR_STOP=1",
@@ -36,7 +38,10 @@ def exec_sql_from_file(filename, user=settings.get("DB_USER"), database=settings
             ["psql", *shared_args, "--file={}".format(path)],
             stdout=open(os.devnull, 'w')
         )
-    log.info("finished executing sql file {}".format(filename))
+
+    end = time.time()
+    log.info("finished executing sql file {} (took {}s)"
+             .format(filename, round(end-start, 1)))
 
 
 def modify_sql_with_auto_modulo(sql):
@@ -85,6 +90,8 @@ def vacuum_database():
         return
 
     log.info("start vacuum database")
+    start = time.time()
+
     check_call([
             "vacuumdb",
             "--username=postgres",
@@ -93,7 +100,10 @@ def vacuum_database():
             "--jobs={}".format(settings.get('VACUUM_JOBS')),
         ], stdout=open(os.devnull, 'w')
     )
-    log.info("finished vacuum database")
+
+    end = time.time()
+    log.info("finished vacuum database (took {}s)"
+             .format(round(end-start, 1)))
 
 
 def wait_for_database():
