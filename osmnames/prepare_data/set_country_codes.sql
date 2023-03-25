@@ -1,5 +1,4 @@
-DROP FUNCTION IF EXISTS set_country_code_for_polygons_within_geometry(VARCHAR(2), geometry);
-CREATE FUNCTION set_country_code_for_polygons_within_geometry(country_code_in VARCHAR(2), geometry_value GEOMETRY) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION set_country_code_for_polygons_within_geometry(country_code_in VARCHAR(2), geometry_value GEOMETRY) RETURNS VOID AS $$
 BEGIN
   UPDATE osm_polygon SET country_code = country_code_in WHERE country_code = '' IS NOT FALSE
                                                               AND st_contains(geometry_value, geometry);
@@ -7,8 +6,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-DROP FUNCTION IF EXISTS get_most_intersecting_country_code(geometry);
-CREATE FUNCTION get_most_intersecting_country_code(geometry_in GEOMETRY) RETURNS VARCHAR(2) AS $$
+CREATE OR REPLACE FUNCTION get_most_intersecting_country_code(geometry_in GEOMETRY) RETURNS VARCHAR(2) AS $$
 BEGIN
   RETURN(
     SELECT lower(country_code)

@@ -6,8 +6,7 @@ CREATE INDEX IF NOT EXISTS osm_housenumber_geometry_center ON osm_housenumber US
 -- see https://www.postgresql.org/docs/9.6/static/pgtrgm.html for more information
 UPDATE pg_settings SET setting = '0.5' WHERE name = 'pg_trgm.similarity_threshold';
 
-DROP FUNCTION IF EXISTS best_matching_street_within_parent(BIGINT, GEOMETRY, VARCHAR);
-CREATE FUNCTION best_matching_street_within_parent(parent_id_in BIGINT, geometry_in GEOMETRY, name_in VARCHAR)
+CREATE OR REPLACE FUNCTION best_matching_street_within_parent(parent_id_in BIGINT, geometry_in GEOMETRY, name_in VARCHAR)
 RETURNS BIGINT AS $$
   SELECT COALESCE(merged_into, osm_id)
     FROM osm_linestring
@@ -18,8 +17,7 @@ RETURNS BIGINT AS $$
     LIMIT 1;
 $$ LANGUAGE 'sql' IMMUTABLE;
 
-DROP FUNCTION IF EXISTS best_matching_street_within_range(GEOMETRY, VARCHAR);
-CREATE FUNCTION best_matching_street_within_range(geometry_in GEOMETRY, name_in VARCHAR)
+CREATE OR REPLACE FUNCTION best_matching_street_within_range(geometry_in GEOMETRY, name_in VARCHAR)
 RETURNS BIGINT AS $$
   SELECT COALESCE(merged_into, osm_id)
     FROM osm_linestring

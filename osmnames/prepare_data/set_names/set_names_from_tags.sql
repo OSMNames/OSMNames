@@ -1,5 +1,4 @@
-DROP FUNCTION IF EXISTS get_name_and_alternative_names(TEXT, HSTORE);
-CREATE FUNCTION get_name_and_alternative_names(current_name TEXT, all_tags HSTORE)
+CREATE OR REPLACE FUNCTION get_name_and_alternative_names(current_name TEXT, all_tags HSTORE)
 RETURNS TABLE(name TEXT, alternative_names_string TEXT) AS $$
 DECLARE
   alternative_names TEXT[];

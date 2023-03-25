@@ -1,5 +1,4 @@
-DROP FUNCTION IF EXISTS set_parent_id_for_linestrings_within_geometry(BIGINT, geometry);
-CREATE FUNCTION set_parent_id_for_linestrings_within_geometry(id_in BIGINT, geometry_in GEOMETRY)
+CREATE OR REPLACE FUNCTION set_parent_id_for_linestrings_within_geometry(id_in BIGINT, geometry_in GEOMETRY)
 RETURNS VOID AS $$
 BEGIN
   UPDATE osm_linestring SET parent_id = id_in WHERE parent_id IS NULL
