@@ -1,7 +1,6 @@
 /* See Nominatim functions.sql placex_insert() line 676 for determining ranks
    Reference: https://github.com/openstreetmap/Nominatim/blob/master/sql/functions.sql */
-DROP FUNCTION IF EXISTS get_place_rank(TEXT, INT);
-CREATE FUNCTION get_place_rank(type TEXT, admin_level INT DEFAULT NULL)
+CREATE OR REPLACE FUNCTION get_place_rank(type TEXT, admin_level INT DEFAULT NULL)
 RETURNS int AS $$
 BEGIN
   RETURN CASE

@@ -17,8 +17,7 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_parent_info(BIGINT, TEXT);
-CREATE FUNCTION get_parent_info(id BIGINT, name TEXT)
+CREATE OR REPLACE FUNCTION get_parent_info(id BIGINT, name TEXT)
 RETURNS parentInfo AS $$
 DECLARE
   retval parentInfo;
@@ -68,8 +67,7 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_country_name(VARCHAR);
-CREATE FUNCTION get_country_name(country_code_in VARCHAR(2)) returns TEXT as $$
+CREATE OR REPLACE FUNCTION get_country_name(country_code_in VARCHAR(2)) returns TEXT as $$
   SELECT COALESCE(name -> 'name:en',
                   name -> 'name',
                   name -> 'name:fr',
@@ -81,8 +79,7 @@ CREATE FUNCTION get_country_name(country_code_in VARCHAR(2)) returns TEXT as $$
 $$ LANGUAGE 'sql' IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_importance(INTEGER, VARCHAR, VARCHAR);
-CREATE FUNCTION get_importance(place_rank INT, wikipedia VARCHAR, country_code VARCHAR(2)) RETURNS DOUBLE PRECISION as $$
+CREATE OR REPLACE FUNCTION get_importance(place_rank INT, wikipedia VARCHAR, country_code VARCHAR(2)) RETURNS DOUBLE PRECISION as $$
 DECLARE
   wiki_article_title TEXT;
   wiki_article_language VARCHAR;
@@ -113,24 +110,21 @@ $$
 LANGUAGE plpgsql IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_country_language_code(VARCHAR);
-CREATE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS VARCHAR(2) AS $$
+CREATE OR REPLACE FUNCTION get_country_language_code(country_code_in VARCHAR(2)) RETURNS VARCHAR(2) AS $$
   SELECT lower(country_default_language_code)
          FROM country_name
          WHERE country_code = country_code_in LIMIT 1;
 $$ LANGUAGE 'sql' IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_housenumbers(BIGINT);
-CREATE FUNCTION get_housenumbers(osm_id_in BIGINT) RETURNS TEXT AS $$
+CREATE OR REPLACE FUNCTION get_housenumbers(osm_id_in BIGINT) RETURNS TEXT AS $$
   SELECT string_agg(housenumber, ', ' ORDER BY housenumber ASC)
     FROM osm_housenumber
     WHERE street_id = osm_id_in;
 $$ LANGUAGE 'sql' IMMUTABLE;
 
 
-DROP FUNCTION IF EXISTS get_bounding_box(GEOMETRY, TEXT, INTEGER);
-CREATE FUNCTION get_bounding_box(geom GEOMETRY, country_code TEXT, admin_level INTEGER)
+CREATE OR REPLACE FUNCTION get_bounding_box(geom GEOMETRY, country_code TEXT, admin_level INTEGER)
 RETURNS DECIMAL[] AS $$
 DECLARE
   bounding_box DECIMAL[];

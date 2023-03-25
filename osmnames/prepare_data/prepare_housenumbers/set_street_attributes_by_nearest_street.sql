@@ -1,5 +1,4 @@
-DROP FUNCTION IF EXISTS nearest_street(BIGINT, geometry);
-CREATE FUNCTION nearest_street(parent_id_in BIGINT, geometry_in GEOMETRY)
+CREATE OR REPLACE FUNCTION nearest_street(parent_id_in BIGINT, geometry_in GEOMETRY)
 RETURNS TABLE(osm_id BIGINT, name VARCHAR) AS $$
 BEGIN
   RETURN QUERY
