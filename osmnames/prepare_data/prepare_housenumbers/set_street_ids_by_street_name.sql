@@ -41,6 +41,7 @@ UPDATE osm_housenumber AS housenumber
   SET street_id = COALESCE(street.merged_into, street.osm_id)
 FROM osm_linestring AS street
 WHERE st_dwithin(street.geometry, housenumber.geometry_center, 1000)
+      -- inverse of the condition in previous query; also selects rows where any parent_id is NULL
       AND (street.parent_id = housenumber.parent_id) IS NOT TRUE
       AND street.normalized_name = housenumber.normalized_street
       AND housenumber.street_id IS NULL
