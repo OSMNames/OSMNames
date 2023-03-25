@@ -266,6 +266,27 @@ Example use:
 
 
 
+Parallelization and PostgreSQL's ``max_connections``
+****************************************************
+
+In addition to the previously mentioned ``--&`` from ``par_psql`` and the
+``auto_modulo`` PSQL function, there is also a ``run_in_parallel`` Python
+function. All combined need to have less simultaneous connections to PostgreSQL
+than its configured ``max_connections``. As there is no queuing mechanism, any
+additional query will fail outright and halt processing.
+
+``auto_modulo`` implements a simple heuristic based on available CPUs, the
+``max_connections`` setting and a hardcoded value of the independent query
+parallelization. The intent is to utilize available hardware resources, while
+staying within ``max_connections`` limit in absence of a more sophisticated
+queuing mechanism.
+
+The user can control parallelization by tuning PostgreSQL's ``max_connections``
+config, as in addition to other tuning parameters. A developer increasing
+parallelism in the code should check if the heuristic needs to be adapted.
+
+
+
 Tips
 *****
 These tips may help for efficient development:

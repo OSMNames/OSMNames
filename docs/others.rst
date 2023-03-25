@@ -13,10 +13,10 @@ Database Configuration
 ----------------------
 
 For better performance, the database needs to be configured according to the
-resources of the host system, the process runs on. A custom configuration can
-be added by creating a file `/docker-entrypoint-initdb.d/alter_system.sh`
-inside the postgres container and marking it as executable. The script is
-executed when restarting the database container.
+resources of the host system, the process runs on. A custom configuration can be
+added to ``data/postgres_config.sh`` which is mounted into the postgres
+container through ``docker_compose.yml``. The script is executed when restarting
+the database container.
 
 Here is an example for the content of the script:
 
@@ -48,7 +48,7 @@ Here is an example for the content of the script:
       alter system set log_temp_files = '1MB';
       alter system set log_timezone = 'UTC';
       alter system set maintenance_work_mem = '96GB';
-      alter system set max_connections = '20';
+      alter system set max_connections = '40';
       alter system set random_page_cost = '1.1';
       alter system set shared_buffers = '96GB';
       alter system set synchronous_commit = 'off';
@@ -67,6 +67,10 @@ Here is an example for the content of the script:
 
 Determining the best configuration for a host is not easy. A good starting
 point for that is `PgTune <https://pgtune.leopard.in.ua/>`_.
+
+Parallelization is limited by CPU count and PostgreSQL's ``max_connections``
+setting. As a rule of thumb ``max_connections = cpu_count * 3`` or greater is
+required to (try to) utilize all CPUs.
 
 tmpfs
 -----
