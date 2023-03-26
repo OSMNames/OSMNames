@@ -56,7 +56,7 @@ def delete_unusable_entries():
 
 
 def set_place_ranks():
-    exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__))
+    exec_sql_from_file("set_place_ranks.sql", cwd=os.path.dirname(__file__), parallelize=True)
     vacuum_database()
 
 
