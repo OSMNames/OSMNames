@@ -25,7 +25,7 @@ def set_street_names_by_relation_attributes():
 
 
 def normalize_street_names():
-    exec_sql_from_file("normalize_street_names.sql", cwd=SQL_DIR)
+    exec_sql_from_file("normalize_street_names.sql", cwd=SQL_DIR, parallelize=True)
 
 
 def set_street_ids_by_street_name():
