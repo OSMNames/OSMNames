@@ -14,4 +14,5 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 UPDATE osm_housenumber
   SET (street_id, street) = (SELECT * FROM nearest_street(parent_id, geometry))
 WHERE street_id IS NULL
-      AND parent_id IS NOT NULL;
+      AND parent_id IS NOT NULL
+      AND auto_modulo(id);
