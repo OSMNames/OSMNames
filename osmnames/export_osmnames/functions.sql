@@ -68,8 +68,8 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 
 
 CREATE OR REPLACE FUNCTION get_country_name(country_code_in VARCHAR(2)) returns TEXT as $$
-  SELECT COALESCE(name -> 'name:en',
-                  name -> 'name',
+  SELECT COALESCE(name -> 'name',
+                  name -> 'name:en',
                   name -> 'name:fr',
                   name -> 'name:de',
                   name -> 'name:es',
