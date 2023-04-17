@@ -16,6 +16,7 @@ BEGIN
   SELECT array_agg(DISTINCT(all_tags -> key))
     FROM unnest(akeys(all_tags)) AS key
     WHERE key LIKE 'name:__'
+          OR key LIKE 'loc_name:__'
           OR key LIKE 'alt_name:__'
           OR key = ANY(accepted_name_tags)
           INTO names;
