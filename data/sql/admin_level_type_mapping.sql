@@ -1154,7 +1154,7 @@ au	6269038	city
 au	2646730	city
 au	2456176	city
 mx	1376330	city
-nz	2094141	city
+nz	17000522	city
 nz	4266321	city
 nz	1640161	city
 nz	2595124	city
@@ -1165,7 +1165,7 @@ nz	3440209	city
 nz	2731991	city
 nz	4266370	city
 nz	1656388	city
-nz	4266962	city
+nz	17000449	city
 nz	4266375	city
 dj	3725245	city
 gm	3214211	city
