@@ -12,7 +12,7 @@ services:
 
   postgres:
     image: postgis/postgis:15-3.3
-    shm_size: 512mb # for processing the world, I increased this to 16g
+    shm_size: 16G # for processing the world, I increased this to 16g
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
