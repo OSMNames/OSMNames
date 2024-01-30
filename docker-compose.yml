@@ -16,7 +16,7 @@ services:
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./data/postgres_config.sh:/docker-entrypoint-initdb.d/postgres_config.sh
 
@@ -32,4 +32,4 @@ services:
       PGADMIN_DEFAULT_EMAIL: "pgadmin4@pgadmin.org"
       PGADMIN_DEFAULT_PASSWORD: "osm"
     ports:
-      - "5050:80" 
+      - "127.0.0.1:5050:80"
