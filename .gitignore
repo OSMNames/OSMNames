@@ -2,6 +2,7 @@ data/import/*
 data/export/*
 data/cache/*
 data/logs/*
+index/*
 
 !.gitkeep
 
