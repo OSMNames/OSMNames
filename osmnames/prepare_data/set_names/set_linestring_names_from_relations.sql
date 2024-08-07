@@ -1,5 +1,7 @@
 UPDATE osm_linestring AS street
-  SET name = COALESCE(NULLIF(street_relation.street, ''), street_relation.name)
+  SET name = COALESCE(NULLIF(street_relation.street, ''),
+                      NULLIF(street_relation.name, ''),
+                      street.name)
 FROM osm_relation_member AS street_relation_member
   INNER JOIN osm_relation AS street_relation
     ON street_relation.osm_id = street_relation_member.osm_id

@@ -36,3 +36,4 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 UPDATE osm_linestring SET (name, alternative_names) = (SELECT * FROM get_name_and_alternative_names(name, all_tags)) WHERE auto_modulo(id); --&
 UPDATE osm_polygon SET (name, alternative_names) = (SELECT * FROM get_name_and_alternative_names(name, all_tags)) WHERE auto_modulo(id); --&
 UPDATE osm_point SET (name, alternative_names) = (SELECT * FROM get_name_and_alternative_names(name, all_tags)) WHERE auto_modulo(id); --&
+UPDATE osm_relation SET (name, alternative_names) = (SELECT * FROM get_name_and_alternative_names(name, all_tags)) WHERE auto_modulo(id); --&

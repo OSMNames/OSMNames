@@ -308,7 +308,9 @@ CREATE TABLE public.osm_relation (
     osm_id bigint,
     name character varying,
     type character varying,
-    street character varying
+    street character varying,
+    all_tags public.hstore,
+    alternative_names text
 );
 
 

@@ -1,4 +1,4 @@
-FROM golang:1.19.3-bullseye
+FROM golang:1.22.5-bullseye
 
 # ARG is only set for the build
 ARG DEBIAN_FRONTEND=noninteractive
