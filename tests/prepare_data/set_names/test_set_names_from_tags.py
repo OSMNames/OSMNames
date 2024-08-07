@@ -4,12 +4,14 @@ from osmnames.prepare_data.set_names import set_names_from_tags
 def test_name_get_set_from_all_tags(session, tables):
     session.add(tables.osm_polygon(id=1, name="", all_tags={"name:en": "Zurich"}))
     session.add(tables.osm_linestring(id=1, name="", all_tags={"name:de": "Rhein"}))
+    session.add(tables.osm_relation(id=1, name="", all_tags={"name:fr": "Paris"}))
     session.commit()
 
     set_names_from_tags()
 
     assert session.query(tables.osm_polygon).get(1).name == "Zurich"
     assert session.query(tables.osm_linestring).get(1).name == "Rhein"
+    assert session.query(tables.osm_relation).get(1).name == "Paris"
 
 
 def test_name_get_set_according_to_priority(session, tables):

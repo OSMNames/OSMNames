@@ -16,6 +16,8 @@ ALTER TABLE osm_point ADD parent_id BIGINT,
                       ADD alternative_names TEXT,
                       ADD merged Boolean DEFAULT(false);
 
+ALTER TABLE osm_relation ADD alternative_names TEXT;
+
 ALTER TABLE osm_housenumber ADD parent_id BIGINT,
                             ADD street_id BIGINT,
                             ADD geometry_center GEOMETRY DEFAULT(ST_Point(0,0)),
